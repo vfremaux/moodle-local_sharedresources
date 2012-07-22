@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:types="urn:www.cenorm.be/isss/ltws/wsdl/SQIv1p0" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" targetNamespace="urn:www.cenorm.be/isss/ltws/wsdl/SQIv1p0">
+	<import namespace="urn:www.cenorm.be/isss/ltws/wsdl/SQIv1p0" location="sqiFault.wsdl"/>
+
+	<types>
+		<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="urn:www.cenorm.be/isss/ltws/wsdl/SQIv1p0">
+			<xsd:element name="createSession">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="userID" type="xsd:string"/>
+						<xsd:element name="password" type="xsd:string"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="createSessionResponse">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="createSessionReturn" type="xsd:string"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="createAnonymousSession">
+				<xsd:complexType>
+					<xsd:sequence/>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="createAnonymousSessionResponse">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="createAnonymousSessionReturn" type="xsd:string"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="destroySession">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="sessionID" type="xsd:string"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+		</xsd:schema>
+	</types>
+	<message name="createSessionRequest">
+		<part name="createSession" element="types:createSession"/>
+	</message>
+	<message name="createSessionResponse">
+		<part name="sessionID" element="types:createSessionResponse"/>
+	</message>
+	<message name="createAnonymousSessionRequest">
+		<part name="createAnonymousSession" element="types:createAnonymousSession"/>
+	</message>
+	<message name="createAnonymousSessionResponse">
+		<part name="sessionID" element="types:createAnonymousSessionResponse"/>
+	</message>
+	<message name="destroySessionRequest">
+		<part name="destroySession" element="types:destroySession"/>
+	</message>
+	<message name="destroySessionResponse"/>
+	<portType name="SqiSessionManagementPort">
+		<operation name="createSession">
+			<input message="types:createSessionRequest"/>
+			<output message="types:createSessionResponse"/>
+			<fault name="SQIFault" message="types:SQIFault"/>
+		</operation>
+		<operation name="createAnonymousSession">
+			<input message="types:createAnonymousSessionRequest"/>
+			<output message="types:createAnonymousSessionResponse"/>
+			<fault name="SQIFault" message="types:SQIFault"/>
+		</operation>
+		<operation name="destroySession">
+			<input message="types:destroySessionRequest"/>
+			<output message="types:destroySessionResponse"/>
+			<fault name="SQIFault" message="types:SQIFault"/>
+		</operation>
+	</portType>
+	<binding name="SqiSessionManagementBinding" type="types:SqiSessionManagementPort">
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+		<operation name="createSession">
+			<soap:operation soapAction="createSession"/>
+			<input>
+				<soap:body use="literal" />
+			</input>
+			<output>
+				<soap:body use="literal" />
+			</output>
+			<fault name="SQIFault">
+				<soap:fault name="SQIFault" use="literal" />
+			</fault>
+		</operation>
+		<operation name="createAnonymousSession">
+			<soap:operation soapAction="createAnonymousSession"/>
+			<input>
+				<soap:body use="literal" />
+			</input>
+			<output>
+				<soap:body use="literal" />
+			</output>
+			<fault name="SQIFault">
+				<soap:fault name="SQIFault" use="literal" />
+			</fault>
+		</operation>
+		<operation name="destroySession">
+			<soap:operation soapAction="destroySession"/>
+			<input>
+				<soap:body use="literal" />
+			</input>
+			<output>
+				<soap:body use="literal" />
+			</output>
+			<fault name="SQIFault">
+				<soap:fault name="SQIFault" use="literal" />
+			</fault>
+		</operation>
+	</binding>
+
+    <service name="lre_test">
+        <port name="nmtoken" binding="types:SqiSessionManagementBinding">
+           <soap:address location="http://lrecoretest.eun.org:6080/LRE-SQI/services/SessionManagementServiceBinding?wsdl" />
+        </port>
+    </service>
+
+</definitions>

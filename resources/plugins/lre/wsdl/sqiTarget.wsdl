@@ -1,0 +1,287 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:types="urn:www.cenorm.be/isss/ltws/wsdl/SQIv1p0" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" targetNamespace="urn:www.cenorm.be/isss/ltws/wsdl/SQIv1p0">
+	<import namespace="urn:www.cenorm.be/isss/ltws/wsdl/SQIv1p0" location="sqiFault.wsdl"/>
+	<types>
+		<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="urn:www.cenorm.be/isss/ltws/wsdl/SQIv1p0">
+			<xsd:element name="setQueryLanguage">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="targetSessionID" type="xsd:string"/>
+						<xsd:element name="queryLanguageID" type="xsd:string"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="setMaxQueryResults">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="targetSessionID" type="xsd:string"/>
+						<xsd:element name="maxQueryResults" type="xsd:int"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="setMaxDuration">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="targetSessionID" type="xsd:string"/>
+						<xsd:element name="maxDuration" type="xsd:int"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="setResultsFormat">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="targetSessionID" type="xsd:string"/>
+						<xsd:element name="resultsFormat" type="xsd:string"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="setResultsSetSize">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="targetSessionID" type="xsd:string"/>
+						<xsd:element name="resultsSetSize" type="xsd:int"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="synchronousQuery">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="targetSessionID" type="xsd:string"/>
+						<xsd:element name="queryStatement" type="xsd:string"/>
+						<xsd:element name="startResult" type="xsd:int"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="synchronousQueryResponse">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="synchronousQueryReturn" type="xsd:string"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="getTotalResultsCount">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="targetSessionID" type="xsd:string"/>
+						<xsd:element name="queryStatement" type="xsd:string"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="getTotalResultsCountResponse">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="getTotalResultsCountReturn" type="xsd:int"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="setSourceLocation">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="targetSessionID" type="xsd:string"/>
+						<xsd:element name="sourceLocation" type="xsd:string"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="asynchronousQuery">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="targetSessionID" type="xsd:string"/>
+						<xsd:element name="queryStatement" type="xsd:string"/>
+						<xsd:element name="queryID" type="xsd:string"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+		</xsd:schema>
+	</types>
+	<message name="setQueryLanguageRequest">
+		<part name="setQueryLanguage" element="types:setQueryLanguage"/>
+	</message>
+	<message name="setQueryLanguageResponse"/>
+	<message name="setMaxQueryResultsRequest">
+		<part name="setMaxQueryResults" element="types:setMaxQueryResults"/>
+	</message>
+	<message name="setMaxQueryResultsResponse"/>
+	<message name="setMaxDurationRequest">
+		<part name="setMaxDuration" element="types:setMaxDuration"/>
+	</message>
+	<message name="setMaxDurationResponse"/>
+	<message name="setResultsFormatRequest">
+		<part name="setResultsFormat" element="types:setResultsFormat"/>
+	</message>
+	<message name="setResultsFormatResponse"/>
+	<message name="setResultsSetSizeRequest">
+		<part name="setResultsSetSize" element="types:setResultsSetSize"/>
+	</message>
+	<message name="setResultsSetSizeResponse"/>
+	<message name="synchronousQueryRequest">
+		<part name="synchronousQuery" element="types:synchronousQuery"/>
+	</message>
+	<message name="synchronousQueryResponse">
+		<part name="queryResults" element="types:synchronousQueryResponse"/>
+	</message>
+	<message name="getTotalResultsCountRequest">
+		<part name="getTotalResultsCount" element="types:getTotalResultsCount"/>
+	</message>
+	<message name="getTotalResultsCountResponse">
+		<part name="totalResultsCount" element="types:getTotalResultsCountResponse"/>
+	</message>
+	<message name="setSourceLocationRequest">
+		<part name="setSourceLocation" element="types:setSourceLocation"/>
+	</message>
+	<message name="setSourceLocationResponse"/>
+	<message name="asynchronousQueryRequest">
+		<part name="asynchronousQuery" element="types:asynchronousQuery"/>
+	</message>
+	<message name="asynchronousQueryResponse"/>
+	<portType name="SqiTargetPort">
+		<!-- Query Parameter Configuration Operations -->
+		<operation name="setQueryLanguage">
+			<input message="types:setQueryLanguageRequest"/>
+			<output message="types:setQueryLanguageResponse"/>
+			<fault name="SQIFault" message="types:SQIFault"/>
+		</operation>
+		<operation name="setMaxQueryResults">
+			<input message="types:setMaxQueryResultsRequest"/>
+			<output message="types:setMaxQueryResultsResponse"/>
+			<fault name="SQIFault" message="types:SQIFault"/>
+		</operation>
+		<operation name="setMaxDuration">
+			<input message="types:setMaxDurationRequest"/>
+			<output message="types:setMaxDurationResponse"/>
+			<fault name="SQIFault" message="types:SQIFault"/>
+		</operation>
+		<operation name="setResultsFormat">
+			<input message="types:setResultsFormatRequest"/>
+			<output message="types:setResultsFormatResponse"/>
+			<fault name="SQIFault" message="types:SQIFault"/>
+		</operation>
+		<!-- Synchronous Query Operations -->
+		<operation name="setResultsSetSize">
+			<input message="types:setResultsSetSizeRequest"/>
+			<output message="types:setResultsSetSizeResponse"/>
+			<fault name="SQIFault" message="types:SQIFault"/>
+		</operation>
+		<operation name="synchronousQuery">
+			<input message="types:synchronousQueryRequest"/>
+			<output message="types:synchronousQueryResponse"/>
+			<fault name="SQIFault" message="types:SQIFault"/>
+		</operation>
+		<operation name="getTotalResultsCount">
+			<input message="types:getTotalResultsCountRequest"/>
+			<output message="types:getTotalResultsCountResponse"/>
+			<fault name="SQIFault" message="types:SQIFault"/>
+		</operation>
+		<!-- Asynchronous Query Operations -->
+		<operation name="setSourceLocation">
+			<input message="types:setSourceLocationRequest"/>
+			<output message="types:setSourceLocationResponse"/>
+			<fault name="SQIFault" message="types:SQIFault"/>
+		</operation>
+		<operation name="asynchronousQuery">
+			<input message="types:asynchronousQueryRequest"/>
+			<output message="types:asynchronousQueryResponse"/>
+			<fault name="SQIFault" message="types:SQIFault"/>
+		</operation>
+	</portType>
+	<binding name="SqiTargetBinding" type="types:SqiTargetPort">
+		<soap:binding transport="http://schemas.xmlsoap.org/soap/http"/>
+		<operation name="setQueryLanguage">
+			<soap:operation soapAction="setQueryLanguage"/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+			<fault name="SQIFault"/>
+		</operation>
+		<operation name="setMaxQueryResults">
+			<soap:operation soapAction="setMaxQueryResults"/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+			<fault name="SQIFault"/>
+		</operation>
+		<operation name="setMaxDuration">
+			<soap:operation soapAction="setMaxDuration"/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+			<fault name="SQIFault"/>
+		</operation>
+		<operation name="setResultsFormat">
+			<soap:operation soapAction="setResultsFormat"/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+			<fault name="SQIFault"/>
+		</operation>
+		<!-- Synchronous Query Operations -->
+		<operation name="setResultsSetSize">
+			<soap:operation soapAction="setResultsSetSize"/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+			<fault name="SQIFault"/>
+		</operation>
+		<operation name="synchronousQuery">
+			<soap:operation soapAction="synchronousQuery"/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+			<fault name="SQIFault"/>
+		</operation>
+		<operation name="getTotalResultsCount">
+			<soap:operation soapAction="getTotalResultsCount"/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+			<fault name="SQIFault"/>
+		</operation>
+		<!-- Asynchronous Query Operations -->
+		<operation name="setSourceLocation">
+			<soap:operation soapAction="setSourceLocation"/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+			<fault name="SQIFault"/>
+		</operation>
+		<operation name="asynchronousQuery">
+			<soap:operation soapAction="asynchronousQuery"/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+			<fault name="SQIFault"/>
+		</operation>
+	</binding>
+	<service name="lre_test">
+		<port name="nmtoken" binding="types:SqiTargetBinding">
+			<documentation>Test impkementation for the SQI Interface for LRE </documentation>
+			<soap:address location="http://lrecoretest.eun.org:6080/LRE-SQI/services/TargetServiceBinding"/>
+		</port>
+	</service>
+</definitions>

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions
+    xmlns="http://schemas.xmlsoap.org/wsdl/" 
+    xmlns:types="urn:www.cenorm.be/isss/ltws/wsdl/SQIv1p0"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+    targetNamespace="urn:www.cenorm.be/isss/ltws/wsdl/SQIv1p0">
+    
+    <import namespace="urn:www.cenorm.be/isss/ltws/wsdl/SQIv1p0" location="sqiFault.wsdl"/>
+    
+    <types>
+        <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified"
+            targetNamespace="urn:www.cenorm.be/isss/ltws/wsdl/SQIv1p0">
+            <xsd:element name="queryResultsListener">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="queryID" type="xsd:string"/>
+                        <xsd:element name="queryResults" type="xsd:string"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+        </xsd:schema>
+    </types>
+    
+    <message name="queryResultsListenerRequest">
+        <part name="queryResultsListener" element="types:queryResultsListener"/>
+    </message>
+    <message name="queryResultsListenerResponse"/>
+    
+    <portType name="SqiSourcePort">
+        <operation name="queryResultsListener">
+            <input message="types:queryResultsListenerRequest"/>
+            <output message="types:queryResultsListenerResponse"/>
+            <fault name="SQIFault" message="types:SQIFault"/>
+        </operation>
+    </portType>
+    
+    <binding name="SqiSourceBinding" type="types:SqiSourcePort">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+        <operation name="queryResultsListener">
+            <soap:operation soapAction="queryResultsListener"/>
+            <input>
+                <soap:body use="literal" 
+                    namespace="urn:www.cenorm.be/isss/ltws/soap/SQIv1p0"/>
+            </input>
+            <output>
+                <soap:body use="literal"
+                    namespace="urn:www.cenorm.be/isss/ltws/soap/SQIv1p0"/>
+            </output>
+            <fault name="SQIFault">
+                <soap:fault
+                    name="SQIFault" use="literal"
+                    namespace="urn:www.cenorm.be/isss/ltws/wsdl/SQIv1p0"/>
+            </fault>
+        </operation>
+    </binding>
+</definitions>
