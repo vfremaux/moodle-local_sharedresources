@@ -1,0 +1,65 @@
+Changes in 1.8.0 (June 20th, 2005)
+- add a simple index.php, so one can easily test own data provider.
+- do not expose query errors, introduce switch to show errors for debugging.
+- in production mode, do always create correct XML answers, even with DB error.
+- do not use totally useless PEAR getMessage(), use errorNative() instead, this should help people, who have problems to install the stuff.
+- xmlformat also uses $attr as parameter.
+
+Changes in 1.7.2 (June 19th, 2005)
+- use xmlformat instead of xmlrecord for identifier in ListRecords.php (Nigel Gilbert <n.gilbert@soc.surrey.ac.uk>)
+- xmlstr should return something even if $xmlescaped is true (Nigel Gilbert <n.gilbert@soc.surrey.ac.uk>)
+- fix xmlrecord if $SQL['split'] is unset (Nigel Gilbert <n.gilbert@soc.surrey.ac.uk>)
+- initialize $output (Nigel Gilbert <n.gilbert@soc.surrey.ac.uk>)
+- <branding> needs to be inside <description> (Nigel Gilbert <n.gilbert@soc.surrey.ac.uk>)
+- add specific table definition for postgresql (Nigel Gilbert <n.gilbert@soc.surrey.ac.uk>)
+- $errors is always initialized to empty string.
+
+Changes in 1.7.1 (June 8th, 2005)
+- Fix regular expression in is_valid_uri (C Daniel Chase <Dan-Chase@UTC.edu>)
+- Fix wrong call (replace is_valid_url by is_valid_uri is oaidp-util.php, C Daniel Chase <Dan-Chase@UTC.edu>)
+
+Changes from 1.7 to 1.6 (May 27th, 2005)
+- when using datetime with timezone (postgresql) datestamps were adjusted
+in days not in hours. More datetime formats are now supported and the
+whole date2UTCdatestamp function has been cleaned up.
+
+Changes from 1.6 to 1.5
+- mark error as badArgument when identifier is not a valid URI
+
+Changes from 1.5 to 1.4
+- remove escaped slashes
+- fix error message if there is a resumption token and other verbs
+- generate correct XML for specific error messages
+
+Changes from 1.4 to 1.3
+- possible to use attributes in xmlrecord()
+- replace sampleIdentifier by $sampleIdentifier (fix by K. Whitsel)
+- handle timezones in datestamps correctly
+- escape values in error messages correclty (fix by K. Whitsel)
+
+Changes from 1.3 to 1.2
+- possible to use UTF-8 charset in database
+- possible to use already escaped XML in database
+- branding container in Identify response
+- some cleanup in internal variables
+- extended and corrected documentation
+
+Changes from 1.2 to 1.1
+- example SQL scripts for database creation
+- Removal of illegal XML characters uses PCRE
+- more DB responses are checked
+- support for Oracle8
+- possibility of duplicate resumptionTokens removed
+
+Changes from 1.1 to 1.0
+- PEAR include path for win32 (ks@aleph99.org)
+- Check for REQUEST_METHOD instead of isset($_GET[0]), since with newer versions of php $_GET has become a true associative array.
+- cleanup support for php version < 4.1.0
+- Add dc:contributor to record_dc.php (kwhitsel@indiana.edu)
+- Fixed bug in listrecords.php (replaced $val by $metadataPrefix, kwhitsel@indiana.edu)
+
+
+Any comments are welcome.
+Heinrich Stamerjohanns
+stamer@uni-oldenburg.de
+

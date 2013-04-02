@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://schemas.xmlsoap.org/wsdl/"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:types="urn:www.cenorm.be/isss/ltws/wsdl/SQIv1p0"
+    targetNamespace="urn:www.cenorm.be/isss/ltws/wsdl/SQIv1p0">
+    
+    <types>
+        <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+            elementFormDefault="qualified"
+            targetNamespace="urn:www.cenorm.be/isss/ltws/wsdl/SQIv1p0">
+            <xsd:simpleType name="faultCodeType">
+                <xsd:restriction base="xsd:string">
+                    <xsd:enumeration value="SQI_00000"/>
+                    <xsd:enumeration value="SQI_00001"/>
+                    <xsd:enumeration value="SQI_00002"/>
+                    <xsd:enumeration value="SQI_00003"/>
+                    <xsd:enumeration value="SQI_00004"/>
+                    <xsd:enumeration value="SQI_00005"/>
+                    <xsd:enumeration value="SQI_00006"/>
+                    <xsd:enumeration value="SQI_00007"/>
+                    <xsd:enumeration value="SQI_00008"/>
+                    <xsd:enumeration value="SQI_00009"/>
+                    <xsd:enumeration value="SQI_00010"/>
+                    <xsd:enumeration value="SQI_00011"/>
+                    <xsd:enumeration value="SQI_00012"/>
+                    <xsd:enumeration value="SQI_00013"/>
+                    <xsd:enumeration value="SQI_00014"/>
+                    <xsd:enumeration value="SQI_00015"/>
+                    <xsd:enumeration value="SQI_00016"/>
+                </xsd:restriction>
+            </xsd:simpleType>
+            <xsd:element name="SqiFault">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="sqiFaultCode" type="types:faultCodeType"/>
+                        <xsd:element name="message" type="xsd:string"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+        </xsd:schema>
+    </types>
+    
+    <message name="SQIFault">
+        <part name="SQIFault" element="types:SqiFault"/>
+    </message>
+
+</definitions>
