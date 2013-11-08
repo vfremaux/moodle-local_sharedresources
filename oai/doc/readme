@@ -1,0 +1,115 @@
+README for phpoai2, version 1.8.0
+June 20th, 2005
+
+This is an implementation for an OAI-PMH 2.0 Data Provider, written in PHP.
+
+This implementation completely complies to OAI-PMH 2.0, including
+the support of on-the-fly output compression which may significantly
+reduce the amount of data being transfered.
+
+Database support is supported through PEAR (PHP Extension and
+Application Repository, included in the PHP distribution), so almost
+any popular SQL-database can be used without any changes in the code. 
+
+The repository can be quite easily configured by just editing 
+oai2/oaidp-config.php, most possible values and options are explained. 
+
+Requirements:
+
+    - Running webserver
+    - Webserver must be able to execute php scripts.
+        If not, go to http://www.php.net/manual/en/ and read how 
+		to install PHP.
+	- SQL Database
+	    If you do not have one, try MySQL (http://www.mysql.com)
+	- Metadata
+	    The metadata should be stored in your SQL Database. You can 
+		find a simple example table for unqualified Dublin Core in in
+		oai_records.sql.
+	
+Installation:
+
+1. Untar to some place. It will extract to phpoai-1.x/ 
+   (tar -zxvf phpoai2-1.x.tar.gz). 
+
+3. Copy the the files in phpoai-1.x/ to a location under your
+   document root of your webserver. The directory structure should be
+   preserved. 
+   (e.g. cp -a phpoai2-1.x/* /www/htdocs/oai/) 
+
+4. change to that directory 
+   (e.g. cd /www/htdocs/oai)
+
+5. Allow your webserver to write to the tokens directory.
+   (e.g. chown wwwrun:nogroup tokens; chmod ug+rwx tokens)
+
+6. Edit oai2/oaidp-config.php. Almost all possible options are
+   explained. It is assumed that all elements of a record are stored in 
+   on simple plain table. You can find an example table in oai_records.sql
+   If your data is organized differently, you have to adjust the 
+   *Query functions in that file.
+   I have not tested how much has be done to adjust this. Please mail me
+   (stamer@uni-oldenburg.de), if you use a different than a single table 
+   layout. I plan to incorporate multi-table layout.
+
+7. Call http://www.your-server.org/oai/oai2.php?verb=Identify, and
+   check results.
+
+FAQ: 
+
+1. I get an error message: Unknown member "numrows". What does it mean? 
+
+	You are using an old version of PEAR. Please upgrade.
+   
+2. I am using Oracle and it does not work.
+    set $options[optimize] in PEAR/DB/common.php to 'portability'
+
+    var $options = array(
+        'persistent' => false,
+        'optimize' => 'portability',
+        'debug' => 0,
+        'seqname_format' => '%s_seq',
+        'autofree' => false
+    );
+
+Apply this ugly change to PEAR/DB/oci8.php:
+
+193c193
+<     function &fetchRow($result, $fetchmode = DB_FETCHMODE_DEFAULT)
+---
+>     function &fetchRow($result, $fetchmode = DB_FETCHMODE_DEFAULT,
+>     $rownum=null)
+199c199
+<             $moredata = @OCIFetchInto($result, $row, OCI_ASSOC +
+OCI_RETURN_NULLS + OCI_RETURN_LOBS);
+---
+>             $moredata = @OCIFetchInto($result, $row, OCI_ASSOC +
+>             OCI_RETURN_NULLS + OCI_RETURN_LOBS, $rownum);
+201c201
+<             $moredata = @OCIFetchInto($result, $row, OCI_RETURN_NULLS +
+OCI_RETURN_LOBS);
+---
+>             $moredata = @OCIFetchInto($result, $row, OCI_RETURN_NULLS +
+>             OCI_RETURN_LOBS, $rownum);
+225c225,231
+<             return $this->raiseError(DB_ERROR_NOT_CAPABLE);
+---
+>             // I know this is really ugly...
+>             for ($i = 1; $i <= $rownum; $i++) {
+>               $moredata =
+>               @OCIFetchInto($result,$arr,OCI_ASSOC+OCI_RETURN_NULLS+OCI_RETURN_LOBS);
+>               if (!$moredata) {
+>                       return NULL;
+>               }
+>           }
+
+Any comments are welcome.
+
+------------------------------------------
+	
+Heinrich Stamerjohanns
+Institute for Science Networking
+stamer@uni-oldenburg.de
+
+
+
