@@ -15,7 +15,7 @@
 * bound catalogs will also get information about local catalog resource used by remote courses. 
 *
 * The index is public access. Browsing the catalog should although be done through a Guest identity,
-* having as a default the mod/sharedresource:browsecatalog capability.
+* having as a default the repository/sharedresource:view capability.
 */
 
     require "../../config.php";
@@ -23,16 +23,17 @@
     require_once($CFG->dirroot.'/course/lib.php');
     require_once($CFG->dirroot.'/mod/sharedresource/rpclib.php');
 	require_once($CFG->dirroot.'/mod/sharedresource/search_widget.class.php');
+	require_once($CFG->dirroot.'/local/sharedresources/renderers.php');
+	require_once($CFG->dirroot.'/local/sharedresources/lib.php');
+
     $PAGE->requires->js('/local/sharedresources/js/jquery.js', true);
     $PAGE->requires->js('/local/sharedresources/js/library.js', true);
     $PAGE->requires->js('/local/sharedresources/js/search.js', true);
     
-    // require_once('pagelib.php'); // obsolete
-    require_once('lib.php');
 
     $edit        = optional_param('edit', -1, PARAM_BOOL);
     $blockaction = optional_param('blockaction', '', PARAM_ALPHA);
-    $courseid 	 = optional_param('course', '', PARAM_INT); // optional course if we are comming from a course
+    $courseid 	 = optional_param('course', SITEID, PARAM_INT); // optional course if we are comming from a course
     $section 	 = optional_param('section', '', PARAM_INT); // optional course section if we are searhcing for feeding a section
     $repo        = optional_param('repo', 'local', PARAM_TEXT);
     $offset      = optional_param('offset', 0, PARAM_INT);
@@ -44,7 +45,7 @@
 		$context = get_context_instance(CONTEXT_SYSTEM);
     }
       
-    require_capability('mod/sharedresource:browsecatalog', $context);
+    require_capability('repository/sharedresources:view', $context);
 
     //prepare the page.
         
@@ -64,11 +65,7 @@
     }
 
    
-    if ($courseid){
-        $course = $DB->get_record('course', array('id'=> $courseid));
-    } else {
-        $course = null;
-    }
+    $course = $DB->get_record('course', array('id'=> $courseid));
 
     $resourcesmoodlestr = get_string('resources', 'sharedresource');
    
@@ -80,7 +77,7 @@
     resources_browse_print_tabs($repo, $course);
     resources_print_tools($course);
 	
-	echo "<table width=\"100%\" cellspacing=\"10\" ><tr valign=\"top\"><td id=\"libsearch\" width=\"200\">";
+	echo "<table width=\"100%\" cellspacing=\"10\" ><tr valign=\"top\"><td id=\"side-pre-like\" width=\"200\">";
 	
 	$visiblewidgets = array();
 	resources_setup_widgets($visiblewidgets, $context);
@@ -91,10 +88,12 @@
 	}
 
     resources_print_search_widgets_tableless($courseid, $repo, $offset, $context, $visiblewidgets, $searchfields);
+
+    resources_print_top_keywords($courseid);
     
 	echo "</td><td>";
 
-    $isediting = has_capability('mod/sharedresource:editcatalog', $context, $USER->id) && $repo == 'local';
+    $isediting = has_capability('repository/sharedresources:manage', $context, $USER->id) && $repo == 'local';
     
     $fullresults = array();
 							
@@ -106,6 +105,7 @@
 			}
 		}
 	}
+	
     if ($repo == 'local'){
         $resources = get_local_resources($repo, $fullresults, $metadatafilters, $offset, $page);
     } else {
@@ -126,7 +126,7 @@
 	}
 	echo '</div>';
 
-    if ($course){
+    if ($courseid > SITEID){
         $options['id'] = $course->id;
         echo '<center><p>';
         $url = new moodle_url($CFG->wwwroot.'/course/view.php', $options);
@@ -138,4 +138,3 @@
 
     print($OUTPUT->footer());
 
-?>

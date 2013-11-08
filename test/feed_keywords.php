@@ -12,11 +12,11 @@
 	require_once $CFG->dirroot.'/mod/sharedresource/lib.php';
 	
 	// protect this script from non-admins
-	require_capability('moodle/site:doanything', get_context_instance(CONTEXT_SYSTEM));
+	require_capability('moodle/site:config', get_context_instance(CONTEXT_SYSTEM));
 
 	echo "<pre>";	
 	mtrace("Setting keywords for all sharedresources...");
-	if ($resources = $DB->get_records('sharedresource_entry',array( ''=> ''))){	
+	if ($resources = $DB->get_records('sharedresource_entry',array('' => ''))){	
 		foreach($resources as $entry){
 			if (!empty($entry->keywords)){
 				$plugins = sharedresource_get_plugins($entry->id); // hidden plugins are already discarded here
@@ -32,5 +32,3 @@
 	}
 	mtrace("Done.");
 	echo "</pre>";	
-
-?>

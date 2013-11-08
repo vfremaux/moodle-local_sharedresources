@@ -29,6 +29,7 @@
 require_once $CFG->dirroot.'/mnet/xmlrpc/client.php';
 require_once $CFG->dirroot.'/mod/sharedresource/lib.php';
 require_once $CFG->dirroot.'/mod/sharedresource/rpclib.php';
+require_once($CFG->dirroot.'/mod/sharedresource/metadatalib.php');
 
 if (!defined('RPC_SUCCESS')) {
     define('RPC_TEST', 100);
@@ -40,57 +41,12 @@ if (!defined('RPC_SUCCESS')) {
     define('RPC_FAILURE_CAPABILITY', 510);
 }
 
-function resources_search_print_tabs($repo, $course){
-    global $CFG;
-    
-    $repos = get_list_of_plugins('resources/plugins');
-    
-    if (!in_array($repo, $repos)) $repo = $repos[0];
-    
-    foreach($repos as $arepo){
-        $rows[0][] = new tabobject($arepo, $CFG->wwwroot."/resources/search.php?id={$course->id}&amp;repo=$arepo", get_string('reponame', $arepo, '', $CFG->dirroot."/resources/plugins/{$arepo}/lang/"));
-    }
-    
-    print_tabs($rows, $repo);
-
-}
-
-/**
-* print tabs allowing selection of the current repository provider
-* note that provider is necessarily a mnet host identity.
-*/
-function resources_browse_print_tabs($repo, $course){
-    global $CFG;
-    
-    $repos['local'] = get_string('local', 'sharedresource');
-    
-    if ($providers = get_providers()){
-
-        foreach($providers as $provider){
-            $repos["$provider->id"] = $provider->name;
-        }
-    }
-
-    $repoids = array_keys($repos);
-    if (!in_array($repo, $repoids)) $repo = $repoids[0];
-
-    foreach($repoids as $repoid){
-        if ($course){
-            $rows[0][] = new tabobject($repoid, $CFG->wwwroot."/resources/index.php?course={$course->id}&amp;repo=$repoid", $repos[$repoid]);
-        } else {
-            $rows[0][] = new tabobject($repoid, $CFG->wwwroot."/resources/index.php?repo=$repoid", $repos[$repoid]);
-        }
-    }
-    
-    print_tabs($rows, $repo);
-}
-
-function cmp($a, $b)
-{
+function cmp($a, $b){
     $a = preg_replace('@^(a|an|the) @', '', $a);
     $b = preg_replace('@^(a|an|the) @', '', $b);
     return strcasecmp($a, $b);
 }
+
 /**
 * get a stub of local resources
 */
@@ -174,15 +130,15 @@ function get_local_resources($repo, &$fullresults, $metadatafilters = '', &$offs
 * 
 */
 function get_remote_repo_resources($repo, &$fullresults, $metadatafilters = '', $offset = 0, $page = 20){
-    global $CFG, $USER,$DB;
-
-    if ($repo == 'local') error("Odd situation : trying to get remote list of local repo");    
+    global $CFG, $USER, $DB;
+    
+    if ($repo == 'local') print_error('errorrepoprogramming');    
     
     $remote_host = $DB->get_record('mnet_host', array('id'=> $repo));
     
     // get the originating (ID provider) host info
     if (!$remotepeer = new mnet_peer()){
-        error ("MNET client initialisation error");
+        print_error('errormnetpeer', 'local_sharedresources');
     }
     $remotepeer->set_wwwroot($remote_host->wwwroot);
 
@@ -218,157 +174,11 @@ function get_remote_repo_resources($repo, &$fullresults, $metadatafilters = '', 
             list($code, $message) = array_map('trim',explode(':', $errormessage, 2));
             $message .= "ERROR $code:<br/>$errormessage<br/>";
         }
-        error("RPC mod/sharedresource/get_list:<br/>$message");
+        print_error("RPC mod/sharedresource/get_list:<br/>$message");
     }
     unset($mnetrequest);
     
     return $fullresults['entries'];
-}
-
-/**
-*
-*/
-function resources_print_tools($course){
-    global $CFG;
-    
-    if ($course){
-        echo '<center>';
-        $convertstr = get_string('resourceconversion', 'sharedresource');
-        echo "<a href=\"{$CFG->wwwroot}/mod/sharedresource/admin_convertall.php?course={$course->id}\">$convertstr</a>";
-        echo '</center>';
-    }
-}
-
-
-/**
-* print list of the selected resources
-*/
-function resources_browse_print_list(&$resources, &$course, $section, $isediting = false, $repo = 'local'){
-    global $CFG, $USER,$OUTPUT;
-    
-    $isremote = ($repo != 'local');
-    $consumers = get_consumers();
-    
-    $courseid = (empty($course->id)) ? '' : $course->id;
-    
-    if ($resources){
-        $i = 0;
-        foreach($resources as $resource){
-            
-            if (!$isremote){
-                // get local once
-                $resource->uses = sharedresource_get_usages($resource, $response, null);
-                if (!empty($consumers)){
-                    // $resource->uses += sharedresource_get_usages($resource, $response, $consumers);
-                }    
-            $reswwwroot = $CFG->wwwroot;
-            } else {
-    			$resource_host = $DB->get_record('mnet_host',array('id'=> $repo));
-                $reswwwroot = $resource_host->wwwroot;
-            }
-            
-            $commands = '';
-            if ($isediting){
-                $editstr = get_string('update');
-                $deletestr = get_string('delete');
-                $exportstr = get_string('export', 'sharedresource');
-                $forcedeletestr = get_string('forcedelete','local_sharedresources');
-                $commands = "<a href=\"{$CFG->wwwroot}/mod/sharedresource/edit.php?course=1&type=file&add=sharedresource&return=0&mode=update&entry_id={$resource->id}\" title=\"$editstr\"><img src=\" ".$OUTPUT->pix_url('t/edit')."\" /></a>";
-                if ($resource->uses == 0){
-                    $commands .= " <a href=\"index.php?what=delete&amp;course=$courseid&amp;id={$resource->id}\" title=\"$deletestr\"><img src=\"".$OUTPUT->pix_url('delete', 'sharedresource')."\" /></a>";
-                } else {
-                    $commands .= " <a href=\"index.php?what=forcedelete&amp;course=$courseid&amp;id={$resource->id}\" title=\"$forcedeletestr\"><img src=\"".$OUTPUT->pix_url('t/delete').
-                    "\" /></a>";
-                }
-                $commands .= " <a href=\"pushout.php?course={$courseid}&amp;resourceid={$resource->id}\" title=\"$exportstr\"><img src=\"".$OUTPUT->pix_url('export', 'sharedresource')."\" /></a>";
-            }
-            
-            $icon = ($isremote) ? 'pix/remoteicon.gif' : 'icon.gif' ;
-            echo("<div class='resourceitem'>"); //resource item
-            echo "<h3><img src=\"{$CFG->wwwroot}/mod/sharedresource/$icon\"/> <span class=\"title\">{$resource->title}</span> $commands</h3>";
-            $OUTPUT->box_start('generalbox');
-            echo "<a class=\"smalllink\" href=\"{$resource->url}\" target=\"_blank\">{$resource->url}</a><br/>";
-
-		/// print notice access
-
-            $readnotice = get_string('readnotice', 'sharedresource');
-            $url = "{$reswwwroot}/mod/sharedresource/metadatanotice.php?identifier={$resource->identifier}";
-            $popupaction = new popup_action('click', $url, 'popup', array('width' => 800, 'height' => 600));
-            echo $OUTPUT->action_link($url, $readnotice, $popupaction);
-			echo '<br/>';
-            echo '<span class="smalltext">'.get_string('keywords', 'sharedresource'). ": $resource->keywords</span><br/>";
-            if (!empty($resource->description)){
-                echo "<span class=\"description\">$resource->description</span><br/>";
-            }
-
-            echo get_string('used', 'local_sharedresources', $resource->uses).'</br>';
-            echo get_string('viewed', 'local_sharedresources', $resource->scoreview).'<br/>';
-            echo get_string('liked', 'local_sharedresources', '<span id="sharedresource-liked-'.$resource->id.'">'.sharedresource_print_stars($resource->scorelike, 15).'</span>').'</p>';
-
-            if (!empty($course)){
-                $addtocourse = get_string('addtocourse', 'sharedresource');
-                $localizetocourse = get_string('localizetocourse', 'sharedresource');
-                $addfiletocourse = get_string('addfiletocourse', 'sharedresource');
-                $markliked = get_string('markliked', 'local_sharedresources');
-                if (!$isremote){
-                    // if is local or already proxied
-                    echo "<form name=\"add{$i}\" action=\"{$CFG->wwwroot}/mod/sharedresource/addlocaltocourse.php\" style=\"display:inline\">";
-                } else {
-                    // if is a true remote
-                    echo "<form name=\"add{$i}\" action=\"{$CFG->wwwroot}/mod/sharedresource/addremotetocourse.php\" style=\"display:inline\" method=\"POST\" >";
-                }
-                echo "<input type=\"hidden\" name=\"id\" value=\"{$course->id}\" />";
-                echo "<input type=\"hidden\" name=\"mode\" value=\"shared\" />";
-                echo "<input type=\"hidden\" name=\"section\" value=\"{$section}\" />";
-                echo "<input type=\"hidden\" name=\"identifier\" value=\"{$resource->identifier}\" />";
-                $desc = htmlentities($resource->description, ENT_QUOTES, 'UTF-8');
-                echo "<input type=\"hidden\" name=\"description\" value=\"$desc\" />";
-                $title = $resource->title;
-                echo "<input type=\"hidden\" name=\"title\" value=\"$title\" />";
-                echo "<input type=\"hidden\" name=\"provider\" value=\"$repo\" />";
-                echo "<input type=\"hidden\" name=\"file\" value=\"{$resource->file}\" />";
-                echo "<input type=\"hidden\" name=\"url\" value=\"{$resource->url}\" />";
-                echo "</form>";
-                echo '<div style="text-align:right" class="commands">';
-                echo "<a href=\"javascript:ajax_mark_liked('{$resource->id}', '{$CFG->wwwroot}')\">{$markliked}</a>";
-                echo " - <a href=\"javascript:document.forms['add{$i}'].submit();\">{$addtocourse}</a>";
-                if (!empty($resource->file) || ($isremote && empty($resource->isurlproxy))){
-                    echo " - <a href=\"javascript:document.forms['add{$i}'].mode.value = 'local';document.forms['add{$i}'].submit();\">{$localizetocourse}</a>";
-                    echo " - <a href=\"javascript:document.forms['add{$i}'].mode.value = 'file';document.forms['add{$i}'].submit();\">{$addfiletocourse}</a>";
-                }
-                echo "</div>";
-                echo "</div>";//resource item
-            }
-            echo $OUTPUT->box_end();
-            $i++;
-        }
-    } else {
-        echo get_string('noresources', 'local_sharedresources');
-    }
-}
-
-/**
-* prints a pager for resource pages
-* @param int $courseid the course context id. I null the library is browsed from non course area
-* @param int $repo the repository ID
-* @param int $nbrpages
-*/
-function resources_print_pager($courseid, $repo, $nbrpages, $page, $offset = 0, $isediting = false){
-	echo '<center><b>';
-	if($courseid){
-		for($i = 1 ; $i <= $nbrpages ; $i++){
-			$pageoffset = ($i - 1)*$page;
-			$pagestyle = ($pageoffset == $offset) ? 'color:black;font-size:14pt' : 'color:grey;font-size:12pt' ;
-			echo "<a style=\"{$pagestyle}\" name=\"page{$i}\" href=\"index.php?course={$courseid}&amp;repo={$repo}&amp;offset={$pageoffset}&amp;isediting={$isediting}\">$i</a>";
-		}
-	} else {
-		for($i = 1 ; $i <= $nbrpages ; $i++){
-			$pageoffset = ($i - 1)*$page;
-			$pagestyle = ($pageoffset == $offset) ? 'color:black;font-size:14pt' : 'color:grey;font-size:12pt' ;
-			echo "<a style=\"{$pagestyle}\" name=\"page{$i}\" href=\"index.php?repo={$repo}&amp;offset={$pageoffset}&amp;isediting={$isediting}\">$i</a>";
-		}
-	}
-	echo '</center>';
 }
 
 /**
@@ -542,7 +352,7 @@ function sharedresource_submit($repo, $resourceentry){
     // set $category and $offset ad $page parameters
     $mnetrequest->add_param($resourceentry, 'struct');
     
-    $metadata = $DB->get_records('sharedresource_metadata', array('entry_id'=> $resourceentry->id));
+    $metadata = $DB->get_records('sharedresource_metadata', array('entry_id' => $resourceentry->id));
 
     $mnetrequest->add_param($metadata, 'array');
 
@@ -611,13 +421,13 @@ function resources_setup_widgets(&$visiblewidgets, $context){
     // setup the catalog view separating providers with tabs
 	$plugins = sharedresource_get_plugins();
 	$pluginname = $plugins[$CFG->pluginchoice]->pluginname;
-	if(has_capability('mod/sharedresource:systemmetadata', $context)){
+	if(has_capability('repository/sharedresources:systemmetadata', $context)){
 		$capability = 'system';
 	}
-	elseif(has_capability('mod/sharedresource:indexermetadata', $context)){
+	elseif(has_capability('repository/sharedresources:indexermetadata', $context)){
 		$capability = 'indexer';
 	}
-	elseif(has_capability('mod/sharedresource:authormetadata', $context)){
+	elseif(has_capability('repository/sharedresources:authormetadata', $context)){
 		$capability = 'author';
 	} else {
 		error(get_string('noaccessform', 'sharedresource'));
@@ -632,91 +442,6 @@ function resources_setup_widgets(&$visiblewidgets, $context){
 			}
 		}
     }
-}
-
-/**
-* print widgets calling the adequate widget class instance
-* @param int $courseid
-* @param int $repo
-* @param int $offset the record count offset of the current page
-* @param object $context the current course or site context
-* @param array ref $visiblewidgets an array of widgets to print
-*/
-function resources_print_search_widgets($courseid, $repo, $offset, $context, &$visiblewidgets, &$searchvalues){
-	global $CFG;
-
-
-	if(empty($visiblewidgets)){
-		echo '<br/><center>'.get_string('nowidget', 'sharedresource').'</center><br/>';
-	} else {
-		echo "<form name=\"cat\" action=\"{$CFG->wwwroot}/local/sharedresources/index.php\"style=\"display:inline\">";
-		if ($courseid){
-			echo "<input type=\"hidden\" name=\"course\" value=\"{$courseid}\">";
-		}
-		echo "<input type=\"hidden\" name=\"repo\" value=\"{$repo}\">";
-		echo "<input type=\"hidden\" name=\"offset\" value=\"{$offset}\">";
-		echo "<fieldset>";
-		$searchstr = get_string('searchinlibrary', 'sharedresource');
-		echo "<legend>$searchstr</legend>";
-		echo '<table>';
-		echo '<tr>';
-		$n = 0;
-		foreach($visiblewidgets as $key => $widget){
-			echo '<td>';
-			echo $widget->print_search_widget('column', @$searchvalues[$widget->id]);
-			echo '</td>';
-			$n++;
-		}
-		echo "</tr><tr><td colspan=\"{$n}\" align=\"center\">";
-		$search = get_string('search');
-		echo "<input type=\"submit\" name=\"go\" value=\"$search\" />";
-		echo "</td></tr>";
-		echo "</table>";
-		echo "</fieldset>";
-		echo "</form>";
-	}
-}
-
-/**
-* print widgets calling the adequate widget class instance
-* @param int $courseid
-* @param int $repo
-* @param int $offset the record count offset of the current page
-* @param object $context the current course or site context
-* @param array ref $visiblewidgets an array of widgets to print
-*/
-function resources_print_search_widgets_tableless($courseid, $repo, $offset, $context, &$visiblewidgets, &$searchvalues){
-	global $CFG;
-
-
-	if(empty($visiblewidgets)){
-		echo '<br/><center>'.get_string('nowidget', 'sharedresource').'</center><br/>';
-	} else {
-		echo '<div id="sharedresource-search">';
-		echo "<form name=\"cat\" action=\"{$CFG->wwwroot}/local/sharedresources/index.php\"style=\"display:inline\">";
-		if ($courseid){
-			echo "<input type=\"hidden\" name=\"course\" value=\"{$courseid}\">";
-		}
-		echo "<input type=\"hidden\" name=\"repo\" value=\"{$repo}\">";
-		echo "<input type=\"hidden\" name=\"offset\" value=\"{$offset}\">";
-		echo "<fieldset>";
-		$searchstr = get_string('searchinlibrary', 'sharedresource');
-		echo "<legend>$searchstr</legend>";
-		$n = 0;
-		foreach($visiblewidgets as $key => $widget){
-			echo '<div id="widget-'.$key.'" class="sharedresource-search-widget">';
-			echo $widget->print_search_widget('column', @$searchvalues[$widget->id]);
-			echo '</div>';
-			$n++;
-		}
-		echo '<div id="sharedresource-search-button">';
-		$search = get_string('search');
-		echo "<input type=\"submit\" name=\"go\" value=\"$search\" />";
-		echo "</div>";
-		echo "</fieldset>";
-		echo "</form>";
-		echo '</div>';
-	}
 }
 
 /**
@@ -799,4 +524,326 @@ function resources_get_string($identifier, $subplugin, $a = '', $lang = ''){
 		return "[[$identifier]]";
 	}
 }
-?>
+
+/**
+* provides a mean to recognize sharedresource hides an LTI Tool definition
+*
+*/
+function sharedresource_is_lti($resource){
+	global $CFG;
+	
+	if (preg_match('/LTI/', $resource->keywords)) return true;
+	
+	return false;
+}
+
+/**
+* get top ranking keywords from metadata
+* @TODO : turn implementation to more portable IN() statement
+*/
+function sharedresource_get_top_keywords($courseid){
+	global $DB, $CFG;
+	
+	$contexts[] = 1;
+	
+	// get all categories on the way to root 
+	if ($courseid > SITEID){
+		$catid = $DB->get_field('course', 'category', array('id' => $courseid));
+		$cat = $DB->get_record('course_categories', array('id' => $catid));
+		$catcontext = context_coursecat::instance($cat->id);
+		$contexts[] = $catcontext->id;
+		while($cat->parent){
+			$cat = $DB->get_record('course_categories', array('id' => $cat->parent));
+			$catcontext = context_coursecat::instance($cat->id);
+			$contexts[] = $catcontext->id;
+		}
+	}
+	
+	$contextlist = implode(',', $contexts);
+		
+	$object = 'sharedresource_plugin_'.$CFG->pluginchoice;
+	$mtdstandard = new $object;
+	
+	$kwelement = $mtdstandard->getKeywordElement();
+	
+	$topranksize = 20;
+	
+	$sql = "
+		SELECT
+			value,
+			COUNT(DISTINCT entry_id) as rank
+		FROM
+			{sharedresource_metadata} shm,
+			{sharedresource_entry} sh
+		WHERE
+			shm.entry_id = sh.id AND
+			sh.context IN ('{$contextlist}') AND
+			element LIKE '{$kwelement->name}:%' AND
+			namespace = '{$CFG->pluginchoice}' AND
+			value IS NOT NULL AND
+			value != ''
+		GROUP BY 
+			value
+		ORDER BY
+			rank DESC			
+		LIMIT 
+			0, $topranksize
+	";
+	
+	$topkws = $DB->get_records_sql($sql, array());
+	
+	return $topkws;
+	
+}
+
+/**
+* A recursive path explorator for building import information from physical directory
+* @param $path the local path for each iteration
+* @param $importlines the aray of descriptors being built by the recursion
+* @param $data the initial recursion start information non mutable
+*/
+function sharedresources_scan_importpath($path, &$importlines, &$METADATA, &$data){
+	global $CFG;
+	
+	if(is_dir($path)){
+		
+		if (file_exists($path.'/metadata.csv')){
+			$metadata = file($path.'/metadata.csv');
+			sharedresources_parse_metadata($metadata, $METADATA, $path);
+		}
+
+		// process an optional alias file for taxonomy tokens
+		$ALIASES = array();
+		if (file_exists($data->importpath.'/taxonomy_aliases.txt')){
+			$aliases = file($data->importpath.'/taxonomy_aliases.txt');
+			foreach($aliases as $aliasline){
+				list($from, $to) = explode('=', chop($aliasline));
+				$ALIASES[rtrim($from)] = ltrim($to);
+			}
+		}
+		
+		// apply overriding aliases to taxonomy
+		if (!function_exists('alias_taxon_tokens')){
+			function alias_taxon_tokens(&$item, $k, $aliases){
+				if (array_key_exists($item, $aliases)){
+					$item = $aliases[$item];
+				}
+			}
+		}
+
+		$taxonparts = null;
+		if (!empty($data->deducetaxonomyfrompath)){
+			// get relative path
+			$cleanedpath = str_replace($data->importpath, '', $path);
+			if (!empty($cleanedpath)){
+				$cleanedpath = preg_replace('/^\//', '', $cleanedpath);
+				// split into parts
+				$taxonparts = explode('/', $cleanedpath);
+				array_walk($taxonparts, 'alias_taxon_tokens', $ALIASES);
+			}
+		}
+		
+		$DIR = opendir($path);
+		
+		while($entry = readdir($DIR)){
+			if (preg_match('/^\\./', $entry)) continue;
+			if (preg_match('/(CVS|SVN)/', $entry)) continue;
+			// if (!is_readable($path.'/'.$entry)) continue;
+			$entry = iconv("ISO-8859-1", "UTF-8//TRANSLIT", $entry);
+			if (is_dir($path.'/'.$entry)){
+				sharedresources_scan_importpath($path.'/'.$entry, $importlines, $METADATA, $data);
+			} else {
+				if (preg_match('/^__/', $entry)) continue; // skip any already processed file
+				if ($entry == "metadata.csv") continue; // skip any metadata add on
+				if ($entry == "taxonomy_aliases.txt") continue; // skip any taxonomy translator add on
+				if ($entry == "moodle_sharedlibrary_import.log") continue;
+				if (!empty($excludepattern)){
+					if (!preg_match('/'.$data->importexclusionpattern.'/', $entry)) $importlines[] = $path.'/'.$entry;
+				} else {
+					$importlines[] = $path.'/'.$entry;
+				}
+				
+				// add taxonomy to metadata
+				if (!empty($taxonparts)){
+					$METADATA[$path.'/'.$entry]['taxonomy'] = implode(', ', $taxonparts);
+				}
+			}
+		}
+		
+		closedir($DIR);
+	}	
+}
+
+/**
+* parses some metadata in the metadata import file
+*
+*
+*/
+function sharedresources_parse_metadata(&$metadata, &$METADATA, $path){
+	
+	$AUTHORIZED = array('file', 'title', 'description', 'keywords', 'language', 'authors', 'contributors', 'documenttype', 'documentnature', 'pedagogictype', 'difficulty');
+
+	$hl = array_shift($metadata);
+	while($hl && preg_match('/^(\s|\/\/|#|$)/', $hl)){
+		$hl = array_shift($metadata);
+	}
+
+	$header = explode(';', chop($hl));
+	$linesize = count($header);
+	
+	if ($header[0] != 'file'){
+		echo "First field name must be file. This metadata file is malformed. Skipping all metadata.";
+		return;
+	}
+
+
+	$unauthorized = array();
+	foreach($header as $column){
+		if (!in_array($column, $AUTHORIZED)){
+			$unauthorized[] = $column;
+		}
+
+	}
+
+	if ($unauthorized){
+		echo "Unauthorized columns in file header: ".implode(', ', $unauthorized);
+		return;
+	}
+
+	$i = 1;
+	foreach($metadata as $l){
+		if (preg_match('/^(\s|\/\/|#|$)/', $hl)) continue; // skip comments, empty lines
+		$l = chop($l);
+		
+		$line = explode(';', $l);
+		if (count($line) != $linesize){
+			echo "Bad count in $path at line $i: ignoring...<br/>\n";
+			continue;
+		}
+		
+		$j = 0;
+		$mtd = array();
+		foreach($line as $field){
+			if (!$j){ // first field is filename
+				$filename = $field;
+			}
+			
+			$mtd[$header[$j]] = $field;
+			
+			$j++;
+		}
+		$METADATA[$path.'/'.$filename] = $mtd;
+
+		$i++;		
+	}	
+}
+
+function sharedresources_reset_volume($data){
+	global $CFG;
+	
+	$path = $data->importpath;
+	
+	if (file_exists($path.'/moodle_sharedlibrary_import.log')){
+		unlink ($path.'/moodle_sharedlibrary_import.log');
+	}
+	$r = 0;
+	sharedresources_reset_volume_rec($path, $r);
+	
+	return get_string('reinitialized', 'local_sharedresources', $r);
+}
+
+function sharedresources_reset_volume_rec($path, &$r){
+
+	if (!is_dir($path)){
+		return;
+	}
+
+	$DIR = opendir($path);	
+	while($entry = readdir($DIR)){
+		if (preg_match('/^\\./', $entry)) continue;
+		if (preg_match('/(CVS|SVN)/', $entry)) continue;
+		// if (!is_readable($path.'/'.$entry)) continue;
+		$entry = iconv("ISO-8859-1", "UTF-8//TRANSLIT", $entry);
+		if (is_dir($path.'/'.$entry)){
+			sharedresources_reset_volume_rec($path.'/'.$entry, $r);
+		} else {
+			if (preg_match('/^__(.*)/', $entry, $matches)){
+				$unmarked = $matches[1];
+				rename($path.'/'.$entry, $path.'/'.$unmarked);
+				$r++;
+			}
+		}	
+	}
+	closedir($DIR);	
+}
+
+/**
+* Renames an imported file so it would not be imported twice when
+* replaying an import.
+*/
+function sharedresources_mark_file_imported($path){
+	
+	$parts = pathinfo($path);	
+	$newname = $parts['dirname'].'/__'.$parts['basename'];
+	rename($path, $newname);
+}
+
+
+/**
+* this method combines the file list an metadata to build adequate descriptors
+* for the import processor.
+*
+*/
+function sharedresources_aggregate($importlist, &$METADATA){
+	
+	$aggregatedlist = array();
+	
+	foreach($importlist as $entry){
+		if (array_key_exists($entry, $METADATA)){
+			$descriptor = $METADATA[$entry];
+			$descriptor['fullpath'] = $entry;
+		} else {
+			$descriptor = array();
+			$descriptor['fullpath'] = $entry;
+			$descriptor['file'] = pathinfo($entry, PATHINFO_FILENAME);
+			$descriptor['title'] = basename($entry);
+		}
+		$aggregatedlist[] = $descriptor;
+	}
+	
+	return $aggregatedlist;
+}
+
+/**
+* checks if a user has a some named capability effective somewhere in a course.
+*/
+function sharedresource_has_capability_somewhere($capability, $excludesystem = true, $excludesite = true, $fromcategorycontext = null, $doanything = false){
+	global $USER;
+
+	if (!$fromcategorycontext){
+		// this will not be very efficient
+		$hassome = get_user_capability_course($capability, $USER->id, false); 
+		if ($excludesite && !empty($hassome) && array_key_exists(SITEID, $hassome)){
+			unset($hassome[SITEID]);
+		}
+		if (!empty($hassome)){
+			return true;
+		}
+		
+		$systemcontext = context_system::instance();
+		if (!$excludesystem && has_capability($capability, $systemcontext, $USER->id, $doanything)){
+			return true;
+		}
+	} else {
+		// return as soon as we can
+		if (has_capability($capability, $fromcategorycontext)) return true;
+		if ($allsubcontexts = $DB->get_records_select('context', " path LIKE '{$fromcategorycontext->path}/%' ")){
+			foreach($allsubcontexts as $sc){
+				$c = context::create_instance_from_record($sc);
+				if (has_capability($capability, $c)) return true;
+			}
+		}
+	}
+	
+	return false;
+}

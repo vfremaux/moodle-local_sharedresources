@@ -14,7 +14,7 @@ $(document).ready(function(){
 });
 
 function ajax_mark_liked(resid, wwwroot){
-	newlike = $.get(wwwroot+'/local/sharedresource/ajax/add_liked_mark.php?resid='+resid, '', function(data, textStatus){
+	newlike = $.get(wwwroot+'/local/sharedresources/ajax/add_liked_mark.php?resid='+resid, '', function(data, textStatus){
 		$('#sharedresource-liked-'+resid).html(sharedresource_print_stars(data, 15, wwwroot));
 	});
 }
@@ -24,7 +24,7 @@ function sharedresource_print_stars(stars, maxstars, wwwroot){
 	
 	for(i = 0 ; i < maxstars ; i++){
 		icon = (i < stars) ? 'star' : 'star_shadow';
-		str += '<img src="'+wwwroot+'/local/sharedresource/pix/'+icon+'.png" />';
+		str += '<img src="'+wwwroot+'/local/sharedresources/pix/'+icon+'.png" />';
 	}
 	return str;
 }

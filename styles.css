@@ -4,3 +4,20 @@
     margin-bottom: 1px;
     padding: 10px;
 }
+
+#side-pre-like{
+	background-color:#fAfAfA;
+	padding:20px;
+}
+
+.resource-description{
+	font-weight:normal;
+	padding:5px;
+	margin:3px;
+	border-radius:5px;
+	border:1px solid #CFCFCF;
+}
+
+.resourceitem .generalbox{
+	margin-left:15px;
+}

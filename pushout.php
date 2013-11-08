@@ -15,7 +15,7 @@
 * bound catalogs will also get information about local catalog resource used by remote courses. 
 *
 * The index is public access. Browsing the catalog should although be done through a Guest identity,
-* having as a default the mod/sharedresource:browsecatalog capability.
+* having as a default the repository/sharedresources:manage capability.
 */
 
     require "../../config.php";
@@ -29,7 +29,7 @@
     $repo = optional_param('repo', 'local', PARAM_TEXT);
 
     $systemcontext = context_system::instance();
-    require_capability('mod/sharedresource:editcatalog', $systemcontext);
+    require_capability('repository/sharedresources:manage', $systemcontext);
 
     $resourcesmoodlestr = get_string('resources', 'sharedresource');
 

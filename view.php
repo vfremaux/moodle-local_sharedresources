@@ -29,7 +29,7 @@
  * The resource access layer is for use with mod/taoresource resource plugin.
  */
     
-    include_once dirname(dirname(__FILE__)).'/config.php';
+    include_once dirname(dirname(dirname(__FILE__))).'/config.php';
     
     if (!file_exists($CFG->dirroot.'/mod/sharedresource/lib.php')){
         error('Shared resource plugin is not installed.');
@@ -43,43 +43,58 @@
     // do we need to be authentified to access resource ?
     
     $resourceid = optional_param('id', '', PARAM_ALPHANUM);
+    $identifier = optional_param('identifier', '', PARAM_ALPHANUM);
     $remote = optional_param('remote', 0, PARAM_ALPHANUM);
-    
+    $forcedownload = optional_param('forcedownload', 0, PARAM_BOOL);
+
     if (!empty($resourceid)){
-        if ($remote){
-            $resource = get_record('sharedresource_entry', 'remoteid', $resourceid);
-        } else {
-            $resource = get_record('sharedresource_entry', 'identifier', $resourceid);
-        }
-
-        // is resource valid for public delivery ?
-        if (!$resource->isvalid){
-            require_login();
-        }
-        
+    	if ($remote){
+	    	$idfield = 'remoteid';
+	    } else {
+	    	$idfield = 'id';
+	    }
+    	$idvalue = $resourceid;
+    } elseif (!empty($identifier)) {
+    	if ($remote){
+	    	$idfield = 'remoteid';
+	    } else {
+	    	$idfield = 'identifier';
+	    }
+    	$idvalue = $identifier;
     } else {
-        error("Invalid resource Id");
+        print_error('errorinvalidresourceid', 'local_sharedresource');
         exit;
     }
     
-    if (!$resource){
-        error("Unkown resource");
-        exit;
+    if (!$resource = $DB->get_record('sharedresource_entry', array($idfield => $idvalue))){
+        print_error('errorinvalidresource', 'local_sharedresource');
     }
 
+    // is resource valid for public delivery ?
+    if (!$resource->isvalid){
+        require_login();
+    }
+
+    // is resource shared in lower context ?
+    if ($resource->context > 1){
+    	$context = $DB->get_record('context', array('id' => $resource->context));
+        require_login();
+    	if (!sharedresource_has_capability_somewhere('repository/sharedresources:use', true, true, $context, false)){
+    		send_file_not_found();
+    	}
+    }        
+    
     if ($remote){
-        add_to_log (SITEID, 'sharedresource', 'view', $CFG->wwwroot.'/local/sharedresources/view.php?id='.$resourceid, 'localid' , 0, 0);
+        add_to_log (SITEID, 'sharedresource', 'view', $CFG->wwwroot.'/local/sharedresources/view.php?id='.$resource->id, 'localid' , 0, 0);
     } else {
-        add_to_log (SITEID, 'sharedresource', 'view', $CFG->wwwroot.'/local/sharedresources/view.php?id='.$resourceid.'&amp;remote=1', 'remoteid' , 0, 0);
+        add_to_log (SITEID, 'sharedresource', 'view', $CFG->wwwroot.'/local/sharedresources/view.php?id='.$resource->id.'&amp;remote=1', 'remoteid' , 0, 0);
     }
 
     if (empty($resource->file) && !empty($resource->url)){
         redirect($resource->url);
     } else {
         // first form
-        $path = $CFG->dataroot . SHAREDRESOURCE_RESOURCEPATH;
-        $filename = $resource->file;
-        send_file($path.'/'.$filename, $filename, 'default', 0, false, false, '');
+        $fs = get_file_storage();
+        $stored_file = $fs->get_file_by_id($resource->file);
+        send_stored_file($stored_file, 60*60, 0, $forcedownload);
     }
-
-?>

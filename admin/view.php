@@ -12,13 +12,13 @@
     require "../../../config.php";
     
     $context = get_context_instance(CONTEXT_SYSTEM);
-    //require_capability('mod/sharedresource:adminrepository', $context);
+    // require_capability('repository/sharedresources:manage', $context);
     
     $PAGE->set_pagelayout('standard');
     $PAGE->set_context($context);
-    $PAGE->set_title(get_string('adminrespository','local_sharedresources'));
+    $PAGE->set_title(get_string('adminrespository', 'local_sharedresources'));
     $PAGE->set_heading($SITE->fullname); 
-    $PAGE->navbar->add(get_string('adminrespository','local_sharedresources'),'view.php','misc');
+    $PAGE->navbar->add(get_string('adminrespository', 'local_sharedresources'),'view.php','misc');
 
     $PAGE->set_focuscontrol('');
     $PAGE->set_cacheable(false);
