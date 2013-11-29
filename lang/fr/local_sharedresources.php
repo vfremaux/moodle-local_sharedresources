@@ -2,6 +2,8 @@
 
 $string['adminrepository'] = 'Administrer la librairie';
 $string['backtocourse'] = 'Revenir au cours';
+$string['clinonexistingpath'] = 'Erreur : Chemin inexistant';
+$string['clinonexistingcontext'] = 'Erreur : Contexte inexistant';
 $string['configdefaulttaxonomypurposeonimport'] = 'L\'objet de la taxonomie définit pour quoi cette taxonomie est utilisée. Certains schémas de métadonnées autorisent la classification des ressources selon plusieurs taxonomies avec des objectifs différents.';
 $string['confirm'] = 'Confirmer';
 $string['deducetaxonomyfrompath'] = 'Déduire la taxonomie du chemin';

@@ -133,7 +133,7 @@ function resources_print_pager($courseid, $repo, $nbrpages, $page, $offset = 0, 
 * print list of the selected resources
 */
 function resources_browse_print_list(&$resources, &$course, $section, $isediting = false, $repo = 'local'){
-    global $CFG, $USER, $OUTPUT;
+    global $CFG, $USER, $OUTPUT, $DB;
     
     $isremote = ($repo != 'local');
     $consumers = get_consumers();
@@ -150,12 +150,12 @@ function resources_browse_print_list(&$resources, &$course, $section, $isediting
                 if (!empty($consumers)){
                     // $resource->uses += sharedresource_get_usages($resource, $response, $consumers);
                 }    
-            $reswwwroot = $CFG->wwwroot;
+            	$reswwwroot = $CFG->wwwroot;
             } else {
-    			$resource_host = $DB->get_record('mnet_host',array('id'=> $repo));
+    			$resource_host = $DB->get_record('mnet_host',array('id' => $repo));
                 $reswwwroot = $resource_host->wwwroot;
             }
-            
+                        
             $commands = '';
             if ($isediting){
                 $editstr = get_string('update');
@@ -179,7 +179,6 @@ function resources_browse_print_list(&$resources, &$course, $section, $isediting
             echo "<a class=\"smalllink\" href=\"{$resource->url}\" target=\"_blank\">{$resource->url}</a><br/>";
 
 		/// print notice access
-
             $readnotice = get_string('readnotice', 'sharedresource');
             $url = "{$reswwwroot}/mod/sharedresource/metadatanotice.php?identifier={$resource->identifier}";
             $popupaction = new popup_action('click', $url, 'popup', array('width' => 800, 'height' => 600));
@@ -191,7 +190,7 @@ function resources_browse_print_list(&$resources, &$course, $section, $isediting
             echo '<span class="smalltext">'.get_string('keywords', 'sharedresource'). ": $resource->keywords</span><br/>";
             echo get_string('used', 'local_sharedresources', $resource->uses).'</br>';
             echo get_string('viewed', 'local_sharedresources', $resource->scoreview).'<br/>';
-            echo get_string('liked', 'local_sharedresources', '<span id="sharedresource-liked-'.$resource->id.'">'.resources_print_stars($resource->scorelike, 15).'</span>').'</p>';
+            echo get_string('liked', 'local_sharedresources', '<span id="sharedresource-liked-'.$resource->identifier.'">'.resources_print_stars($resource->scorelike, 15).'</span>').'</p>';
 
             $markliked = get_string('markliked', 'local_sharedresources');
 
@@ -221,8 +220,9 @@ function resources_browse_print_list(&$resources, &$course, $section, $isediting
                 echo "<input type=\"hidden\" name=\"file\" value=\"{$resource->file}\" />";
                 echo "<input type=\"hidden\" name=\"url\" value=\"{$resource->url}\" />";
                 echo "</form>";
+
                 echo '<div style="text-align:right" class="commands">';
-                echo "<a href=\"javascript:ajax_mark_liked('{$resource->id}', '{$CFG->wwwroot}')\">{$markliked}</a>";
+                echo "<a href=\"javascript:ajax_mark_liked('{$CFG->wwwroot}', '{$repo}', '{$resource->identifier}')\">{$markliked}</a>";
                 if (!$isLTITool){
 	                echo " - <a href=\"javascript:document.forms['add{$i}'].submit();\">{$addtocourse}</a>";
 	                if (!empty($resource->file) || ($isremote && empty($resource->isurlproxy))){
@@ -247,7 +247,7 @@ function resources_browse_print_list(&$resources, &$course, $section, $isediting
                 echo "</div>";
             } else {
                 echo '<div style="text-align:right" class="commands">';
-                echo "<a href=\"javascript:ajax_mark_liked('{$resource->id}', '{$CFG->wwwroot}')\">{$markliked}</a>";
+                echo "<a href=\"javascript:ajax_mark_liked('{$CFG->wwwroot}', '{$repo}', '{$resource->identifier}')\">{$markliked}</a>";
                 echo "</div>";
             }
             echo "</div>";//resource item
@@ -314,9 +314,9 @@ function resources_browse_print_tabs($repo, $course){
 
     foreach($repoids as $repoid){
         if ($course){
-            $rows[0][] = new tabobject($repoid, $CFG->wwwroot."/resources/index.php?course={$course->id}&amp;repo=$repoid", $repos[$repoid]);
+            $rows[0][] = new tabobject($repoid, $CFG->wwwroot."/local/sharedresources/index.php?course={$course->id}&amp;repo=$repoid", $repos[$repoid]);
         } else {
-            $rows[0][] = new tabobject($repoid, $CFG->wwwroot."/resources/index.php?repo=$repoid", $repos[$repoid]);
+            $rows[0][] = new tabobject($repoid, $CFG->wwwroot."/local/sharedresources/index.php?repo=$repoid", $repos[$repoid]);
         }
     }
     
@@ -331,7 +331,7 @@ function resources_search_print_tabs($repo, $course){
     if (!in_array($repo, $repos)) $repo = $repos[0];
     
     foreach($repos as $arepo){
-        $rows[0][] = new tabobject($arepo, $CFG->wwwroot."/resources/search.php?id={$course->id}&amp;repo=$arepo", get_string('reponame', $arepo, '', $CFG->dirroot."/resources/plugins/{$arepo}/lang/"));
+        $rows[0][] = new tabobject($arepo, $CFG->wwwroot."/local/sharedresources/search.php?id={$course->id}&amp;repo=$arepo", get_string('reponame', $arepo, '', $CFG->dirroot."/resources/plugins/{$arepo}/lang/"));
     }
     
     print_tabs($rows, $repo);

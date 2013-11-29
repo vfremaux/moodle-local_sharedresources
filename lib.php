@@ -134,7 +134,7 @@ function get_remote_repo_resources($repo, &$fullresults, $metadatafilters = '', 
     
     if ($repo == 'local') print_error('errorrepoprogramming');    
     
-    $remote_host = $DB->get_record('mnet_host', array('id'=> $repo));
+    $remote_host = $DB->get_record('mnet_host', array('id' => $repo));
     
     // get the originating (ID provider) host info
     if (!$remotepeer = new mnet_peer()){
@@ -223,7 +223,7 @@ function get_providers(){
         WHERE
             mh.id = h2s.hostid AND
             h2s.serviceid = ms.id AND
-            ms.name = 'resource_provider' AND
+            ms.name = 'sharedresourceservice' AND
             h2s.subscribe = 1 AND
             mh.deleted = 0
     ";
@@ -250,7 +250,7 @@ function get_consumers(){
         WHERE
             mh.id = h2s.hostid AND
             h2s.serviceid = ms.id AND
-            ms.name = 'resource_consumer' AND
+            ms.name = 'sharedresourceservice' AND
             h2s.subscribe = 1 AND
             mh.deleted = 0           
     ";
@@ -311,7 +311,7 @@ function sharedresource_get_usages($entry, &$response, $consumers = null, $user 
                         list($code, $message) = array_map('trim',explode(':', $errormessage, 2));
                         $message .= " Callback ERROR $code:<br/>$errormessage<br/>";
                     }
-                    $response['error'][] = "RPC mod/sharedresource/get_list:<br/>$message";
+                    $response['error'][] = "RPC mod/sharedresource/check:<br/>$message";
                 }
                 unset($mnetrequest);
             }
