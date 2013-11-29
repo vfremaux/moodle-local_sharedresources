@@ -9,7 +9,7 @@ require_once $CFG->dirroot.'/mod/sharedresource/sharedresource_metadata.class.ph
 class file_importer_base{
 
 	/**
-	* the file descriptior out from data collection. Descriptor is an array of properties
+	* the file descriptor out from data collection. Descriptor is an array of properties
 	*/
 	var $fd;
 
@@ -151,6 +151,81 @@ class file_importer_base{
 			$this->sharedresourceentry->update_instance();
 		}
 		sharedresources_mark_file_imported($this->fd['fullpath']);
+	}
+
+	/**
+	* if a course is mentionned in file description in field course 
+	* (based on course shortname), and an eventual section (field section) number is given, 
+	* this will add a course module to the relevant section of the course, on this entry. 
+	* an optional field (coursemoduletype) let you decide if the attached module is a sharedresource
+	* or a standard "file" resource (unshared, cloned)
+	* this function DO NOT HANDLE paged formats
+	*/
+	function attach(){
+		global $DB;
+		
+		if (empty($this->fd->course)) return;
+
+		if ($course = $DB->get_record('course', array('shortname' => $this->fd->course))){
+			mtrace('Unexisting course '.$this->fd->course.' for attachement. Skipping....');
+			return;
+		}
+		
+		$section = (!empty($this->fd->section)) ? $this->fd->section : 0 ;
+
+        $instance = new sharedresource_base(0, $this->sharedresourceentry->identifier);
+        $instance->options = 0;
+        $instance->popup = 0;
+        $instance->type = 'file';
+        $instance->identifier = $this->sharedresourceentry->identifier;
+        $instance->name = $this->sharedresourceentry->title;
+        $instance->course = $course->id;
+        $instance->description = $this->sharedresourceentry->description;
+        $instance->alltext = '';
+        $instance->timemodified = time();
+
+		if (!empty($this->fd->coursemoduletype) && $this->fd->coursemoduletype == 'resource')
+        print_string('convertingsharedresource', 'sharedresource', $sharedresource);
+        sharedresource_convertfrom($sharedresource);
+
+	    // make a new course module
+	    $module = $DB->get_record('modules', array('name'=> $modulename));
+	    $cm = new StdClass;
+	    $cm->instance = $instance->id;
+	    $cm->module = $module->id;
+	    $cm->course = $courseid;
+	    $cm->section = 1;
+	
+	    /// remoteid may be obtained by $sharedresource_entry->add_instance() plugin hooking !! ;
+	    // valid also if LTI tool
+	    if (!empty($this->sharedresourceentry->remoteid)){
+	        $cm->idnumber = $this->sharedresourceentry->remoteid;
+	    }
+	
+	    // insert the course module in course
+	    if (!$cm->id = add_course_module($cm)){
+	        print_error('errorcmaddition', 'sharedresource');
+	    }
+	    
+	    // reset the course modinfo cache
+	    $course->modinfo = null;
+	    $DB->update_record('course', $course);
+	
+	    if (!$section){
+	    	// when we add directly from library without course action
+	        $section = sharedresource_get_course_section_to_add($course);
+	    }
+	
+	    if (!$sectionid = course_add_cm_to_section($course, $cm->id, $section)){
+	        print_error('errorsectionaddition', 'sharedresource');
+	    }
+	    
+	    // echo "added cm $cm->id in section $sectionid";
+	
+	    if (!$DB->set_field('course_modules', 'section', $sectionid, array('id' => $cm->id))) {
+	        print_error('errorcmsectionbinding', 'sharedresource');
+	    }
+	    
 	}
 
 	/**

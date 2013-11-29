@@ -1,7 +1,6 @@
 <?php
 
 require_once $CFG->dirroot.'/local/sharedresources/lib.php';
-require_once($CFG->dirroot.'/mod/sharedresource/plugins/'.$CFG->pluginchoice.'/plugin.class.php');
 require_once($CFG->dirroot.'/mod/sharedresource/metadatalib.php');
 
 /**
@@ -14,7 +13,8 @@ if ($hassiteconfig) { // needs this condition or there is error on login page
     
     $settings = new admin_settingpage('local_sharedresources', get_string('pluginname', 'sharedresource'));
 
-	if (isset($CFG->pluginchoice)){
+	if (!empty($CFG->pluginchoice)){
+		require_once($CFG->dirroot.'/mod/sharedresource/plugins/'.$CFG->pluginchoice.'/plugin.class.php');
 		$object = 'sharedresource_plugin_'.$CFG->pluginchoice;
 		$mtdstandard = new $object;
 

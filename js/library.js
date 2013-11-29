@@ -13,9 +13,9 @@ $(document).ready(function(){
     
 });
 
-function ajax_mark_liked(resid, wwwroot){
-	newlike = $.get(wwwroot+'/local/sharedresources/ajax/add_liked_mark.php?resid='+resid, '', function(data, textStatus){
-		$('#sharedresource-liked-'+resid).html(sharedresource_print_stars(data, 15, wwwroot));
+function ajax_mark_liked(wwwroot, repo, residentifier){
+	newlike = $.get(wwwroot+'/local/sharedresources/ajax/add_liked_mark.php?resid='+residentifier+'&repo='+repo, '', function(data, textStatus){
+		$('#sharedresource-liked-'+residentifier).html(sharedresource_print_stars(data, 15, wwwroot));
 	});
 }
 
