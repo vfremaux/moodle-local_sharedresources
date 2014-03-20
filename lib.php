@@ -601,77 +601,108 @@ function sharedresource_get_top_keywords($courseid){
 * @param $path the local path for each iteration
 * @param $importlines the aray of descriptors being built by the recursion
 * @param $data the initial recursion start information non mutable
+*
+* In all the code, $_ variable contain filesystem compatible encodings, other
+* are all UTF8 variable
 */
 function sharedresources_scan_importpath($path, &$importlines, &$METADATA, &$data){
 	global $CFG;
+
+	if ($CFG->ostype == 'WINDOWS'){
+		$_path = utf8_decode($path);
+		$_importpath = utf8_decode($data->importpath);
+	} else {
+		$_path = $path;
+		$_importpath = $data->importpath;
+	}
 	
-	if(is_dir($path)){
-		
-		if (file_exists($path.'/metadata.csv')){
-			$metadata = file($path.'/metadata.csv');
-			sharedresources_parse_metadata($metadata, $METADATA, $path);
-		}
+	if (file_exists($_path.'/metadata.csv')){
+		$metadata = file($_path.'/metadata.csv');
+		if (defined('CLI_SCRIPT')) mtrace("Found metadata file in $path");
+		sharedresources_parse_metadata($metadata, $METADATA, $path);
+	}
 
-		// process an optional alias file for taxonomy tokens
-		$ALIASES = array();
-		if (file_exists($data->importpath.'/taxonomy_aliases.txt')){
-			$aliases = file($data->importpath.'/taxonomy_aliases.txt');
-			foreach($aliases as $aliasline){
-				list($from, $to) = explode('=', chop($aliasline));
-				$ALIASES[rtrim($from)] = ltrim($to);
+	// process an optional alias file for taxonomy tokens
+	$ALIASES = array();
+	if (file_exists($_importpath.'/taxonomy_aliases.txt')){
+		$aliases = file($_importpath.'/taxonomy_aliases.txt');
+		foreach($aliases as $aliasline){
+			list($from, $to) = explode('=', chop($aliasline));
+			$ALIASES[rtrim($from)] = ltrim($to);
+		}
+	}
+	
+	// apply overriding aliases to taxonomy
+	if (!function_exists('alias_taxon_tokens')){
+		function alias_taxon_tokens(&$item, $k, $aliases){
+			if (array_key_exists($item, $aliases)){
+				$item = $aliases[$item];
 			}
 		}
+	}
+
+	// Utf8 processing here for taxons
+	$taxonparts = null;
+	if (!empty($data->deducetaxonomyfrompath)){
+		// get relative path
+		$cleanedpath = str_replace($data->importpath, '', $path);
+		if (!empty($cleanedpath)){
+			$cleanedpath = preg_replace('/^\//', '', $cleanedpath);
+			// split into parts
+			$taxonparts = explode('/', $cleanedpath);
+			array_walk($taxonparts, 'alias_taxon_tokens', $ALIASES);
+		}
+	}
 		
-		// apply overriding aliases to taxonomy
-		if (!function_exists('alias_taxon_tokens')){
-			function alias_taxon_tokens(&$item, $k, $aliases){
-				if (array_key_exists($item, $aliases)){
-					$item = $aliases[$item];
+	$DIR = opendir($_path);
+	
+	if (!$DIR) { mtrace("Failed opening $path"); return ; }
+	
+	if (defined('CLI_SCRIPT')) mtrace("Processing entries from $path");
+	while($_entry = readdir($DIR)){
+
+		if ($CFG->ostype == 'WINDOWS'){
+			// $entry is read as ASCII from Windows file system. We need it so for accessing Windows filesystem but in UTF8 for all other purposes.
+			$entry = utf8_encode($_entry);
+		} else {
+			$entry = $_entry;
+		}
+
+		if (preg_match('/^\\./', $entry)) continue;
+		if (preg_match('/(CVS|SVN)/', $entry)) continue;
+		// if (!is_readable($path.'/'.$entry)) continue;
+		if (is_dir($_path.'/'.$_entry)){
+			if (defined('CLI_SCRIPT')) mtrace("Processing dir $path/$entry ");
+			sharedresources_scan_importpath($path.'/'.$entry, $importlines, $METADATA, $data);
+		} else {
+			if (preg_match('/^__/', $entry)) continue; // skip any already processed file
+			if ($entry == "metadata.csv") continue; // skip any metadata add on
+			if ($entry == "taxonomy_aliases.txt") continue; // skip any taxonomy translator add on
+			if ($entry == "moodle_sharedlibrary_import.log") continue;
+			
+			// if we have no metadata at all for this entry, we cannot process it
+			if (empty($METADATA) || !array_key_exists($path.'/'.$entry, $METADATA)) continue;
+			
+			if (!empty($excludepattern)){
+				if (!preg_match('/'.$data->importexclusionpattern.'/', $entry)){
+				 	$importlines[$METADATA[$path.'/'.$entry]['sortorder']] = $path.'/'.$entry;
+					if (defined('CLI_SCRIPT')) mtrace("Prepare import ".$path.'/'.$entry);
 				}
-			}
-		}
-
-		$taxonparts = null;
-		if (!empty($data->deducetaxonomyfrompath)){
-			// get relative path
-			$cleanedpath = str_replace($data->importpath, '', $path);
-			if (!empty($cleanedpath)){
-				$cleanedpath = preg_replace('/^\//', '', $cleanedpath);
-				// split into parts
-				$taxonparts = explode('/', $cleanedpath);
-				array_walk($taxonparts, 'alias_taxon_tokens', $ALIASES);
-			}
-		}
-		
-		$DIR = opendir($path);
-		
-		while($entry = readdir($DIR)){
-			if (preg_match('/^\\./', $entry)) continue;
-			if (preg_match('/(CVS|SVN)/', $entry)) continue;
-			// if (!is_readable($path.'/'.$entry)) continue;
-			$entry = iconv("ISO-8859-1", "UTF-8//TRANSLIT", $entry);
-			if (is_dir($path.'/'.$entry)){
-				sharedresources_scan_importpath($path.'/'.$entry, $importlines, $METADATA, $data);
 			} else {
-				if (preg_match('/^__/', $entry)) continue; // skip any already processed file
-				if ($entry == "metadata.csv") continue; // skip any metadata add on
-				if ($entry == "taxonomy_aliases.txt") continue; // skip any taxonomy translator add on
-				if ($entry == "moodle_sharedlibrary_import.log") continue;
-				if (!empty($excludepattern)){
-					if (!preg_match('/'.$data->importexclusionpattern.'/', $entry)) $importlines[] = $path.'/'.$entry;
-				} else {
-					$importlines[] = $path.'/'.$entry;
-				}
-				
-				// add taxonomy to metadata
-				if (!empty($taxonparts)){
-					$METADATA[$path.'/'.$entry]['taxonomy'] = implode(', ', $taxonparts);
-				}
+				$importlines[$METADATA[$path.'/'.$entry]['sortorder']] = $path.'/'.$entry;
+				if (defined('CLI_SCRIPT')) mtrace("Prepare import ".$path.'/'.$entry);
+			}
+			
+			// add taxonomy to metadata from file path, or from a 'category' field in metadata
+			if (!empty($taxonparts)){
+				$METADATA[$path.'/'.$entry]['taxonomy'] = implode(', ', $taxonparts);
+			} elseif (!empty($METADATA[$path.'/'.$entry]['category'])){
+				$METADATA[$path.'/'.$entry]['taxonomy'] = str_replace('\/', ', ', $METADATA[$path.'/'.$entry]['category']);
 			}
 		}
-		
-		closedir($DIR);
-	}	
+	}
+	
+	closedir($DIR);
 }
 
 /**
@@ -680,8 +711,9 @@ function sharedresources_scan_importpath($path, &$importlines, &$METADATA, &$dat
 *
 */
 function sharedresources_parse_metadata(&$metadata, &$METADATA, $path){
+	static $sortorder = 0; // an absolute counter for ordering file in inputlist, based on metadata analysis
 	
-	$AUTHORIZED = array('file', 'title', 'description', 'keywords', 'language', 'authors', 'contributors', 'documenttype', 'documentnature', 'pedagogictype', 'difficulty');
+	$AUTHORIZED = array('file', 'category', 'section', 'visible', 'title', 'shortname', 'description', 'keywords', 'language', 'authors', 'contributors', 'documenttype', 'documentnature', 'pedagogictype', 'difficulty', 'guidance');
 
 	$hl = array_shift($metadata);
 	while($hl && preg_match('/^(\s|\/\/|#|$)/', $hl)){
@@ -712,17 +744,21 @@ function sharedresources_parse_metadata(&$metadata, &$METADATA, $path){
 
 	$i = 1;
 	foreach($metadata as $l){
-		if (preg_match('/^(\s|\/\/|#|$)/', $hl)) continue; // skip comments, empty lines
+		if (preg_match('/^(\s|\/\/|#|$)/', $l)) continue; // skip comments, empty lines
 		$l = chop($l);
 		
 		$line = explode(';', $l);
-		if (count($line) != $linesize){
-			echo "Bad count in $path at line $i: ignoring...<br/>\n";
+		$linecount = count($line);
+		if ($linecount != $linesize){
+			$state = ($linecount < $linesize) ? -1 : 1 ;
+			echo "Bad count in $path at line ".($i + 1)." ($state): ignoring...<br/>\n$l\n";
+			$i++;
 			continue;
 		}
 		
 		$j = 0;
 		$mtd = array();
+		$mtd['sortorder'] = $sortorder++;
 		foreach($line as $field){
 			if (!$j){ // first field is filename
 				$filename = $field;
@@ -738,13 +774,22 @@ function sharedresources_parse_metadata(&$metadata, &$METADATA, $path){
 	}	
 }
 
+/**
+* In all the code, $_ variable contain filesystem compatible encodings, other
+* are all UTF8 variable
+*/
 function sharedresources_reset_volume($data){
 	global $CFG;
 	
 	$path = $data->importpath;
+	if ($CFG->ostype == 'WINDOWS'){
+		$_path = utf8_decode($path);
+	} else {
+		$_path = $path;
+	}
 	
-	if (file_exists($path.'/moodle_sharedlibrary_import.log')){
-		unlink ($path.'/moodle_sharedlibrary_import.log');
+	if (file_exists($_path.'/moodle_sharedlibrary_import.log')){
+		unlink ($_path.'/moodle_sharedlibrary_import.log');
 	}
 	$r = 0;
 	sharedresources_reset_volume_rec($path, $r);
@@ -752,24 +797,42 @@ function sharedresources_reset_volume($data){
 	return get_string('reinitialized', 'local_sharedresources', $r);
 }
 
+/**
+* In all the code, $_ variable contain filesystem compatible encodings, other
+* are all UTF8 variable
+*/
 function sharedresources_reset_volume_rec($path, &$r){
+	global $CFG;
+	
+	if ($CFG->ostype == 'WINDOWS'){
+		$_path = utf8_decode($path);
+	} else {
+		$_path = $path;
+	}
 
-	if (!is_dir($path)){
+	if (!is_dir($_path)){
+		mtrace("Not existant dir $path... skipping");
 		return;
 	}
 
-	$DIR = opendir($path);	
-	while($entry = readdir($DIR)){
-		if (preg_match('/^\\./', $entry)) continue;
-		if (preg_match('/(CVS|SVN)/', $entry)) continue;
+	$DIR = opendir($_path);	
+	while($_entry = readdir($DIR)){
+		if (preg_match('/^\\./', $_entry)) continue;
+		if (preg_match('/(CVS|SVN)/', $_entry)) continue;
 		// if (!is_readable($path.'/'.$entry)) continue;
-		$entry = iconv("ISO-8859-1", "UTF-8//TRANSLIT", $entry);
-		if (is_dir($path.'/'.$entry)){
+		
+		if ($CFG->ostype == 'WINDOWS'){
+			$entry = utf8_encode($_entry);
+		} else {
+			$entry = $_entry;
+		}
+
+		if (is_dir($_path.'/'.$_entry)){
 			sharedresources_reset_volume_rec($path.'/'.$entry, $r);
 		} else {
-			if (preg_match('/^__(.*)/', $entry, $matches)){
-				$unmarked = $matches[1];
-				rename($path.'/'.$entry, $path.'/'.$unmarked);
+			if (preg_match('/^__(.*)/', $_entry, $matches)){
+				$_unmarked = $matches[1];
+				rename($_path.'/'.$_entry, $_path.'/'.$_unmarked);
 				$r++;
 			}
 		}	
@@ -782,10 +845,17 @@ function sharedresources_reset_volume_rec($path, &$r){
 * replaying an import.
 */
 function sharedresources_mark_file_imported($path){
+	global $CFG;
+
+	if ($CFG->ostype == 'WINDOWS'){
+		$_path = utf8_decode($path);
+	} else {
+		$_path = $path;
+	}
 	
-	$parts = pathinfo($path);	
-	$newname = $parts['dirname'].'/__'.$parts['basename'];
-	rename($path, $newname);
+	$_parts = pathinfo($_path);	
+	$_newname = $_parts['dirname'].'/__'.$_parts['basename'];
+	rename($_path, $_newname);
 }
 
 
@@ -793,6 +863,7 @@ function sharedresources_mark_file_imported($path){
 * this method combines the file list an metadata to build adequate descriptors
 * for the import processor.
 *
+* @param array $importlist The list of file physical paths to import
 */
 function sharedresources_aggregate($importlist, &$METADATA){
 	
@@ -805,7 +876,7 @@ function sharedresources_aggregate($importlist, &$METADATA){
 		} else {
 			$descriptor = array();
 			$descriptor['fullpath'] = $entry;
-			$descriptor['file'] = pathinfo($entry, PATHINFO_FILENAME);
+			$descriptor['file'] = pathinfo($entry, PATHINFO_BASENAME);
 			$descriptor['title'] = basename($entry);
 		}
 		$aggregatedlist[] = $descriptor;

@@ -6,6 +6,7 @@ $string['clinonexistingpath'] = 'Erreur : Chemin inexistant';
 $string['clinonexistingcontext'] = 'Erreur : Contexte inexistant';
 $string['configdefaulttaxonomypurposeonimport'] = 'L\'objet de la taxonomie définit pour quoi cette taxonomie est utilisée. Certains schémas de métadonnées autorisent la classification des ressources selon plusieurs taxonomies avec des objectifs différents.';
 $string['confirm'] = 'Confirmer';
+$string['confignotfound'] = 'Fichier de configuration introuvable';
 $string['deducetaxonomyfrompath'] = 'Déduire la taxonomie du chemin';
 $string['deducetaxonomyfrompath_help'] = 'Si coché, le chemin relatif de la ressoure importée servira de base à l\'alimentation de la taxonomie.';
 $string['defaulttaxonomypurposeonimport'] = 'Objet de la taxonomie par défaut';

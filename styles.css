@@ -10,6 +10,10 @@
 	padding:20px;
 }
 
+#side-pre-like .block .header {
+	color:#fAfAfA;
+}
+
 .resource-description{
 	font-weight:normal;
 	padding:5px;

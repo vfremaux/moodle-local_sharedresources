@@ -8,8 +8,6 @@
     require_once 'locallib.php'; 
     require_once 'form_remote_search.class.php'; 
 
-    $stringlocationurl = $CFG->dirroot.'/resources/plugins/lre/lang/';
-    
     $searchform = new Remote_Search_Form('');
 
     $courseid = optional_param('id', null, PARAM_INT);
@@ -18,7 +16,7 @@
     $data = $searchform->get_data();
     if (!$page){
         if (empty($data)) 
-            redirect($CFG->wwwroot."/resources/search.php?id={$courseid}&amp;repo=lre");
+            redirect($CFG->wwwroot."/local/sharedresources/search.php?id={$courseid}&amp;repo=lre");
             $query = clean_param($data->query, PARAM_TEXT);
             if (!empty($query)) $queryparts[] = $query;
             if (!empty($data->minAge)) $queryparts[] = 'lre.minAge='.clean_param($data->minAge, PARAM_INT);
@@ -31,11 +29,11 @@
             $fullquery = required_param('query', PARAM_RAW);
     }
     
-    print_box_start();
+    echo $OUTPUT->box_start();
     
     // we have search data. Need assemble
     
-    $displayquery = '<b>'.get_string('yousearched', 'lre', '', $stringlocationurl).':</b> '. $fullquery;
+    $displayquery = '<b>'.get_string('yousearched', 'local_sharedresources').':</b> '. $fullquery;
 
     if (empty($page)){
         SQIEnd();    
@@ -77,15 +75,13 @@
             }
             
         } else {
-            print_box(get_string('noresults', 'lre', '', $stringlocationurl));
+            echo $OUTPUT->box(get_string('noresults', 'local_sharedresources'));
         }    
     } else {
         // may be an error
-        echo get_string('badquery', 'lre', '', $stringlocationurl);
+        echo get_string('badquery', 'local_sharedresources');
     }
 
     add_to_log(0, 'lre', 'results', $fullquery, 0);
     
-    print_box_end();
-
-?>
+    echo $OUTPUT->box_end();

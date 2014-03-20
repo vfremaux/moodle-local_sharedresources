@@ -53,14 +53,20 @@
             $lrtoptions = SQIGetLearningResourceTypeOptions();
 
     		$mform->addElement('text', 'query', get_string('query', 'lre', '', $langroot));
+    		$mform->setType('query', PARAM_RAW);
 
     		$mform->addElement('select', 'minAge', get_string('minage', 'lre', '', $langroot), $ageoptions);
+    		$mform->setType('minAge', PARAM_INT);
     		$mform->addElement('select', 'maxAge', get_string('maxage', 'lre', '', $langroot), $ageoptions);
+    		$mform->setType('maxAge', PARAM_INT);
 
     		$mform->addElement('select', 'loLanguage', get_string('lolanguage', 'lre', '', $langroot), $languageoptions);
+    		$mform->setType('loLanguage', PARAM_TEXT);
     		$mform->addElement('select', 'mtdLanguage', get_string('mtdlanguage', 'lre', '', $langroot), $languageoptions);
+    		$mform->setType('mtdLanguage', PARAM_TEXT);
 
     		$mform->addElement('select', 'lrt', get_string('lrt', 'lre', '', $langroot), $lrtoptions);
+    		$mform->setType('lrt', PARAM_TEXT);
 
             $this->add_action_buttons(false, get_string('search'));
     				
@@ -69,12 +75,10 @@
     	/**
     	* validates inputs
     	*/
-    	function validation($data){
+    	function validation($data, $files = array()){
     	    
     	    $errors = array();
     	    
     	    return $errors; 
     	}
     }
-
-?>

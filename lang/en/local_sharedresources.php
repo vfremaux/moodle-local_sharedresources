@@ -4,6 +4,7 @@ $string['adminrepository'] = 'Admin Repository';
 $string['backtocourse'] = 'Back to course';
 $string['configdefaulttaxonomypurposeonimport'] = 'The taxonomy purpose tells why the taxonomy is used for. some metadata schema allows multiple taxonomies to be used at once for distinct purposes.';
 $string['confirm'] = 'Confirm';
+$string['confignotfound'] = 'Config file not found';
 $string['deducetaxonomyfrompath'] = 'Guess taxonomy from path';
 $string['clinonexistingpath'] = 'Error: Path does not exist';
 $string['clinonexistingcontext'] = 'Error: Non existing context';

@@ -28,6 +28,7 @@ class import_processor{
 			$importer->metadata_preprocess();
 			$importer->aggregate_metadata();
 			$importer->save();
+			$importer->attach();
 			
 			// final cleanup
 			$fs = get_file_storage();

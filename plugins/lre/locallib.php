@@ -4,7 +4,7 @@
 *
 */
 
-require $CFG->dirroot.'/local/lib/simpleXmlDeserializer.php';
+require $CFG->dirroot.'/local/sharedresources/plugins/lre/simpleXmlDeserializer.php';
 
 /**
 * given an XML result bulk, get the interesting data in and 
@@ -91,7 +91,7 @@ function lre_parse_xml_results($results){
 * @param int $page the pagecount of this page of results
 */
 function lre_print_search_result($hit, $courseid, $page){
-    global $CFG, $SESSION;
+    global $CFG, $SESSION, $DB;
     
     $stringlocationurl = $CFG->dirroot.'/resources/plugins/lre/lang/';
     
@@ -108,10 +108,10 @@ function lre_print_search_result($hit, $courseid, $page){
     echo "<span class=\"desc\">".mb_convert_encoding($hit->description, 'utf-8', 'auto').'</span><br/>';
     echo "<div style=\"font-size:0.8em;margin-top:3px\" class=\"keywords\"><b>$keywordsstr</b>: {$hit->keywords}</div><br/>";
     if ($courseid > SITEID && $CFG->taomode != 'main'){
-        $context = get_context_instance(CONTEXT_COURSE, $courseid);
+        $context = context_course::instance($courseid);
         if (has_capability('moodle/course:manageactivities', $context)){
             echo "<form name=\"add{$hit->i}\" action=\"{$CFG->wwwroot}/mod/taoresource/addremotetocourse.php\" style=\"display:inline\">";
-            $entry = get_record('taoresource_entry', 'remoteid', $hit->remoteid, 'provider', 'lre');
+            $entry = $DB->get_record('taoresource_entry', 'remoteid', $hit->remoteid, 'provider', 'lre');
             if (empty($entry)){
                 echo "<input type=\"hidden\" name=\"id\" value=\"{$courseid}\" />";
                 echo "<input type=\"hidden\" name=\"title\" value=\"".htmlentities($hit->title, ENT_QUOTES, 'UTF-8')."\" />";
@@ -152,5 +152,3 @@ function lre_print_paging($page, $maxpage, $courseid, $fullquery){
     echo implode(' ', $links);
     echo '</center>';
 }
-
-?>
