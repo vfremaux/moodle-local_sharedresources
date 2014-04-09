@@ -27,7 +27,7 @@ if ($hassiteconfig) { // needs this condition or there is error on login page
 	    $settings->add(new admin_setting_configselect('defaulttaxonomypurposeonimport', get_string('defaulttaxonomypurposeonimport', 'local_sharedresources'), get_string('configdefaulttaxonomypurposeonimport', 'local_sharedresources'), 0, $purposes));
 	}
   
-    $plugins = get_list_of_plugins('local/sharedresources/plugins');
+    $plugins =  core_component::get_plugin_list('local/sharedresources/plugins');
     foreach($plugins as $plugin){
         if (file_exists($CFG->dirroot.'/local/sharedresources/plugins/'.$plugin.'/settings.php')){
             // each plugin shoud add its proper page
@@ -37,4 +37,3 @@ if ($hassiteconfig) { // needs this condition or there is error on login page
     
     $ADMIN->add('localplugins', $settings);
 }
-?>

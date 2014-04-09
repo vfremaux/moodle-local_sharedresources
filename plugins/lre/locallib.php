@@ -111,7 +111,7 @@ function lre_print_search_result($hit, $courseid, $page){
         $context = context_course::instance($courseid);
         if (has_capability('moodle/course:manageactivities', $context)){
             echo "<form name=\"add{$hit->i}\" action=\"{$CFG->wwwroot}/mod/taoresource/addremotetocourse.php\" style=\"display:inline\">";
-            $entry = $DB->get_record('taoresource_entry', 'remoteid', $hit->remoteid, 'provider', 'lre');
+            $entry = $DB->get_record('sharedresource_entry', 'remoteid', $hit->remoteid, 'provider', 'lre');
             if (empty($entry)){
                 echo "<input type=\"hidden\" name=\"id\" value=\"{$courseid}\" />";
                 echo "<input type=\"hidden\" name=\"title\" value=\"".htmlentities($hit->title, ENT_QUOTES, 'UTF-8')."\" />";

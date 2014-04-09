@@ -16,9 +16,9 @@
     
     $PAGE->set_pagelayout('standard');
     $PAGE->set_context($context);
-    $PAGE->set_title(get_string('adminrespository', 'local_sharedresources'));
+    $PAGE->set_title(get_string('adminrepository', 'local_sharedresources'));
     $PAGE->set_heading($SITE->fullname); 
-    $PAGE->navbar->add(get_string('adminrespository', 'local_sharedresources'),'view.php','misc');
+    $PAGE->navbar->add(get_string('adminrepository', 'local_sharedresources'),'view.php','misc');
 
     $PAGE->set_focuscontrol('');
     $PAGE->set_cacheable(false);

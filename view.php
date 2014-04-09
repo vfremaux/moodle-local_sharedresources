@@ -29,7 +29,7 @@
  * The resource access layer is for use with mod/taoresource resource plugin.
  */
     
-    include_once dirname(dirname(dirname(__FILE__))).'/config.php';
+    include_once dirname(dirname(__FILE__)).'/config.php';
     
     if (!file_exists($CFG->dirroot.'/mod/sharedresource/lib.php')){
         error('Shared resource plugin is not installed.');
