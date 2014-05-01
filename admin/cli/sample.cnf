@@ -1,0 +1,6 @@
+# Sample config for mass importer
+path=D:/My Documents/Dossiers Actifs/ISF/Pool Ressources 1
+context=1
+exclude=
+taxonomize=1
+test=simulate
