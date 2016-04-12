@@ -1,5 +1,6 @@
 <?php
 
+$string['pluginname'] = 'Dépot Européen European Schoolnet';
 $string['reponame'] = 'European Schoolnet';
 $string['lresearch'] = 'Rechercher dans le référentiel Européen \"Learning Resource Exchange\"';
 $string['query'] = 'Recherche';

@@ -1,27 +1,38 @@
-<?php  // $Id: admin_convert_form.php,v 1.1 2013-02-13 21:56:39 wa Exp $
+<?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+defined('MOODLE_INTERNAL') || die();
 
 /**
 * forms for converting resources to sharedresources
 *
-* @package    mod-sharedresource
-* @category   mod
+* @package    local_sharedresources
+* @category   local
 * @author     Valery Fremaux <valery.fremaux@club-internet.fr>
 * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
 * @copyright  (C) 1999 onwards Martin Dougiamas  http://dougiamas.com
 */
-
-/**
-* Includes and requires
-*/
 require $CFG->libdir.'/formslib.php';
 
-
-class sharedresource_massimport_form extends moodleform{
+class sharedresource_massimport_form extends moodleform {
 
     function __construct($courses) {
         parent::moodleform();
     }
- 
+
     function definition() {
         $mform = & $this->_form;
 
@@ -53,7 +64,7 @@ class sharedresource_massimport_form extends moodleform{
         $mform->addHelpButton('resetvolume', 'resetvolume', 'local_sharedresources');
 
 
-        // Adding submit and reset button
+        // Adding submit and reset button.
         $buttonarray = array();
         $buttonarray[] = &$mform->createElement('submit', 'go_submit', get_string('submit'));
         $buttonarray[] = &$mform->createElement('cancel', 'go_cancel', get_string('cancel'));

@@ -82,7 +82,7 @@ if (empty($errors)) {
         $errors .= oai_error('idDoesNotExist', '', $identifier);
     }
 
-    $query = selectAllQuery($id); 
+    $query = selectAllQuery($id);
     if (!$res = $DB->get_record_sql($query)) {
             $errors .= oai_error('idDoesNotExist', '', $identifier); 
     }
@@ -105,7 +105,7 @@ if ($num_rows) {
     
     $identifier = $oaiprefix.$record['oaiid'];
 
-    $datestamp = formatDatestamp($record['datestamp']); 
+    $datestamp = formatDatestamp($record['datestamp']);
 
     if (isset($record['deleted']) && ($record['deleted'] == 'true') && 
         ($deletedRecord == 'transient' || $deletedRecord == 'persistent')) {

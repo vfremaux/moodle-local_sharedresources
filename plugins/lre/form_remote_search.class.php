@@ -17,13 +17,16 @@
 /**
  * Defines form to add a new project
  *
- * @package    block-prf-catalogue
- * @subpackage classes
+ * @package    local_sharedresources
+ * @category   local
+ * @subpackage plugins
  * @author     Valery Fremaux <valery.fremaux@club-internet.fr>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
  * @copyright  (C) 1999 onwards Martin Dougiamas  http://dougiamas.com
  *
  */
+
+defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->libdir.'/formslib.php');
 require_once($CFG->dirroot.'/local/sharedresources/plugins/lre/sqilib.php');

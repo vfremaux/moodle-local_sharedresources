@@ -16,7 +16,8 @@
 
 /**
  *
- * @package    local-sharedresource
+ * @package    local_sharedresources
+ * @category   local
  * @author Valery Fremaux <valery.fremaux@club-internet.fr>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
  * @copyright  (C) 1999 onwards Martin Dougiamas  http://dougiamas.com
@@ -26,15 +27,22 @@
  * 
  * The resource access layer is for use with mod/taoresource resource plugin.
  */
-require(dirname(dirname(dirname(__FILE__))).'/config.php');
+require('../../config.php');
 
 if (!file_exists($CFG->dirroot.'/mod/sharedresource/lib.php')) {
-    error('Shared resource plugin is not installed.');
-    exit;
+    throw new coding_exception('Shared resource plugin is not installed.');
 }
-    
+
 require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
 require_once($CFG->libdir.'/filelib.php');
+
+$config = get_config('local_sharedresources');
+
+$isloggedin = false;
+if (!empty($config->privatecatalog)) {
+    require_login();
+    $isloggedin = true;
+}
 
 $resourceid = optional_param('id', '', PARAM_ALPHANUM);
 $identifier = optional_param('identifier', '', PARAM_ALPHANUM);
@@ -66,23 +74,24 @@ if (!$resource = $DB->get_record('sharedresource_entry', array($idfield => $idva
 
 // is resource valid for public delivery ?
 if (!$resource->isvalid) {
-    require_login();
+    if (!$isloggedin) {
+        require_login();
+        $isloggedin = true;
+    }
 }
 
 // is resource shared in lower context ?
 if ($resource->context > 1) {
     $context = $DB->get_record('context', array('id' => $resource->context));
-    require_login();
+    if (!$isloggedin) {
+        require_login();
+    }
     if (!sharedresource_has_capability_somewhere('repository/sharedresources:use', true, true, $context, false)) {
         send_file_not_found();
     }
-}        
-
-if ($remote) {
-    add_to_log (SITEID, 'sharedresource', 'view', $CFG->wwwroot.'/local/sharedresources/view.php?id='.$resource->id, 'localid' , 0, 0);
-} else {
-    add_to_log (SITEID, 'sharedresource', 'view', $CFG->wwwroot.'/local/sharedresources/view.php?id='.$resource->id.'&amp;remote=1', 'remoteid' , 0, 0);
 }
+
+// TODO : implement logging
 
 if (empty($resource->file) && !empty($resource->url)) {
     redirect($resource->url);

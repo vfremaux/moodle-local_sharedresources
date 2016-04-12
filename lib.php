@@ -1,31 +1,30 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+defined('MOODLE_INTERNAL') || die();
+
 /**
- * Moodle - Modular Object-Oriented Dynamic Learning Environment
- *          http://moodle.org
- * Copyright (C) 1999 onwards Martin Dougiamas  http://dougiamas.com
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- * @package    mod-taoresource
- * @subpackage resources
+ * @package    local_sharedresources
+ * @category   local
  * @author Valery Fremaux <valery.fremaux@club-internet.fr>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
  * @copyright  (C) 1999 onwards Martin Dougiamas  http://dougiamas.com
  *
  * Provides libraries for resource generic access.
  */
-
 require_once($CFG->dirroot.'/mnet/xmlrpc/client.php');
 require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
 require_once($CFG->dirroot.'/mod/sharedresource/rpclib.php');
@@ -48,8 +47,8 @@ function cmp($a, $b) {
 }
 
 /**
-* get a stub of local resources
-*/
+ * get a stub of local resources
+ */
 function get_local_resources($repo, &$fullresults, $metadatafilters = '', &$offset = 0, $page = 20) {
     global $CFG, $USER,$DB;
 
@@ -106,7 +105,10 @@ function get_local_resources($repo, &$fullresults, $metadatafilters = '', &$offs
 
     $fullresults['maxobjects'] = $DB->count_records_sql($sqlcount);
     $fullresults['order'] = array();
-    if ($offset >= $fullresults['maxobjects']) $offset = 0; // security when changing filter configuration
+    if ($offset >= $fullresults['maxobjects']) {
+        // Security when changing filter configuration.
+        $offset = 0;
+    }
     $fullresults['entries'] = $DB->get_records_sql($sql, array(), $offset, $page);
 
     if (!empty($fullresults['entries'])) {
@@ -122,13 +124,13 @@ function get_local_resources($repo, &$fullresults, $metadatafilters = '', &$offs
 }
 
 /**
-* makes a call to remote resource exposure service
-* for getting a resource list. Multimodal function that will
-* admit per category browsing or linear "per page" browsing.
-* @uses $CFG
-* @param string $repo the repo identifier
-* 
-*/
+ * makes a call to remote resource exposure service
+ * for getting a resource list. Multimodal function that will
+ * admit per category browsing or linear "per page" browsing.
+ * @uses $CFG
+ * @param string $repo the repo identifier
+ * 
+ */
 function get_remote_repo_resources($repo, &$fullresults, $metadatafilters = '', $offset = 0, $page = 20) {
     global $CFG, $USER, $DB;
 
@@ -262,14 +264,14 @@ function get_consumers() {
 
 
 /**
-* fetch remotely or locally amount of usages about a resource.
-* @uses $USER
-* @param object $entry an sharedresource entry
-* @param object $response an array for aggregating error messages
-* @param array $consumers an array of available resource consumers. If not provided, will check localy.
-* @param object $user an eventual user on behalf to whom asking for usage check.
-* @return a count for how many times the resource was used
-*/
+ * fetch remotely or locally amount of usages about a resource.
+ * @uses $USER
+ * @param object $entry an sharedresource entry
+ * @param object $response an array for aggregating error messages
+ * @param array $consumers an array of available resource consumers. If not provided, will check localy.
+ * @param object $user an eventual user on behalf to whom asking for usage check.
+ * @return a count for how many times the resource was used
+ */
 function sharedresource_get_usages($entry, &$response, $consumers = null, $user = null) {
     global $USER,$DB;
 
@@ -321,9 +323,9 @@ function sharedresource_get_usages($entry, &$response, $consumers = null, $user 
 }
 
 /**
-* submits a resource to a remote provider
-*
-*/
+ * submits a resource to a remote provider
+ *
+ */
 function sharedresource_submit($repo, $resourceentry) {
     global $CFG,$DB;
 
@@ -356,13 +358,19 @@ function sharedresource_submit($repo, $resourceentry) {
 
     $mnetrequest->add_param($metadata, 'array');
 
+    $result = false;
+
     // Do RPC call and store response.
     if ($mnetrequest->send($remotepeer) === true) {
-        $results = json_decode($mnetrequest->response);
+        $result = json_decode($mnetrequest->response);
+
+        if (!$result) {
+            return false;
+        }
 
         if ($result->status == RPC_SUCCESS) {
 
-            // we need converting our local instance as a proxy
+            // We need converting our local instance as a proxy.
             if (!empty($resourceentry->file)) {
 
                 $file = $resourceentry->file;
@@ -372,24 +380,24 @@ function sharedresource_submit($repo, $resourceentry) {
                 $resourceentry->file = '';
                 $resourceentry->provider = resources_repo($remote_host->wwwroot);
                 $DB->update_record('sharedresource', $resourceentry);
-    
+
                 // Destroy local file.
                 $filename = $CFG->dataroot.SHAREDRESOURCE_RESOURCEPATH.$resourceentry->file;
                 unlink($filename);
             }
         } else {
-            error("RPC remote error in submit:<br/>{$status->error}");
+            print_error('rpcsharedresourcesubmiterror', '');
         }
     } else {
         foreach ($mnetrequest->error as $errormessage) {
             list($code, $message) = array_map('trim',explode(':', $errormessage, 2));
             $message .= "ERROR $code:<br/>$errormessage<br/>";
         }
-        error("RPC mod/sharedresource/get_list:<br/>$message");
+        print_error('rpcsharedresourceerror', 'local_sharedresources', $message);
     }
     unset($mnetrequest);
 
-    return $results;
+    return $result;
 }
 
 /**
@@ -532,6 +540,29 @@ function sharedresource_is_lti($resource) {
     global $CFG;
 
     return(preg_match('/LTI/', $resource->keywords));
+}
+
+/**
+ * provides a mean to recognize sharedresource hides an media or a media
+ * proxy that can be played in a mplayer
+ * TODO : refine filtering of mime types that are acceptable
+ * @param object $resource a sharedresource descriptor
+ */
+function sharedresource_is_media($resource) {
+
+    $fs = get_file_storage();
+
+    if ($resource->file) {
+        if ($resourcefile = $fs->get_file_by_id($resource->file)) {
+
+            if (preg_match('#^video/#', $resourcefile->mimetype)) {
+                return true;
+            }
+
+        }
+    }
+
+    return false;
 }
 
 /**
@@ -804,7 +835,8 @@ function sharedresources_parse_metadata(&$metadata, &$METADATA, $path) {
         $mtd = array();
         $mtd['sortorder'] = $sortorder++;
         foreach ($line as $field) {
-            if (!$j) { // first field is filename
+            if (!$j) {
+                // First field is filename.
                 $filename = $field;
             }
 

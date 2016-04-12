@@ -1,17 +1,44 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+defined('MOODLE_INTERNAL') || die();
 
 /**
-* Implements an SQI querier
-*/
-    include_once 'sqilib.php';
-    include_once 'form_remote_search.class.php';
+ * @package    local_sharedresources
+ * @category   local
+ * @author Valery Fremaux <valery.fremaux@club-internet.fr>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
+ * @copyright  (C) 1999 onwards Martin Dougiamas  http://dougiamas.com
+ *
+ * Provides libraries for resource generic access.
+ */
 
-    print ($OUTPUT->heading(get_string('lresearch', 'local_sharedresources')));
-    echo $OUTPUT->box_start(true, 'emptyleftspace');
-    
-    $searchform = new Remote_Search_Form($CFG->wwwroot."/local/sharedresources/results.php?id={$courseid}&repo={$repo}");
+/**
+ * Implements an SQI querier
+ */
 
-    echo "<table width=\"95%\" style=\"position:relative;left:-60px\"><tr><td width=\"120\"><img src=\"$CFG->wwwroot/local/sharedresources/plugins/lre/pix/lre.jpg\"/></td><td width=\"70%\">";    
-    $searchform->display();
-    echo '</td></tr></table>';
-    echo $OUTPUT->box_end('emptyleftspace');
+include_once($CFG->dirroot.'/local/sharedresources/plugin/lre/sqilib.php');
+include_once($CFG->dirroot.'/local/sharedresources/plugin/lre/form_remote_search.class.php');
+
+echo $OUTPUT->heading(get_string('lresearch', 'local_sharedresources'));
+echo $OUTPUT->box_start(true, 'emptyleftspace');
+
+$searchform = new Remote_Search_Form($CFG->wwwroot."/local/sharedresources/results.php?id={$courseid}&repo={$repo}");
+
+echo "<table width=\"95%\" style=\"position:relative;left:-60px\"><tr><td width=\"120\"><img src=\"$CFG->wwwroot/local/sharedresources/plugins/lre/pix/lre.jpg\"/></td><td width=\"70%\">";    
+$searchform->display();
+echo '</td></tr></table>';
+echo $OUTPUT->box_end('emptyleftspace');

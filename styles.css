@@ -25,3 +25,7 @@
 .resourceitem .generalbox{
     margin-left:15px;
 }
+
+.oai-doc dd {
+    margin-top:10px;
+}

@@ -752,4 +752,3 @@ class tag_renderer {
         return $content;
     }
 }
-?>

@@ -29,18 +29,16 @@
  * bound catalogs will also get information about local catalog resource used by remote courses. 
  *
  * The index is public access. Browsing the catalog should although be done through a Guest identity,
- * having as a default the repository/sharedresource:view capability.
+ * having as a default the repository/sharedresources:view capability.
  */
-
 require('../../config.php');
 require_once($CFG->libdir.'/blocklib.php');
 require_once($CFG->dirroot.'/course/lib.php');
 require_once($CFG->dirroot.'/mod/sharedresource/rpclib.php');
 require_once($CFG->dirroot.'/mod/sharedresource/search_widget.class.php');
-require_once($CFG->dirroot.'/local/sharedresources/renderers.php');
 require_once($CFG->dirroot.'/local/sharedresources/lib.php');
 
-$PAGE->requires->js('/local/sharedresources/js/jquery.js', true);
+$PAGE->requires->jquery();
 $PAGE->requires->js('/local/sharedresources/js/library.js', true);
 $PAGE->requires->js('/local/sharedresources/js/search.js', true);
 
@@ -52,29 +50,33 @@ $repo = optional_param('repo', 'local', PARAM_TEXT);
 $offset = optional_param('offset', 0, PARAM_INT);
 $action = optional_param('what', '', PARAM_TEXT);
 
+// Security.
+
 if ($courseid) {
     $context = context_course::instance($courseid);
 } else {
     $context = context_system::instance();
 }
-  
+
 require_capability('repository/sharedresources:view', $context);
 
 // Prepare the page.
 
 $PAGE->set_context($context);
-$PAGE->navbar->add(get_string('sharedresources_library', 'local_sharedresources'));    
+$PAGE->navbar->add(get_string('sharedresources_library', 'local_sharedresources'));
 $PAGE->set_title(get_string('sharedresources_library', 'local_sharedresources'));
 $PAGE->set_heading(get_string('sharedresources_library', 'local_sharedresources'));
 
 $PAGE->set_url('/local/sharedresources/index.php',array('edit' => $edit,'blockaction' => $blockaction,'course' => $courseid,'repo' => $repo,'offset' => $offset,'what' => $action));
+
+$renderer = $PAGE->get_renderer('local_sharedresources');
 
 echo $OUTPUT->header();
 
 $page = 20;
 
 if ($action) {
-    include('index.controller.php');
+    include($CFG->dirroot.'/local/sharedresources/index.controller.php');
 }
 
 $course = $DB->get_record('course', array('id' => $courseid));
@@ -86,10 +88,13 @@ if (empty($CFG->pluginchoice)) {
     die;
 }
 
-resources_browse_print_tabs($repo, $course);
-resources_print_tools($course);
+echo $renderer->browse_tabs($repo, $course);
 
-echo "<table width=\"100%\" cellspacing=\"10\" ><tr valign=\"top\"><td id=\"side-pre-like\" width=\"200\">";
+if (($repo == 'local') || empty($repo)) {
+    echo $renderer->tools($course);
+}
+
+echo '<table width="100%" cellspacing="10" ><tr valign="top"><td id="side-pre-like" width="200">';
 
 $visiblewidgets = array();
 resources_setup_widgets($visiblewidgets, $context);
@@ -99,11 +104,11 @@ if (resources_process_search_widgets($visiblewidgets, $searchfields)) {
     $offset = 0;
 }
 
-resources_print_search_widgets_tableless($courseid, $repo, $offset, $context, $visiblewidgets, $searchfields);
+echo $renderer->search_widgets_tableless($courseid, $repo, $offset, $context, $visiblewidgets, $searchfields);
 
-resources_print_top_keywords($courseid);
+echo $renderer->top_keywords($courseid);
 
-echo "</td><td>";
+echo '</td><td>';
 
 $isediting = has_capability('repository/sharedresources:manage', $context, $USER->id) && $repo == 'local';
 
@@ -123,23 +128,25 @@ if ($repo == 'local') {
 } else {
     $resources = get_remote_repo_resources($repo, $fullresults, $metadatafilters, $offset, $page);
 }
+
 $SESSION -> resourceresult = $resources;
 
 echo '<div id="resources">';
-if ($fullresults['maxobjects'] <= $page) { // Do we have enough resource for one page ?
-    resources_browse_print_list($resources, $course, $section, $isediting, $repo);
+if ($fullresults['maxobjects'] <= $page) {
+    // Do we have enough resource for one page ?
+    echo $renderer->resources_list($resources, $course, $section, $isediting, $repo);
 } else {
     $nbrpages = ceil($fullresults['maxobjects']/$page);
-    resources_print_pager($courseid, $repo, $nbrpages, $page, $offset, $isediting);
-    resources_browse_print_list($resources, $course, $section, $isediting, $repo, $page, $offset);
-    resources_print_pager($courseid, $repo, $nbrpages, $page, $offset, $isediting);
+    echo $renderer->pager($courseid, $repo, $nbrpages, $page, $offset, $isediting);
+    echo $renderer->resources_list($resources, $course, $section, $isediting, $repo, $page, $offset);
+    echo $renderer->pager($courseid, $repo, $nbrpages, $page, $offset, $isediting);
 }
 echo '</div>';
 
 if ($courseid > SITEID) {
     $options['id'] = $course->id;
     echo '<center><p>';
-    $url = new moodle_url($CFG->wwwroot.'/course/view.php', $options);
+    $url = new moodle_url('/course/view.php', $options);
     print($OUTPUT->single_button($url, get_string('backtocourse', 'local_sharedresources')));
     echo '</p></center>';
 }

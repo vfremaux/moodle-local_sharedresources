@@ -16,9 +16,6 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-/**
-* include wrapper for /mod/cndpindexing
-*
-*/
-
-include $CFG->dirroot.'/mod/cndpindexing/remoteresults.php';
+$plugin = new stdclass;
+$plugin->version = 2015071300;
+$plugin->component = 'sharedresourceprovider_lre';

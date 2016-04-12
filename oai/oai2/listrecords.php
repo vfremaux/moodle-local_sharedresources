@@ -72,7 +72,7 @@ foreach ($args as $key => $val) {
             } else {
                 $errors .= oai_error('badArgument', $key, $val);
             }
-            break;      
+            break;
 
         case 'resumptionToken':
             if (!isset($OAI->resumptionToken)) {
@@ -89,7 +89,7 @@ foreach ($args as $key => $val) {
 
 
 // Resume previous session?
-if (isset($args['resumptionToken'])) {         
+if (isset($args['resumptionToken'])) {
     if (count($args) > 1) {
         // overwrite all other errors
         $errors = oai_error('exclusiveArgument');

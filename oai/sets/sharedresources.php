@@ -94,5 +94,3 @@ function setQuery($set) {
 function isDeleted($id) {
     return false;
 }
-
-?>

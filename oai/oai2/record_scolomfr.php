@@ -6,8 +6,8 @@ require_once($CFG->dirroot.'/local/sharedresources/oai/metadata/metadata.class.p
 $prefix = 'oai_scolomfr';
 $myformat = $METADATAFORMATS[$prefix];
 $atts = array(
-            'xmlns:xsi' => $XMLSCHEMA,
-            'xsi:schemaLocation' => $myformat['metadataNamespace'].'       '.$myformat['schema']
+    'xmlns:xsi' => $XMLSCHEMA,
+    'xsi:schemaLocation' => $myformat['metadataNamespace'].'       '.$myformat['schema']
 );
 
 if (!$myformat['defaultnamespace']) {

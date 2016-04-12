@@ -149,6 +149,4 @@ header($CONTENT_TYPE);
 echo $xmlheader;
 echo $request;
 echo $output;
-oai_close(); 
-
-?>
+oai_close();

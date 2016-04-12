@@ -470,5 +470,3 @@ function oai_find_set($set) {
     }
     return false;
 }
-
-?>
