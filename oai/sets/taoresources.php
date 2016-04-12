@@ -8,61 +8,61 @@
 // all records
 // the useless condition id_column = id_column is just there to ease
 // further extensions to the query, please leave it as it is.
-function selectAllQuery ($id = ''){
-	global $CFG;
+function selectAllQuery ($id = '') {
+    global $CFG;
 
-	if ($id == '') {
-		$identityClause = 'id = id';
-	} else {
-		$identityClause  = " identifier = '$id' ";
-	}
-	
-	$validityClause = ' AND isvalid = 1';
-	$validityClause = '';
+    if ($id == '') {
+        $identityClause = 'id = id';
+    } else {
+        $identityClause  = " identifier = '$id' ";
+    }
+    
+    $validityClause = ' AND isvalid = 1';
+    $validityClause = '';
 
-	$sql = "
-	    SELECT 
-	        *,
-	        title as shortname,
-	        timemodified as datestamp,
-	        identifier as oaiid,
-	        'taoresources' as `set`
-	    FROM 
-	        {$CFG->prefix}taoresource_entry 
-	    WHERE 
-	        $identityClause
-	        $validityClause
-	";
+    $sql = "
+        SELECT 
+            *,
+            title as shortname,
+            timemodified as datestamp,
+            identifier as oaiid,
+            'taoresources' as `set`
+        FROM 
+            {$CFG->prefix}taoresource_entry 
+        WHERE 
+            $identityClause
+            $validityClause
+    ";
 
-	return $sql;
+    return $sql;
 }
 
 // this function will return identifier and datestamp for all records
-function idQuery ($id = ''){
-	global $CFG;
-	global $OAI;
+function idQuery ($id = '') {
+    global $CFG;
+    global $OAI;
 
-	if ($id == '') {
-		$identityClause = 'id = id';
-	} else {
-		$identityClause = " identifier = '$id' ";
-	}
+    if ($id == '') {
+        $identityClause = 'id = id';
+    } else {
+        $identityClause = " identifier = '$id' ";
+    }
 
-	$validityClause = ' AND isvalid = 1';
+    $validityClause = ' AND isvalid = 1';
 
-	$sql = "
-	    SELECT 
-	        identifier as oaiid,
-	        timemodified as datestamp,
-	        'taoresources' as `set`
-	    FROM 
-	        {$CFG->prefix}taoresource_entry 
-	    WHERE 
-	        $identityClause
-	        $validityClause
-	";
+    $sql = "
+        SELECT 
+            identifier as oaiid,
+            timemodified as datestamp,
+            'taoresources' as `set`
+        FROM 
+            {$CFG->prefix}taoresource_entry 
+        WHERE 
+            $identityClause
+            $validityClause
+    ";
 
-	return $sql;
+    return $sql;
 }
 
 // filter for until
@@ -70,19 +70,19 @@ function untilQuery($until) {
     global $OAI;
     
     $until = datestamp2unix($OAI->until);
-	return " AND timemodified <= '$until' ";
+    return " AND timemodified <= '$until' ";
 }
 
 // filter for from
-function fromQuery($from){
+function fromQuery($from) {
     global $OAI;
 
     $from = datestamp2unix($OAI->from);
-	return " AND timemodified >= '$from' ";
+    return " AND timemodified >= '$from' ";
 }
 
 // filter for sets
-function setQuery($set){
+function setQuery($set) {
     global $OAI;
 
     return '';
@@ -91,7 +91,7 @@ function setQuery($set){
 /**
 * tels if
 */
-function isDeleted($id){
+function isDeleted($id) {
     return false;
 }
 

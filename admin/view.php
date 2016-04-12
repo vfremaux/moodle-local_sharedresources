@@ -11,7 +11,7 @@
 
     require "../../../config.php";
     
-    $context = get_context_instance(CONTEXT_SYSTEM);
+    $context = context_system::instance();
     // require_capability('repository/sharedresources:manage', $context);
     
     $PAGE->set_pagelayout('standard');
@@ -31,7 +31,7 @@
     
 
     
-    if ($providers = sharedrepository_get_providers()){
+    if ($providers = sharedrepository_get_providers()) {
         
     $provider = optional_param('provider', 'all', PARAM_ALPHA);
 

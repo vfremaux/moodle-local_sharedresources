@@ -38,8 +38,8 @@
     if ($courseid == 0) $courseid = SITEID;
     $repo = required_param('repo', PARAM_TEXT);
 
-    if (!$course = get_record('course', 'id', $courseid)){
-		print_error('coursemisconf');
+    if (!$course = get_record('course', 'id', $courseid)) {
+        print_error('coursemisconf');
     }
 
 /// Build and print header

@@ -1,16 +1,16 @@
 <?php
 /**
-	 *
-	 * @author  Frédéric GUILLOU
-	 * @version 0.0.1
-	 * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resource
-	 * @package sharedresource
-	 *
-	 */
+     *
+     * @author  Frédéric GUILLOU
+     * @version 0.0.1
+     * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resource
+     * @package sharedresource
+     *
+     */
 
-		// This php script is called using ajax
-		// It display a page of resources
-		//-----------------------------------------------------------
+        // This php script is called using ajax
+        // It display a page of resources
+        //-----------------------------------------------------------
 
 require_once("../config.php");
 require_once('lib.php');
@@ -21,10 +21,10 @@ $isediting = required_param('isediting', PARAM_TEXT);
 $courseid = required_param('courseid', PARAM_INT);
 $repo = required_param('repo', PARAM_TEXT);
 
-if ($courseid){
-	$course = get_record('course', 'id', $courseid);
+if ($courseid) {
+    $course = get_record('course', 'id', $courseid);
 } else {
-	$course = null;
+    $course = null;
 }
 
 $resources = $SESSION->resourceresult;
@@ -33,13 +33,13 @@ $i = 1;
 $beginprint = (($numpage - 1) * $page) + 1;
 $endprint = $beginprint + $page;
 
-foreach($resources as $id => $value){
-	if($i >= $beginprint && $i < $endprint){
-		if(count($tempresources) < $page){
-			$tempresources[$id] = $value;
-		}
-	}
-	$i++;
+foreach ($resources as $id => $value) {
+    if ($i >= $beginprint && $i < $endprint) {
+        if (count($tempresources) < $page) {
+            $tempresources[$id] = $value;
+        }
+    }
+    $i++;
 }
 resources_browse_print_list($tempresources, $course, $isediting, $repo);
 

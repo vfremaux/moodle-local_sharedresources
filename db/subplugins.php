@@ -1,3 +1,3 @@
 <?php
 
-$subplugins = array('sharedresourceprovider'  => 'local/sharedresources/plugins');
+$subplugins = array('sharedresourceprovider' => 'local/sharedresources/plugins');

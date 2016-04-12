@@ -74,7 +74,7 @@ foreach ($manifestations as $format => $param) {
         $title = 'web site';
         $url = $resourceBaseURL.$record['identifier'];
     } else {
-        if(!isset($formats[$format])) {continue;} // file doesn't exist
+        if (!isset($formats[$format])) {continue;} // file doesn't exist
         $name = 'package in';
         $url = $formats[$format]['url'];
         $title = $formats[$format]['title'];

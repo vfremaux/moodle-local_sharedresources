@@ -8,73 +8,73 @@
 // all records
 // the useless condition id_column = id_column is just there to ease
 // further extensions to the query, please leave it as it is.
-function selectallQuery ($id = ''){
-	global $CFG;
+function selectallQuery ($id = '') {
+    global $CFG;
 
-	$query = "
-	    SELECT 
-	        *,
-	        docdate as datestamp,
-	        MD5(url) as oaiid,
-	        'globalsearch' as `set`
-	    FROM 
-	        {$CFG->prefix}block_search_documents
-	    WHERE 
-	";
+    $query = "
+        SELECT 
+            *,
+            docdate as datestamp,
+            MD5(url) as oaiid,
+            'globalsearch' as `set`
+        FROM 
+            {$CFG->prefix}block_search_documents
+        WHERE 
+    ";
 
-	if ($id == '') {
-		$query .= 'id = id';
-	} else {
-		$query .= " MD5(url) = '$id' ";
-	}
-	return $query;
+    if ($id == '') {
+        $query .= 'id = id';
+    } else {
+        $query .= " MD5(url) = '$id' ";
+    }
+    return $query;
 }
 
 // this function will return identifier and datestamp for all records
-function idQuery ($id = ''){
-	global $CFG;
-	global $OAI;
+function idQuery ($id = '') {
+    global $CFG;
+    global $OAI;
 
-	$query = "
-	    SELECT 
-	        MD5(url) as oaiid,
-	        doctype,
-	        itemtype,
-	        docdate as datestamp,
-	        'globalsearch' as `set`
-	    FROM 
-	        {$CFG->prefix}block_search_documents 
-	    WHERE 
-	";
+    $query = "
+        SELECT 
+            MD5(url) as oaiid,
+            doctype,
+            itemtype,
+            docdate as datestamp,
+            'globalsearch' as `set`
+        FROM 
+            {$CFG->prefix}block_search_documents 
+        WHERE 
+    ";
 
-	if ($id == '') {
-		$query .= 'id = id';
-	} else {
-		$query .= " MD5(url) = '$id' ";
-	}
+    if ($id == '') {
+        $query .= 'id = id';
+    } else {
+        $query .= " MD5(url) = '$id' ";
+    }
 
-	return $query;
+    return $query;
 }
 
 // filter for until
 function untilQuery($until) {
-	return " AND docdate <= '$OAI->until' ";
+    return " AND docdate <= '$OAI->until' ";
 }
 
 // filter for from
-function fromQuery($from){
-	return " AND docdate >= '$OAI->from' ";
+function fromQuery($from) {
+    return " AND docdate >= '$OAI->from' ";
 }
 
 // filter for sets
-function setQuery($set){
+function setQuery($set) {
     return '';
 }
 
 /**
 * tels if
 */
-function isDeleted($id){
+function isDeleted($id) {
     return false;
 }
 

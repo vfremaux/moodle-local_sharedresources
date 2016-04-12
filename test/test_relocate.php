@@ -6,7 +6,7 @@
     include_once $CFG->libdir.'/pear/HTML/AJAX/JSON.php';
     include_once 'relocate_testform.php';
 
-    $context = get_context_instance(CONTEXT_SYSTEM);
+    $context = context_system::instance();
     require_capability('moodle/site:doanything', $context);
 
     /**
@@ -17,7 +17,7 @@
 
     $form = new Relocate_Test_Form();
     
-    if ($data = $form->get_data()){
+    if ($data = $form->get_data()) {
         
         $consumer = $DB->get_record('mnet_host', array('id'=> $data->consumer));
         
@@ -29,7 +29,7 @@
         $client->add_param($data->targetrepo, 'string');
         $client->add_param($CFG->wwwroot.'/changed_url', 'string');
 
-        if (!$remotepeer = new mnet_peer()){
+        if (!$remotepeer = new mnet_peer()) {
             error ("MNET client initialisation error");
         }
         $remotepeer->set_wwwroot($consumer->wwwroot);

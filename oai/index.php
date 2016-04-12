@@ -54,15 +54,15 @@ the generated XML-answers in your browser.
 For detailed tests use the <a href="http://re.cs.uct.ac.za/">Repository Explorer</a>.
 <p>
 Any comments or questions are welcome.
-<p/>	
+<p/>    
 Heinrich Stamerjohanns<br />
 Institute for Science Networking<br />
 stamer#AT#uni-oldenburg.de<br />
 <p>
-	This version has been redrawn for Moodle Shared Resource system by:<br/>
-	Valery Fremaux<br/>
-	VF Consulting / MyLearningFactory<br/>
-	valery.fremaux@gmail.com<br/>
+    This version has been redrawn for Moodle Shared Resource system by:<br/>
+    Valery Fremaux<br/>
+    VF Consulting / MyLearningFactory<br/>
+    valery.fremaux@gmail.com<br/>
 </blockquote>
 </body>
 </html>

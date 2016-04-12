@@ -6,22 +6,22 @@
 }
 
 #side-pre-like{
-	background-color:#fAfAfA;
-	padding:20px;
+    background-color:#fAfAfA;
+    padding:20px;
 }
 
 #side-pre-like .block .header {
-	color:#fAfAfA;
+    color:#fAfAfA;
 }
 
 .resource-description{
-	font-weight:normal;
-	padding:5px;
-	margin:3px;
-	border-radius:5px;
-	border:1px solid #CFCFCF;
+    font-weight:normal;
+    padding:5px;
+    margin:3px;
+    border-radius:5px;
+    border:1px solid #CFCFCF;
 }
 
 .resourceitem .generalbox{
-	margin-left:15px;
+    margin-left:15px;
 }

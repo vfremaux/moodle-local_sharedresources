@@ -14,7 +14,7 @@
     $page = optional_param('p', 0, PARAM_INT);
     
     $data = $searchform->get_data();
-    if (!$page){
+    if (!$page) {
         if (empty($data)) 
             redirect($CFG->wwwroot."/local/sharedresources/search.php?id={$courseid}&amp;repo=lre");
             $query = clean_param($data->query, PARAM_TEXT);
@@ -35,13 +35,13 @@
     
     $displayquery = '<b>'.get_string('yousearched', 'local_sharedresources').':</b> '. $fullquery;
 
-    if (empty($page)){
+    if (empty($page)) {
         SQIEnd();    
         SQIInit();
         $page = 1;
     }
     
-    if ($page == 1){
+    if ($page == 1) {
         $xmlresults = SQIQuery($fullquery);
     } else {
         $xmlresults = SQIGetPage($page);
@@ -52,25 +52,25 @@
     $counter->results = SQIResultsCount();
     $resultcount = get_string('resultcount', 'lre', $counter, $stringlocationurl);
     
-    if ($maxpage >= 2){
+    if ($maxpage >= 2) {
         lre_print_paging($page, $maxpage, $courseid, $fullquery);
     }
 
     echo "<p><table width=\"100%\"><tr><td><span class=\"searched\">$displayquery</span></td><td align=\"right\">$resultcount</td></tr></table></p>";
     
-    if (!empty($xmlresults)){
-      // if (true){
+    if (!empty($xmlresults)) {
+      // if (true) {
       // $xmlresults = implode('', file($CFG->dirroot.'/x_tmp/lre_results.xml'));
         
         $hits = lre_parse_xml_results($xmlresults);
         
-        if (!empty($hits)){
+        if (!empty($hits)) {
 
-            foreach($hits as $hit){
+            foreach ($hits as $hit) {
                 lre_print_search_result($hit, $courseid, $page);
             }
             
-            if ($maxpage >= 2){
+            if ($maxpage >= 2) {
                 lre_print_paging($page, $maxpage, $courseid, $fullquery);
             }
             

@@ -7,28 +7,28 @@
 *
 */
 
-	require_once "../../config.php";
-	
-	require_once $CFG->dirroot.'/mod/sharedresource/lib.php';
-	
-	// protect this script from non-admins
-	require_capability('moodle/site:config', get_context_instance(CONTEXT_SYSTEM));
+    require_once "../../config.php";
+    
+    require_once $CFG->dirroot.'/mod/sharedresource/lib.php';
+    
+    // protect this script from non-admins
+    require_capability('moodle/site:config', context_system::instance());
 
-	echo "<pre>";	
-	mtrace("Setting keywords for all sharedresources...");
-	if ($resources = $DB->get_records('sharedresource_entry',array('' => ''))){	
-		foreach($resources as $entry){
-			if (!empty($entry->keywords)){
-				$plugins = sharedresource_get_plugins($entry->id); // hidden plugins are already discarded here
-				foreach($plugins as $plugin){
-					$plugin->setEntry($entry->id);
-					if (method_exists($plugin, 'setKeywords')){
-						mtrace("\tSetting keywords for entry {$entry->identifier} with {$entry->keywords}");
-						$plugin->setKeywords($entry->keywords);
-					}
-				}
-			}
-		}
-	}
-	mtrace("Done.");
-	echo "</pre>";	
+    echo "<pre>";    
+    mtrace("Setting keywords for all sharedresources...");
+    if ($resources = $DB->get_records('sharedresource_entry',array('' => ''))) {    
+        foreach ($resources as $entry) {
+            if (!empty($entry->keywords)) {
+                $plugins = sharedresource_get_plugins($entry->id); // hidden plugins are already discarded here
+                foreach ($plugins as $plugin) {
+                    $plugin->setEntry($entry->id);
+                    if (method_exists($plugin, 'setKeywords')) {
+                        mtrace("\tSetting keywords for entry {$entry->identifier} with {$entry->keywords}");
+                        $plugin->setKeywords($entry->keywords);
+                    }
+                }
+            }
+        }
+    }
+    mtrace("Done.");
+    echo "</pre>";    

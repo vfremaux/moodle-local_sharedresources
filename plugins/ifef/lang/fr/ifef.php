@@ -1,5 +1,0 @@
-<?php
-
-$string['reponame'] = 'Ifef';
-
-?>

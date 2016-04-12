@@ -16,58 +16,58 @@ $SQL['datestamp'] = 'timecreated';
 // all records
 // the useless condition id_column = id_column is just there to ease
 // further extensions to the query, please leave it as it is.
-function selectallQuery ($id = ''){
-	global $SQL;
+function selectallQuery ($id = '') {
+    global $SQL;
 
-	$query = 'SELECT * FROM '.$SQL['table'].' WHERE ';
-	if ($id == '') {
-		$query .= $SQL['id_column'].' = '.$SQL['id_column'];
-	}
-	else {
-		$query .= $SQL['identifier']." ='$id'";
-	}
-	return $query;
+    $query = 'SELECT * FROM '.$SQL['table'].' WHERE ';
+    if ($id == '') {
+        $query .= $SQL['id_column'].' = '.$SQL['id_column'];
+    }
+    else {
+        $query .= $SQL['identifier']." ='$id'";
+    }
+    return $query;
 }
 
 // this function will return identifier and datestamp for all records
-function idQuery ($id = ''){
-	global $SQL;
+function idQuery ($id = '') {
+    global $SQL;
 
-	if ($SQL['set'] != '') {
-		$query = 'select '.$SQL['identifier'].','.$SQL['datestamp'].','.$SQL['set'].' FROM '.$SQL['table'].' WHERE ';
-	} else {
-		$query = 'select '.$SQL['identifier'].','.$SQL['datestamp'].' FROM '.$SQL['table'].' WHERE ';
-	}
-	
-	if ($id == '') {
-		$query .= $SQL['id_column'].' = '.$SQL['id_column'];
-	}
-	else {
-		$query .= $SQL['identifier']." = '$id'";
-	}
+    if ($SQL['set'] != '') {
+        $query = 'select '.$SQL['identifier'].','.$SQL['datestamp'].','.$SQL['set'].' FROM '.$SQL['table'].' WHERE ';
+    } else {
+        $query = 'select '.$SQL['identifier'].','.$SQL['datestamp'].' FROM '.$SQL['table'].' WHERE ';
+    }
+    
+    if ($id == '') {
+        $query .= $SQL['id_column'].' = '.$SQL['id_column'];
+    }
+    else {
+        $query .= $SQL['identifier']." = '$id'";
+    }
 
-	return $query;
+    return $query;
 }
 
 // filter for until
 function untilQuery($until) {
-	global $SQL;
+    global $SQL;
 
-	return ' and '.$SQL['datestamp']." <= '$until'";
+    return ' and '.$SQL['datestamp']." <= '$until'";
 }
 
 // filter for from
-function fromQuery($from){
-	global $SQL;
+function fromQuery($from) {
+    global $SQL;
 
-	return ' and '.$SQL['datestamp']." >= '$from'";
+    return ' and '.$SQL['datestamp']." >= '$from'";
 }
 
 // filter for sets
-function setQuery($set){
-	global $SQL;
+function setQuery($set) {
+    global $SQL;
 
-	return ' and '.$SQL['set']." LIKE '%$set%'";
+    return ' and '.$SQL['set']." LIKE '%$set%'";
 }
 
 

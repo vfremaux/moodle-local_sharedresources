@@ -32,39 +32,39 @@
 global $DB;
 
 // parse and check arguments
-foreach($args as $key => $val) {
+foreach ($args as $key => $val) {
 
-	switch ($key) { 
-		case 'identifier':
-			$identifier = $val; 
-			if (!is_valid_uri($identifier)) {
-				$errors .= oai_error('badArgument', $key, $val);
-			}
-			break;
+    switch ($key) { 
+        case 'identifier':
+            $identifier = $val; 
+            if (!is_valid_uri($identifier)) {
+                $errors .= oai_error('badArgument', $key, $val);
+            }
+            break;
 
-		case 'metadataPrefix':
-			if (is_array($METADATAFORMATS[$val])
-					&& isset($METADATAFORMATS[$val]['myhandler'])) {
-				$metadataPrefix = $val;
-				$inc_record  = $METADATAFORMATS[$val]['myhandler'];
-			} else {
-				$errors .= oai_error('cannotDisseminateFormat', $key, $val);
-			}
-			break;
-			
+        case 'metadataPrefix':
+            if (is_array($METADATAFORMATS[$val])
+                    && isset($METADATAFORMATS[$val]['myhandler'])) {
+                $metadataPrefix = $val;
+                $inc_record  = $METADATAFORMATS[$val]['myhandler'];
+            } else {
+                $errors .= oai_error('cannotDisseminateFormat', $key, $val);
+            }
+            break;
+            
         case 'set':
             break;
 
-		default:
-			$errors .= oai_error('badArgument', $key, $val);
-	}
+        default:
+            $errors .= oai_error('badArgument', $key, $val);
+    }
 }
 
 if (!isset($args['identifier'])) {
-	$errors .= oai_error('missingArgument', 'identifier');
+    $errors .= oai_error('missingArgument', 'identifier');
 }
 if (!isset($args['metadataPrefix'])) {
-	$errors .= oai_error('missingArgument', 'metadataPrefix');
+    $errors .= oai_error('missingArgument', 'metadataPrefix');
 } 
 
 // choose a set or the default set
@@ -77,71 +77,71 @@ if (isset($args['set'])) {
 
 // remove the OAI part to get the identifier
 if (empty($errors)) {
-	$id = str_replace($oaiprefix, '', $identifier); 
-	if ($id == '') {
-		$errors .= oai_error('idDoesNotExist', '', $identifier);
-	}
+    $id = str_replace($oaiprefix, '', $identifier); 
+    if ($id == '') {
+        $errors .= oai_error('idDoesNotExist', '', $identifier);
+    }
 
-	$query = selectAllQuery($id); 
-	if (!$res = $DB->get_record_sql($query)){
-			$errors .= oai_error('idDoesNotExist', '', $identifier); 
-	}
+    $query = selectAllQuery($id); 
+    if (!$res = $DB->get_record_sql($query)) {
+            $errors .= oai_error('idDoesNotExist', '', $identifier); 
+    }
 
-	if (empty($res)) {
-		$errors .= oai_error('idDoesNotExist', '', $identifier); 
-	}
+    if (empty($res)) {
+        $errors .= oai_error('idDoesNotExist', '', $identifier); 
+    }
 }
 
 // break and clean up on error
 if ($errors != '') {
-	oai_exit();
+    oai_exit();
 }
 
 $output .= "  <GetRecord>\n";
 
 $num_rows = count($res);
 if ($num_rows) {
-	$record = (array)$res;
-	
-	$identifier = $oaiprefix.$record['oaiid'];
+    $record = (array)$res;
+    
+    $identifier = $oaiprefix.$record['oaiid'];
 
-	$datestamp = formatDatestamp($record['datestamp']); 
+    $datestamp = formatDatestamp($record['datestamp']); 
 
-	if (isset($record['deleted']) && ($record['deleted'] == 'true') && 
-		($deletedRecord == 'transient' || $deletedRecord == 'persistent')) {
-		$status_deleted = TRUE;
-	} else {
-		$status_deleted = FALSE;
-	}
+    if (isset($record['deleted']) && ($record['deleted'] == 'true') && 
+        ($deletedRecord == 'transient' || $deletedRecord == 'persistent')) {
+        $status_deleted = TRUE;
+    } else {
+        $status_deleted = FALSE;
+    }
 
 // print Header
-	$output .= 
+    $output .= 
 '  <record>'."\n";
-	$output .= 
+    $output .= 
 '  <header';
-	if ($status_deleted) {
-		$output .= ' status="deleted"';
-	}  
-	$output .='>'."\n";
+    if ($status_deleted) {
+        $output .= ' status="deleted"';
+    }  
+    $output .='>'."\n";
 
-	// use xmlrecord since we include stuff from database;
-	$output .= xmlrecord($identifier, 'identifier', '', 3);
-	$output .= xmlformat($datestamp, 'datestamp', '', 3);
-	if (!$status_deleted) 
-		$output .= xmlrecord($record['set'], 'setSpec', '', 3);
-	$output .= 
+    // use xmlrecord since we include stuff from database;
+    $output .= xmlrecord($identifier, 'identifier', '', 3);
+    $output .= xmlformat($datestamp, 'datestamp', '', 3);
+    if (!$status_deleted) 
+        $output .= xmlrecord($record['set'], 'setSpec', '', 3);
+    $output .= 
 '   </header>'."\n"; 
 
 // return the metadata record itself
-	if (!$status_deleted) 
-		include('oai2/'.$inc_record); 
+    if (!$status_deleted) 
+        include('oai2/'.$inc_record); 
 
-	$output .= 
+    $output .= 
 '  </record>'."\n"; 
 } 
 else {
-	// we should never get here
-	oai_error('idDoesNotExist');
+    // we should never get here
+    oai_error('idDoesNotExist');
 }
 
 // End GetRecord

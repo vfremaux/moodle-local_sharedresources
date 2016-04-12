@@ -8,7 +8,7 @@
 /**
 * Opens an SQI session and fills an SQI descriptor.
 */
-function SQIInit(){
+function SQIInit() {
     global $CFG, $SESSION;
     
     ini_set('soap.wsdl_cache_enabled', 0); // while debug
@@ -22,7 +22,7 @@ function SQIInit(){
         'use'      => SOAP_ENCODED
     );
 
-    if (!empty($CFG->proxyhost)){
+    if (!empty($CFG->proxyhost)) {
          $soapoptions['proxy_host']     = $CFG->proxyhost;
          $soapoptions['proxy_port']     = 0 + $CFG->proxyport;
          $soapoptions['proxy_login']    = $CFG->proxyuser;
@@ -35,7 +35,7 @@ function SQIInit(){
     $SESSION->SQI = new StdClass;
     $SESSION->SQI->resultSetSize = 8;
     $SESSION->SQI->sessionID = $sessionIDObject->createAnonymousSessionReturn;
-    if (!empty($SESSION->SQI->sessionID)){
+    if (!empty($SESSION->SQI->sessionID)) {
         
         $wsdl = $CFG->dirroot.'/resources/plugins/lre/wsdl/sqiTarget.wsdl';
 
@@ -47,7 +47,7 @@ function SQIInit(){
             'encoding'      => 'UTF-8'
         );
 
-        if (!empty($CFG->proxyhost)){
+        if (!empty($CFG->proxyhost)) {
              $soapoptions['proxy_host']     = $CFG->proxyhost;
              $soapoptions['proxy_port']     = 0 + $CFG->proxyport;
              $soapoptions['proxy_login']    = $CFG->proxyuser;
@@ -63,7 +63,7 @@ function SQIInit(){
         $p_resultSize = new SoapParam($SESSION->SQI->resultSetSize, 'resultsSetSize');
         $SESSION->SQI->client->setResultsSetSize($p_sessionID, $p_resultSize);
 
-        if(!empty($SESSION->SQI->client->__SOAP_Fault)){
+        if (!empty($SESSION->SQI->client->__SOAP_Fault)) {
             print_object($SESSION->SQI->client);
         }
     } else {
@@ -75,10 +75,10 @@ function SQIInit(){
 /**
 * terminates an open SQI session
 */
-function SQIEnd(){
+function SQIEnd() {
     global $CFG, $SESSION;
 
-    if (!empty($SESSION->SQI->sessionID)){
+    if (!empty($SESSION->SQI->sessionID)) {
         $wsdl = $CFG->dirroot.'/resources/plugins/lre/wsdl/sqiSessionManagement.wsdl';
         
         $soapoptions = array(
@@ -88,7 +88,7 @@ function SQIEnd(){
             'use'      => SOAP_ENCODED
         );
 
-        if (!empty($CFG->proxyhost)){
+        if (!empty($CFG->proxyhost)) {
              $soapoptions['proxy_host']     = $CFG->proxyhost;
              $soapoptions['proxy_port']     = 0 + $CFG->proxyport;
              $soapoptions['proxy_login']    = $CFG->proxyuser;
@@ -106,10 +106,10 @@ function SQIEnd(){
 /**
 *
 */
-function SQIQuery($query, $offset = 1){
+function SQIQuery($query, $offset = 1) {
     global $CFG, $SESSION;
     
-    if (is_null($SESSION->SQI)){
+    if (is_null($SESSION->SQI)) {
         error("SQI Not yet initialized. Run SQIInit first");
     }
     
@@ -125,10 +125,10 @@ function SQIQuery($query, $offset = 1){
 /**
 *
 */
-function SQIResultsCount(){
+function SQIResultsCount() {
     global $CFG, $SESSION;
     
-    if (is_null($SESSION->SQI)){
+    if (is_null($SESSION->SQI)) {
         error("SQI Not yet initialized. Run SQIInit first");
     }
     
@@ -147,10 +147,10 @@ function SQIResultsCount(){
 /**
 *
 */
-function SQIGetMaxPage(){
+function SQIGetMaxPage() {
     global $CFG, $SESSION;
     
-    if (is_null($SESSION->SQI)){
+    if (is_null($SESSION->SQI)) {
         error("SQI Not yet initialized. Run SQIInit first");
     }
     
@@ -169,14 +169,14 @@ function SQIGetMaxPage(){
 /**
 *
 */
-function SQIGetPage($page){
+function SQIGetPage($page) {
     global $CFG, $SESSION;
     
-    if (is_null($SESSION->SQI)){
+    if (is_null($SESSION->SQI)) {
         error("SQI Not yet initialized. Run SQIInit first");
     }
 
-    if (empty($SESSION->SQI->query)){
+    if (empty($SESSION->SQI->query)) {
         error("SQI Query not yet initialized. Run SQIQuery first");
     }
     
@@ -192,7 +192,7 @@ function SQIGetPage($page){
 /**
 * 
 */
-function SQIGetAgeRangeOptions(){
+function SQIGetAgeRangeOptions() {
     
     $age = array('0', '3', '5', '8', '10', '14', '16', '18');
          
@@ -204,12 +204,12 @@ function SQIGetAgeRangeOptions(){
 /**
 * 
 */
-function SQIGetLoLanguages(){
+function SQIGetLoLanguages() {
     global $CFG;
     
     $langkeys = array('de','en','hy','bg','ca','hr','da','es','et','fi','fr','el','hu','he','ga','is','it','lv','lt','mt','no','nl','pl','pt','ro','ru','sk','sl','sv','cs','uk');
     $options[''] = get_string('choose');
-    foreach($langkeys as $akey){
+    foreach ($langkeys as $akey) {
         $options[$akey] = get_string($akey, 'lre', '', $CFG->dirroot.'/resources/plugins/lre/lang/');
     }
     return $options;
@@ -218,7 +218,7 @@ function SQIGetLoLanguages(){
 /**
 * 
 */
-function SQIGetLearningResourceTypeOptions(){
+function SQIGetLearningResourceTypeOptions() {
     global $CFG;
     
     $lrtkeys = array('application',
@@ -255,7 +255,7 @@ function SQIGetLearningResourceTypeOptions(){
                 'other');
 
     $options[0] = get_string('choose');
-    foreach($lrtkeys as $akey){
+    foreach ($lrtkeys as $akey) {
         $options[$akey] = get_string($akey, 'lre', '', $CFG->dirroot.'/resources/plugins/lre/lang/');
     }
     return $options;

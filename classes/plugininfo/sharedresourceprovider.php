@@ -30,7 +30,9 @@ defined('MOODLE_INTERNAL') || die();
 class sharedresourceprovider extends base {
 
     public function is_uninstall_allowed() {
+        if ($this->is_standard()) {
+            return false;
+        }
         return true;
     }
-
 }

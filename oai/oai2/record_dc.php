@@ -69,7 +69,7 @@ $output .= xmlrecord(@$record['dc_rights'], 'dc:rights', '', $indent);
 $output .=           
 '     </'.$prefix;
 if (isset($METADATAFORMATS[$prefix]['record_prefix'])) {
-	$output .= ':'.$METADATAFORMATS[$prefix]['record_prefix'];
+    $output .= ':'.$METADATAFORMATS[$prefix]['record_prefix'];
 }
 $output .= ">\n";
 $output .= 

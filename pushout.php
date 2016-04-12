@@ -33,10 +33,10 @@
 
     $resourcesmoodlestr = get_string('resources', 'sharedresource');
 
-	$url = new moodle_url('/local/sharedresources/pushout.php?course='.$course);
-	$PAGE->set_url($url);
-	$PAGE->set_context($systemcontext);
-	$PAGE->set_pagelayout('standard');
+    $url = new moodle_url('/local/sharedresources/pushout.php?course='.$course);
+    $PAGE->set_url($url);
+    $PAGE->set_context($systemcontext);
+    $PAGE->set_pagelayout('standard');
     $PAGE->set_title($resourcesmoodlestr);
     $PAGE->set_heading($SITE->fullname);
     $PAGE->navbar->add(get_string('resourcesadministration', 'local_sharedresources'));
@@ -45,21 +45,21 @@
     // setup the dialog for pushing out
     $form = new PushOut_Form($resourceid);
     
-    if ($form->is_cancelled()){
+    if ($form->is_cancelled()) {
         redirect($CFG->wwwroot."/local/sharedresources/index.php?course=$course");
     }
     
-    if ($data = $form->get_data()){
+    if ($data = $form->get_data()) {
         // do the real thing !!
         $resourceentry = $DB->get_record('sharedresource_entry', array('id' => $resourceid));
         sharedresource_submit($data->provider, $resourceentry);
         redirect($CFG->wwwroot."/local/sharedresources/index.php?course=$course");
         die;
     } else {
-    	echo $OUTPUT->header();
-    	echo $OUTPUT->box_start('generalbox');
+        echo $OUTPUT->header();
+        echo $OUTPUT->box_start('generalbox');
         $form->display();
-    	echo $OUTPUT->box_end();
-    	echo $OUTPUT->footer();
+        echo $OUTPUT->box_end();
+        echo $OUTPUT->footer();
     }
     

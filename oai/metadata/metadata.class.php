@@ -41,7 +41,7 @@ class metadata {
      * should be used in a pair with end_metadata
      * includes manipulation of the prefix so there is not one for this tag
      */
-    public function start_metadata(){
+    public function start_metadata() {
         $oldprefix = $this->tr->get_prefix();
         $this->tr->set_prefix();
         $lom = $this->tr->start_tag('metadata');
@@ -157,11 +157,11 @@ class metadata {
             $lom .= $this->tr->full_tag('language',$this->course->language);
         }
 
-        if(!empty($this->course->summary)) {
+        if (!empty($this->course->summary)) {
             $lom .= $this->tr->lang_tag('description',array($this->course->language=>$this->course->summary));
         }
 
-        if(!empty($this->course->categoryname)) {
+        if (!empty($this->course->categoryname)) {
             $lom .= $this->tr->lang_tag('keyword',array($this->course->language=>$this->course->categoryname));
         }
 
@@ -194,7 +194,7 @@ class metadata {
         }
 
         if ($this->course->public) {
-            foreach($this->course->contributed as $name => $true) {
+            foreach ($this->course->contributed as $name => $true) {
                 $person = array("name" => $name);
                 $lom .= $this->build_contribute_tag('unknown', $person);
             }
@@ -268,7 +268,7 @@ class metadata {
 
         $lom .= $this->tr->full_tag('catalog', $this->course->catalog);
 
-        if ($this->type == 'imscp'){
+        if ($this->type == 'imscp') {
             $lom .= $this->tr->lang_tag('entry',array('' => $this->course->shortname));
         } else {
             $lom .= $this->tr->full_tag('entry', $this->course->shortname);
@@ -288,7 +288,7 @@ class metadata {
     }
 
     private function get_technical() {
-        //if($this->lommode=='LREv4.0') { return '';} // technical not used for LRE, leave in hope they won't mind!
+        //if ($this->lommode=='LREv4.0') { return '';} // technical not used for LRE, leave in hope they won't mind!
         global $CFG;
         $lom = $this->tr->start_tag('technical');
         $lom .= $this->tr->full_tag('format','text/html');
@@ -309,7 +309,7 @@ class metadata {
         $tlt_tag = 'typicalLearningTime';
         $tar_tag = 'typicalAgeRange';
         $d_tag = 'duration';
-        if($this->type == 'imscp') {
+        if ($this->type == 'imscp') {
             $lrt_tag = strtolower($lrt_tag);
             $it_tag = strtolower($it_tag);
             $il_tag = strtolower($il_tag);
@@ -324,7 +324,7 @@ class metadata {
         if ($this->type != "imscc") { // tag not supported in CC
             $lom .= $this->vocab_tag($it_tag,'mixed','interactivityTypeValues');
         }
-        if($this->type == 'imscc') {
+        if ($this->type == 'imscc') {
             $lom .= $this->vocab_tag($lrt_tag,'IMS Common Cartridge','learningResourceTypeValues');
         } else if ($this->type == 'scorm' || $this->type== 'oai') {
             $lom .= $this->vocab_tag($lrt_tag,'narrative text','LOMv1.0');
@@ -377,7 +377,7 @@ class metadata {
 
         // there are a few things that are different for the various LOM flavours
         $cror_tag   = 'copyrightAndOtherRestrictions';
-        if($this->type == 'imscp') {
+        if ($this->type == 'imscp') {
             $cror_tag   = strtolower('copyrightandotherrestrictions');
         }
 
@@ -400,8 +400,8 @@ class metadata {
         $lom = "";
         $kindvalues =  ($this->type == 'lre') ? 'LRE.kindValues' : 'KindValues';
 
-        if( $this->course->groupings) {
-            foreach( $this->course->groupings as $id => $relation ) {
+        if ( $this->course->groupings) {
+            foreach ( $this->course->groupings as $id => $relation ) {
 
                 $lom .= $this->tr->start_tag('relation');
 
@@ -414,7 +414,7 @@ class metadata {
                 $tag = ($this->type == 'imscp') ? 'catalogentry' : 'identifier';
                 $lom .= $this->tr->start_tag($tag);
                 $lom .= $this->tr->full_tag('catalog','URL');
-                if ($this->type=='imscp'){
+                if ($this->type=='imscp') {
                     $lom .= $this->tr->lang_tag('entry',array('x-t-url'=>$relation['url']));
                 } else {
                     $lom .= $this->tr->full_tag('entry',$relation['url']);
@@ -428,7 +428,7 @@ class metadata {
         }
 
         //  Write out the parent course relation
-        if(!empty($this->course->source)) {
+        if (!empty($this->course->source)) {
             $lom .= $this->tr->start_tag('relation');
 
             $lom .= $this->vocab_tag('kind','isbasedon',$kindvalues);
@@ -440,7 +440,7 @@ class metadata {
             $tag = ($this->type == 'imscp') ? 'catalogentry' : 'identifier';
             $lom .= $this->tr->start_tag($tag);
             $lom .= $this->tr->full_tag('catalog','Open University course');
-            if ($this->type=='imscp'){
+            if ($this->type=='imscp') {
                 $lom .= $this->tr->lang_tag('entry',array('en-gb'=>$this->course->source));
             } else {
                 $lom .= $this->tr->full_tag('entry',$this->course->source);
@@ -481,7 +481,7 @@ class metadata {
         $dc .= $this->tr->full_tag('publisher','The Open University');
 
         if ($this->course->public) {
-            foreach($this->course->contributed as $name => $true) {
+            foreach ($this->course->contributed as $name => $true) {
                 $dc.= $this->tr->full_tag('contributor',$name);
             }
         } else {
@@ -544,8 +544,8 @@ class metadata {
             $this->course->tags = coursetag_get_official_keywords($this->course->id, true);
             $groupings = block_ru_get_links( $this->course->id ); //  Load this courses related educational resourses
             // process course groupings to skip public contributed ones
-            if( $groupings) {
-                foreach( $groupings as $k => $grouping ) {
+            if ( $groupings) {
+                foreach ( $groupings as $k => $grouping ) {
                     switch( $k ) {
                         case 'ollinks':
                             $main_title = get_string( 'oltitle', 'block_related_units' );
@@ -558,14 +558,14 @@ class metadata {
                     switch( $k ) {
                         case 'ollinks':
                         case 'oulinks':
-                            foreach( $grouping as $key => $link ) {
+                            foreach ( $grouping as $key => $link ) {
                                 $this->course->groupings[$key]=$link;
                             }
                     }
                 }
             }
 
-            if(empty($this->course->source)) { // might come from oucontent module
+            if (empty($this->course->source)) { // might come from oucontent module
                 $this->course->source = oci_get_parent_course_from_xml( $this->course->id, $this->course->shortname);
             }
         }
@@ -598,12 +598,12 @@ class metadata {
             $this->course->contributed = array();
             $contributorrole   = get_records_list('role','shortname',"'uploader','revisioneditor'");
 
-            if( $contributorrole) {
-                $context = get_context_instance(CONTEXT_COURSE,$this->course->id);
-                foreach($contributorrole as $role) {
+            if ( $contributorrole) {
+                $context = context_course::instance($this->course->id);
+                foreach ($contributorrole as $role) {
                     $users = get_role_users($role->id,$context);
-                    if( !empty($users) ) {
-                        foreach( $users as $user ) {
+                    if ( !empty($users) ) {
+                        foreach ( $users as $user ) {
                             $this->course->contributed[$user->firstname.' '.$user->lastname] = 1;
                         }
                     }
@@ -639,7 +639,7 @@ class tag_renderer {
     private $prefix;
     private $langstring;
 
-    function __construct($p='',$indent = 0,$l='string'){
+    function __construct($p='',$indent = 0,$l='string') {
         $this->prefix = $p;
         if ($this->prefix && substr($this->prefix,strlen($this->prefix))!=":") {
             $this->prefix .= ':';
@@ -701,7 +701,7 @@ class tag_renderer {
      * @returns $string
      */
     public function full_tag($tag,$content,$attributes=null) {
-        if(empty($content)){
+        if (empty($content)) {
             $tag = $this->start_tag($tag,$attributes,false, true);
         }
         else{
