@@ -22,3 +22,6 @@ $plugin->component = 'local_sharedresources';
 $plugin->release = '2.7.0 (Build 2014032700)';
 $plugin->maturity = MATURITY_BETA;
 $plugin->dependencies = array('mod_sharedresource' => 2013032600);
+
+// Non moodle attributes
+$plugin->codeincrement = '2.7.0000';

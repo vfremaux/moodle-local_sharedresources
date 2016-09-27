@@ -28,8 +28,9 @@ if ($action == 'forcedelete' || $action == 'delete') {
         $module = $DB->get_record('modules', array('name' => 'sharedresource'));
 
         foreach ($sharedresources as $sharedresource) {
-            $cm = get_coursemodule_from_instance('sharedresource', $sharedresource->id);
-            course_delete_module($cm->id);
+            if ($cm = get_coursemodule_from_instance('sharedresource', $sharedresource->id)) {
+                course_delete_module($cm->id);
+            }
         }
     }
 }

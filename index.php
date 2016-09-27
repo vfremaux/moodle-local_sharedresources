@@ -15,6 +15,10 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * @package sharedresource
+ * @subpackage local_sharedresources
+ * @category local
+ *
  * This file provides access to a master shared resources index, intending
  * to allow a public browsing of resources.
  * The catalog is considered as multi-provider, and can federate all resources into
