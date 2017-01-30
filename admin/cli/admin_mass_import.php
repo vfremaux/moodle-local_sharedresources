@@ -1,4 +1,18 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
 * This script enables mass_importing of resources from the command line
@@ -10,7 +24,7 @@ define('CLI_SCRIPT', true);
 define('CACHE_DISABLE_ALL', true);
 
 require(dirname(dirname(dirname(dirname(dirname(__FILE__))))).'/config.php');
-require_once($CFG->libdir.'/clilib.php');         // cli only functions
+require_once($CFG->libdir.'/clilib.php');         // Cli only functions.
 require_once($CFG->libdir . '/adminlib.php');
 require_once($CFG->dirroot . '/mod/sharedresource/lib.php');
 require_once($CFG->dirroot . '/mod/sharedresource/locallib.php');
@@ -23,33 +37,28 @@ if (empty($CFG->pluginchoice)) {
 }
 
 $expectedoptions =     array(
-        'path'   => true,
-        'context'    => true,
-        'exclude'    => true,
-        'taxonomize' => false,
+        'path'                   => true,
+        'context'                => true,
+        'exclude'                => true,
+        'taxonomize'             => false,
         'makelabelswithguidance' => false,
-        'coursemoduletype' => true,
-        'autodeploy' => false,
-        'defaultmainfile' => true,
-        'test' => true,
-        'help' => false,
-        'config' => true,
+        'coursemoduletype'       => true,
+        'autodeploy'             => false,
+        'defaultmainfile'        => true,
+        'test'                   => true,
+        'help'                   => false,
+        'config'                 => true,
     );
 
-// now get cli options
+// Now get cli options.
 list($options, $unrecognized) = cli_get_params(
     $expectedoptions,
-    array(
-        'a' => 'autodeploy',
-        'm' => 'coursemoduletype',
-        'c' => 'config',
-        'h' => 'help',
-        'T' => 'taxonomize',
-        't' => 'test',
-    )
-);
-
-// $interactive = empty($options['non-interactive']);
+    array('a' => 'autodeploy',
+          'm' => 'coursemoduletype',
+          'c' => 'config',
+          'h' => 'help',
+          'T' => 'taxonomize',
+          't' => 'test'));
 
 if ($unrecognized) {
     $unrecognized = implode("\n  ", $unrecognized);
@@ -76,21 +85,25 @@ Options:
 
 Example:
 \$sudo -u www-data /usr/bin/php local/sharedresources/cli/mass_import.php
-"; //TODO: localize - to be translated later when everything is finished
+"; // TODO: localize - to be translated later when everything is finished.
 
     echo $help;
     die;
 }
 
-// Get all options from config file
+// Get all options from config file.
 if (!empty($options['config'])) {
     if (!file_exists($options['config'])) {
         cli_error(get_string('confignotfound', 'local_sharedresources'));
     }
     $content = file($options['config']);
     foreach ($content as $l) {
-        if (preg_match('/^\s+$/', $l)) continue; // empty lines
-        if (preg_match('/^[#\/!;]/', $l)) continue; // comments (any form)
+        if (preg_match('/^\s+$/', $l)) {
+            continue; // Empty lines.
+        }
+        if (preg_match('/^[#\/!;]/', $l)) {
+            continue; // Comments (any form).
+        }
         if (preg_match('/^(.*?)=(.*)$/', $l, $matches)) {
             if (in_array($matches[1], $expectedoptions)) {
                 $options[trim($matches[1])] = trim($matches[2]);
@@ -99,7 +112,7 @@ if (!empty($options['config'])) {
     }
 }
 
-/// Here all config should be there. Reencode some related to filesystem encoding
+// Here all config should be there. Reencode some related to filesystem encoding.
 $options['_path'] = $options['path'];
 if ($CFG->ostype == 'WINDOWS') {
     $options['_path'] = utf8_encode($options['path']);
@@ -130,21 +143,21 @@ if (empty($options['context'])) {
 
 $data = new StdClass();
 $data->importpath                 = $options['path'];
-$data->importexclusionpattern     = empty($options['exclude']) ? '' : $options['exclude'] ;
-$data->deducetaxonomyfrompath     = empty($options['taxonomize']) ? false : true ;
+$data->importexclusionpattern     = empty($options['exclude']) ? '' : $options['exclude'];
+$data->deducetaxonomyfrompath     = empty($options['taxonomize']) ? false : true;
 $data->context                     = $options['context'];
 
 echo "OS Type is : ".$CFG->ostype."\n";
 
-// process import
+// Process to import.
+
 $importlist = array();
 sharedresources_scan_importpath($data->importpath, $importlist, $METADATA, $data);
 $importlist = sharedresources_aggregate($importlist, $METADATA);
 if ($options['test'] == 'listonly') {
     print_object($importlist);
 } else {
-
-    // this passes some options to defines so we can catch them deeper in the implementation.
+    // This passes some options to defines so we can catch them deeper in the implementation.
     if ($options['test'] == 'simulate') {
         define('DO_NOT_WRITE', 1);
     }

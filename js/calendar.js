@@ -1,4 +1,7 @@
-// Set the initial date.
+/*
+ * Set the initial date.
+ */
+// jshint undef:false, unused:false
 var ds_i_date = new Date();
 ds_c_month = ds_i_date.getMonth() + 1;
 ds_c_year = ds_i_date.getFullYear();
