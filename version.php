@@ -26,12 +26,11 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version  = 2014032700;   // The (date) version of this plugin
-$plugin->requires = 2016051900;   // Requires this Moodle version
+$plugin->version  = 2014032700;   // The (date) version of this plugin.
+$plugin->requires = 2016051900;   // Requires this Moodle version.
 $plugin->component = 'local_sharedresources'; 
 $plugin->release = '3.1.0 (Build 2014032700)';
 $plugin->maturity = MATURITY_RC;
-$plugin->dependencies = array('mod_sharedresource' => 2013032600);
 
 // Non moodle attributes.
 $plugin->codeincrement = '3.1.0000';

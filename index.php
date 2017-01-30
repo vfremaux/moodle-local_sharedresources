@@ -48,8 +48,8 @@ $PAGE->requires->js('/local/sharedresources/js/search.js', true);
 
 $edit = optional_param('edit', -1, PARAM_BOOL);
 $blockaction = optional_param('blockaction', '', PARAM_ALPHA);
-$courseid = optional_param('course', SITEID, PARAM_INT); // optional course if we are comming from a course
-$section = optional_param('section', '', PARAM_INT); // optional course section if we are searhcing for feeding a section
+$courseid = optional_param('course', SITEID, PARAM_INT); // Optional course if we are comming from a course.
+$section = optional_param('section', '', PARAM_INT); // Optional course section if we are searhcing for feeding a section.
 $repo = optional_param('repo', 'local', PARAM_TEXT);
 $offset = optional_param('offset', 0, PARAM_INT);
 $action = optional_param('what', '', PARAM_TEXT);
@@ -71,7 +71,13 @@ $PAGE->navbar->add(get_string('sharedresources_library', 'local_sharedresources'
 $PAGE->set_title(get_string('sharedresources_library', 'local_sharedresources'));
 $PAGE->set_heading(get_string('sharedresources_library', 'local_sharedresources'));
 
-$PAGE->set_url('/local/sharedresources/index.php',array('edit' => $edit,'blockaction' => $blockaction,'course' => $courseid,'repo' => $repo,'offset' => $offset,'what' => $action));
+$params = array('edit' => $edit,
+                'blockaction' => $blockaction,
+                'course' => $courseid,
+                'repo' => $repo,
+                'offset' => $offset,
+                'what' => $action);
+$PAGE->set_url('/local/sharedresources/index.php', $params);
 
 $renderer = $PAGE->get_renderer('local_sharedresources');
 
