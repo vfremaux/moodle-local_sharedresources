@@ -14,6 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+defined('MOODLE_INTERNAL') || die();
+
 /**
  * @package    local_sharedresources
  * @category   local
@@ -23,24 +25,20 @@
  *
  * Provides libraries for resource generic access.
  */
-defined('MOODLE_INTERNAL') || die();
 
 /**
  * Implements an SQI querier
  */
 
-require_once($CFG->dirroot.'/local/sharedresources/plugin/lre/sqilib.php');
-require_once($CFG->dirroot.'/local/sharedresources/plugin/lre/form_remote_search.class.php');
+include_once($CFG->dirroot.'/local/sharedresources/plugin/lre/sqilib.php');
+include_once($CFG->dirroot.'/local/sharedresources/plugin/lre/form_remote_search.class.php');
 
 echo $OUTPUT->heading(get_string('lresearch', 'local_sharedresources'));
 echo $OUTPUT->box_start(true, 'emptyleftspace');
 
-$searchform = new Remote_Search_Form(new moodle_url('/local/sharedresources/results.php', array('id' => $courseid, 'repo' => $repo)));
+$searchform = new Remote_Search_Form($CFG->wwwroot."/local/sharedresources/results.php?id={$courseid}&repo={$repo}");
 
-echo '<table width="95%" style="position:relative;left:-60px">';
-echo '<tr>';
-echo '<td width="120"><img src="'.$OUTPUT->pix_url('lre', 'sharedresourceprovider_lre').'"/></td>';
-echo '<td width=\"70%\">';
+echo "<table width=\"95%\" style=\"position:relative;left:-60px\"><tr><td width=\"120\"><img src=\"$CFG->wwwroot/local/sharedresources/plugins/lre/pix/lre.jpg\"/></td><td width=\"70%\">";    
 $searchform->display();
 echo '</td></tr></table>';
 echo $OUTPUT->box_end('emptyleftspace');

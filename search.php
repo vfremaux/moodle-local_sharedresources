@@ -15,10 +15,10 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package     local_sharedresources
- * @category    local
- * @author      Valery Fremaux <valery@valeisti.fr>
- * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL
+ * @package    local_sharedresources
+ * @category   local
+ * @author Valery Fremaux <valery@valeisti.fr>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
  *
  * Provides a pluggable search form for several external resources repositories.
  * @see resources/results.php
@@ -56,11 +56,11 @@ $PAGE->set_url($url);
 
 echo $OUTPUT->header();
 
-// Get repos and make tabs.
+// get repos and make tabs
 
 resources_search_print_tabs($repo, $course);
 
-// Get repo and get search page.
+// get repo and get search page
 
 include($CFG->dirroot."/resources/plugins/{$repo}/remotesearch.php");
 

@@ -14,6 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+defined('MOODLE_INTERNAL') || die();
+
 /**
  * @package    local_sharedresources
  * @category   local
@@ -23,8 +25,6 @@
  *
  * Provides libraries for resource generic access.
  */
-defined('MOODLE_INTERNAL') || die();
-
 require_once($CFG->dirroot.'/mnet/xmlrpc/client.php');
 require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
 require_once($CFG->dirroot.'/mod/sharedresource/rpclib.php');
@@ -58,7 +58,7 @@ function get_local_resources($repo, &$fullresults, $metadatafilters = '', &$offs
     $mtdfiltersarr = (array)$metadatafilters;
     $sqlclauses = array();
     $hasfilter = false;
-    $tabresources = array(); // Array with keys = id of a resource and value = number of criteria matched in research.
+    $tabresources = array(); //array with keys = id of a resource and value = number of criteria matched in research
     foreach ($mtdfiltersarr as $filterkey => $filtervalue) {
         if (!empty($filtervalue)) {
             $entrysets = sharedresource_get_by_metadata($filterkey, $namespace = $plugin->pluginname, $what = 'entries', $filtervalue);
@@ -81,7 +81,7 @@ function get_local_resources($repo, &$fullresults, $metadatafilters = '', &$offs
     }
 
     $clauses[] = ($repo != 'all') ? " provider = '$repo' " : '';
-
+    
     if (!empty($clauses)) {
         $clause = 'WHERE '.implode(' AND ', $clauses);
     }
@@ -127,9 +127,9 @@ function get_local_resources($repo, &$fullresults, $metadatafilters = '', &$offs
  * makes a call to remote resource exposure service
  * for getting a resource list. Multimodal function that will
  * admit per category browsing or linear "per page" browsing.
- *
  * @uses $CFG
  * @param string $repo the repo identifier
+ * 
  */
 function get_remote_repo_resources($repo, &$fullresults, $metadatafilters = '', $offset = 0, $page = 20) {
     global $CFG, $USER, $DB;
@@ -138,17 +138,17 @@ function get_remote_repo_resources($repo, &$fullresults, $metadatafilters = '', 
 
     $remote_host = $DB->get_record('mnet_host', array('id' => $repo));
 
-    // Get the originating (ID provider) host info.
+    // get the originating (ID provider) host info
     if (!$remotepeer = new mnet_peer()) {
         print_error('errormnetpeer', 'local_sharedresources');
     }
     $remotepeer->set_wwwroot($remote_host->wwwroot);
 
-    // Set up the RPC request.
+    // set up the RPC request
     $mnetrequest = new mnet_xmlrpc_client();
     $mnetrequest->set_method('mod/sharedresource/rpclib.php/sharedresource_rpc_get_list');
 
-    // Set remoteuser and remoteuserhost parameters.
+    // set $remoteuser and $remoteuserhost parameters
     if (!empty($USER->username)) {
         $mnetrequest->add_param($USER->username, 'string');
         $remoteuserhost = $DB->get_record('mnet_host', array('id'=> $USER->mnethostid));
@@ -158,12 +158,12 @@ function get_remote_repo_resources($repo, &$fullresults, $metadatafilters = '', 
         $mnetrequest->add_param($CFG->wwwroot, 'string');
     }
 
-    // Set filters and offset ad page parameters.
+    // set $filters and $offset ad $page parameters
     $mnetrequest->add_param((array)$metadatafilters, 'struct');
     $mnetrequest->add_param($offset, 'int');
     $mnetrequest->add_param($page, 'int');
 
-    // Do RPC call and store response.
+    // Do RPC call and store response
     if ($mnetrequest->send($remotepeer) === true) {
         $res = json_decode($mnetrequest->response);
         if ($res->status == RPC_SUCCESS) {
@@ -184,14 +184,12 @@ function get_remote_repo_resources($repo, &$fullresults, $metadatafilters = '', 
 }
 
 /**
- *
- */
+*
+*/
 function update_resourcepage_icon() {
     global $CFG, $USER;
 
-    if (!isloggedin()) {
-        return '';
-    }
+    if (!isloggedin()) return '';
 
     if (!empty($USER->editing)) {
         $string = get_string('updateresourcepageoff', 'sharedresource');
@@ -211,9 +209,9 @@ function update_resourcepage_icon() {
 }
 
 /**
- * Resources providers are mnet_hosts for which we have a subscription to its provider
- * service
- */
+* Resources providers are mnet_hosts for which we have a subscription to its provider
+* service
+*/
 function get_providers() {
     global $CFG, $DB;
 
@@ -238,9 +236,9 @@ function get_providers() {
 }
 
 /**
- * Resources consumers are mnet_hosts for which we have a subscription to its consumer service API
- * service
- */
+* Resources consumers are mnet_hosts for which we have a subscription to its consumer service API
+* service
+*/
 function get_consumers() {
     global $CFG,$DB;
 
@@ -275,7 +273,7 @@ function get_consumers() {
  * @return a count for how many times the resource was used
  */
 function sharedresource_get_usages($entry, &$response, $consumers = null, $user = null) {
-    global $USER, $DB;
+    global $USER,$DB;
 
     if (is_null($user)) {
         $user = $USER;
@@ -288,26 +286,26 @@ function sharedresource_get_usages($entry, &$response, $consumers = null, $user 
         if ($consumers) {
             foreach ($consumers as $consumer) {
 
-                // Get the originating (ID provider) host info.
+                // get the originating (ID provider) host info
                 if (!$remotepeer = new mnet_peer()) {
                     $response['error'][] = "MNET client initialisation error";
                 }
                 $remotepeer->set_wwwroot($consumer->wwwroot);
 
-                // Set up the RPC request.
+                // set up the RPC request
                 $mnetrequest = new mnet_xmlrpc_client();
                 $mnetrequest->set_method('mod/sharedresource/rpclib.php/sharedresource_rpc_check');
 
-                // Set remoteuser and remoteuserhost parameters.
+                // set $remoteuser and $remoteuserhost parameters
                 $mnetrequest->add_param($user->username);
 
                 $remoteuserhost = $DB->get_record('mnet_host', array('id'=> $user->mnethostid));
                 $mnetrequest->add_param($remoteuserhost->wwwroot);
 
-                // Set category and resourceID parameter.
+                // set $category and $resourceID parameter
                 $mnetrequest->add_param($entry->identifier);
 
-                // Do RPC call and store response.
+                // Do RPC call and store response
                 if ($mnetrequest->send($remotepeer) === true) {
                     $uses += (int) json_decode($mnetrequest->response);
                 } else {
@@ -326,6 +324,7 @@ function sharedresource_get_usages($entry, &$response, $consumers = null, $user 
 
 /**
  * submits a resource to a remote provider
+ *
  */
 function sharedresource_submit($repo, $resourceentry) {
     global $CFG,$DB;
@@ -430,9 +429,9 @@ function resources_setup_widgets(&$visiblewidgets, $context) {
     $pluginname = $plugins[$CFG->pluginchoice]->pluginname;
     if (has_capability('repository/sharedresources:systemmetadata', $context)) {
         $capability = 'system';
-    } else if (has_capability('repository/sharedresources:indexermetadata', $context)) {
+    } elseif (has_capability('repository/sharedresources:indexermetadata', $context)) {
         $capability = 'indexer';
-    } else if (has_capability('repository/sharedresources:authormetadata', $context)) {
+    } elseif (has_capability('repository/sharedresources:authormetadata', $context)) {
         $capability = 'author';
     } else {
         error(get_string('noaccessform', 'sharedresource'));
@@ -487,7 +486,7 @@ function resources_get_string($identifier, $subplugin, $a = '', $lang = '') {
             debugging("English lang file must exist", DEBUG_DEVELOPER);
         }
 
-        // Override with lang file if exists.
+        // override with lang file if exists
         if (file_exists($CFG->dirroot.'/'.$subplugins[$type].'/'.$plug.'/lang/'.$lang.'/'.$subplugin.'.php')) {
             include($CFG->dirroot.'/'.$subplugins[$type].'/'.$plug.'/lang/'.$lang.'/'.$subplugin.'.php');
         } else {
@@ -518,7 +517,7 @@ function resources_get_string($identifier, $subplugin, $a = '', $lang = '') {
                 $result = str_replace('{$a}', (string)$a, $result);
             }
         }
-        // Debugging feature lets you display string identifier and component.
+        // Debugging feature lets you display string identifier and component
         if (!empty($CFG->debugstringids) && optional_param('strings', 0, PARAM_INT)) {
             $result .= ' {' . $identifier . '/' . $subplugin . '}';
         }
@@ -556,7 +555,7 @@ function sharedresource_is_media($resource) {
     if ($resource->file) {
         if ($resourcefile = $fs->get_file_by_id($resource->file)) {
 
-            if (preg_match('#^video/#', $resourcefile->get_mimetype())) {
+            if (preg_match('#^video/#', $resourcefile->mimetype)) {
                 return true;
             }
 
@@ -568,9 +567,10 @@ function sharedresource_is_media($resource) {
 
 /**
  * provides a mean to recognize sharedresource hides an LTI Tool definition
- * @param sharedresource $resource
+ *
  */
 function sharedresource_is_moodle_activity($resource) {
+    global $CFG;
 
     $fs = get_file_storage();
 
@@ -593,7 +593,7 @@ function sharedresource_get_top_keywords($courseid) {
 
     $contexts[] = 1;
 
-    // Get all categories on the way to root.
+    // get all categories on the way to root 
     if ($courseid > SITEID) {
         $catid = $DB->get_field('course', 'category', array('id' => $courseid));
         $cat = $DB->get_record('course_categories', array('id' => $catid));
@@ -651,28 +651,26 @@ function sharedresource_get_top_keywords($courseid) {
  * In all the code, $_ variable contain filesystem compatible encodings, other
  * are all UTF8 variable
  */
-function sharedresources_scan_importpath($upath, &$importlines, &$metadatadefines, &$data) {
+function sharedresources_scan_importpath($path, &$importlines, &$METADATA, &$data) {
     global $CFG;
 
     if ($CFG->ostype == 'WINDOWS') {
-        $path = utf8_decode($upath);
-        $importpath = utf8_decode($data->importpath);
+        $_path = utf8_decode($path);
+        $_importpath = utf8_decode($data->importpath);
     } else {
-        $path = $upath;
-        $importpath = $data->importpath;
+        $_path = $path;
+        $_importpath = $data->importpath;
     }
 
     if (file_exists($_path.'/metadata.csv')) {
-        $metadata = file($path.'/metadata.csv');
-        if (defined('CLI_SCRIPT')) {
-            mtrace("Found metadata file in $upath");
-        }
-        sharedresources_parse_metadata($metadata, $metadatadefines, $upath);
+        $metadata = file($_path.'/metadata.csv');
+        if (defined('CLI_SCRIPT')) mtrace("Found metadata file in $path");
+        sharedresources_parse_metadata($metadata, $METADATA, $path);
     }
 
     // Process an optional alias file for taxonomy tokens.
     $ALIASES = array();
-    if (file_exists($importpath.'/taxonomy_aliases.txt')) {
+    if (file_exists($_importpath.'/taxonomy_aliases.txt')) {
         $aliases = file($_importpath.'/taxonomy_aliases.txt');
         foreach ($aliases as $aliasline) {
             list($from, $to) = explode('=', chop($aliasline));
@@ -693,7 +691,7 @@ function sharedresources_scan_importpath($upath, &$importlines, &$metadatadefine
     $taxonparts = null;
     if (!empty($data->deducetaxonomyfrompath)) {
         // Get relative path.
-        $cleanedpath = str_replace($data->importpath, '', $upath);
+        $cleanedpath = str_replace($data->importpath, '', $path);
         if (!empty($cleanedpath)) {
             $cleanedpath = preg_replace('/^\//', '', $cleanedpath);
             // Split into parts.
@@ -702,82 +700,80 @@ function sharedresources_scan_importpath($upath, &$importlines, &$metadatadefine
         }
     }
 
-    $dir = opendir($path);
+    $DIR = opendir($_path);
 
-    if (!$dir) {
-        mtrace("Failed opening $upath");
+    if (!$DIR) {
+        mtrace("Failed opening $path");
         return;
     }
 
     if (defined('CLI_SCRIPT')) {
-        mtrace("Processing entries from $upath");
+        mtrace("Processing entries from $path");
     }
 
-    while ($entry = readdir($dir)) {
+    while ($_entry = readdir($DIR)) {
 
         if ($CFG->ostype == 'WINDOWS') {
-            /*
-             * $entry is read as ASCII from Windows file system. We need it so for accessing
-             * Windows filesystem but in UTF8 for all other purposes.
-             */
-            $uentry = utf8_encode($entry);
+            // $entry is read as ASCII from Windows file system. We need it so for accessing Windows filesystem but in UTF8 for all other purposes.
+            $entry = utf8_encode($_entry);
         } else {
-            $uentry = $entry;
+            $entry = $_entry;
         }
 
-        if (preg_match('/^\\./', $uentry)) {
+        if (preg_match('/^\\./', $entry)) {
             continue;
         }
-        if (preg_match('/(CVS|SVN)/', $uentry)) {
+        if (preg_match('/(CVS|SVN)/', $entry)) {
             continue;
         }
-        if (is_dir($path.'/'.$entry)) {
+        // if (!is_readable($path.'/'.$entry)) continue;
+        if (is_dir($_path.'/'.$_entry)) {
             if (defined('CLI_SCRIPT')) {
                 mtrace("Processing dir $path/$entry ");
             }
-            sharedresources_scan_importpath($upath.'/'.$entry, $importlines, $metadatadefines, $data);
+            sharedresources_scan_importpath($path.'/'.$entry, $importlines, $METADATA, $data);
         } else {
-            if (preg_match('/^__/', $uentry)) {
-                continue; // Skip any already processed file.
+            if (preg_match('/^__/', $entry)) {
+                continue; // Skip any already processed file
             }
-            if ($uentry == "metadata.csv") {
-                continue; // Skip any metadata add on.
+            if ($entry == "metadata.csv") {
+                continue; // Skip any metadata add on
             }
-            if ($uentry == "taxonomy_aliases.txt") {
-                continue; // Skip any taxonomy translator add on.
+            if ($entry == "taxonomy_aliases.txt") {
+                continue; // skip any taxonomy translator add on
             }
-            if ($uentry == "moodle_sharedlibrary_import.log") {
+            if ($entry == "moodle_sharedlibrary_import.log") {
                 continue;
             }
 
-            // If we have no metadata at all for this entry, we cannot process it.
-            if (empty($metadatadefines) || !array_key_exists($upath.'/'.$uentry, $metadatadefines)) {
+            // if we have no metadata at all for this entry, we cannot process it
+            if (empty($METADATA) || !array_key_exists($path.'/'.$entry, $METADATA)) {
                 continue;
             }
 
             if (!empty($excludepattern)) {
-                if (!preg_match('/'.$data->importexclusionpattern.'/', $uentry)) {
-                     $importlines[$metadatadefines[$upath.'/'.$uentry]['sortorder']] = $upath.'/'.$uentry;
+                if (!preg_match('/'.$data->importexclusionpattern.'/', $entry)) {
+                     $importlines[$METADATA[$path.'/'.$entry]['sortorder']] = $path.'/'.$entry;
                     if (defined('CLI_SCRIPT')) {
-                        mtrace("Prepare import ".$upath.'/'.$uentry);
+                        mtrace("Prepare import ".$path.'/'.$entry);
                     }
                 }
             } else {
-                $importlines[$metadatadefines[$upath.'/'.$uentry]['sortorder']] = $upath.'/'.$uentry;
+                $importlines[$METADATA[$path.'/'.$entry]['sortorder']] = $path.'/'.$entry;
                 if (defined('CLI_SCRIPT')) {
-                    mtrace("Prepare import ".$upath.'/'.$uentry);
+                    mtrace("Prepare import ".$path.'/'.$entry);
                 }
             }
-
+            
             // Add taxonomy to metadata from file path, or from a 'category' field in metadata.
             if (!empty($taxonparts)) {
-                $metadatadefines[$upath.'/'.$uentry]['taxonomy'] = implode(', ', $taxonparts);
-            } else if (!empty($metadatadefines[$upath.'/'.$uentry]['category'])) {
-                $metadatadefines[$upath.'/'.$uentry]['taxonomy'] = str_replace('\/', ', ', $metadatadefines[$upath.'/'.$uentry]['category']);
+                $METADATA[$path.'/'.$entry]['taxonomy'] = implode(', ', $taxonparts);
+            } elseif (!empty($METADATA[$path.'/'.$entry]['category'])) {
+                $METADATA[$path.'/'.$entry]['taxonomy'] = str_replace('\/', ', ', $METADATA[$path.'/'.$entry]['category']);
             }
         }
     }
-    closedir($dir);
+    closedir($DIR);
 }
 
 /**
@@ -785,10 +781,10 @@ function sharedresources_scan_importpath($upath, &$importlines, &$metadatadefine
  *
  *
  */
-function sharedresources_parse_metadata(&$metadata, &$metadatadefines, $path) {
-    static $sortorder = 0; // An absolute counter for ordering file in inputlist, based on metadata analysis.
+function sharedresources_parse_metadata(&$metadata, &$METADATA, $path) {
+    static $sortorder = 0; // An absolute counter for ordering file in inputlist, based on metadata analysis
 
-    $authorized = array('file', 'category', 'section', 'visible', 'title',
+    $AUTHORIZED = array('file', 'category', 'section', 'visible', 'title',
                         'shortname', 'description', 'keywords', 'language',
                         'authors', 'contributors', 'documenttype', 'documentnature',
                         'pedagogictype', 'difficulty', 'guidance');
@@ -800,7 +796,7 @@ function sharedresources_parse_metadata(&$metadata, &$metadatadefines, $path) {
 
     $header = explode(';', chop($hl));
     $linesize = count($header);
-
+    
     if ($header[0] != 'file') {
         echo "First field name must be file. This metadata file is malformed. Skipping all metadata.";
         return;
@@ -809,7 +805,7 @@ function sharedresources_parse_metadata(&$metadata, &$metadatadefines, $path) {
 
     $unauthorized = array();
     foreach ($header as $column) {
-        if (!in_array($column, $authorized)) {
+        if (!in_array($column, $AUTHORIZED)) {
             $unauthorized[] = $column;
         }
     }
@@ -829,12 +825,12 @@ function sharedresources_parse_metadata(&$metadata, &$metadatadefines, $path) {
         $line = explode(';', $l);
         $linecount = count($line);
         if ($linecount != $linesize) {
-            $state = ($linecount < $linesize) ? -1 : 1;
+            $state = ($linecount < $linesize) ? -1 : 1 ;
             echo "Bad count in $path at line ".($i + 1)." ($state): ignoring...<br/>\n$l\n";
             $i++;
             continue;
         }
-
+        
         $j = 0;
         $mtd = array();
         $mtd['sortorder'] = $sortorder++;
@@ -847,7 +843,7 @@ function sharedresources_parse_metadata(&$metadata, &$metadatadefines, $path) {
             $mtd[$header[$j]] = $field;
             $j++;
         }
-        $metadatadefines[$path.'/'.$filename] = $mtd;
+        $METADATA[$path.'/'.$filename] = $mtd;
         $i++;
     }
 }
@@ -859,18 +855,18 @@ function sharedresources_parse_metadata(&$metadata, &$metadatadefines, $path) {
 function sharedresources_reset_volume($data) {
     global $CFG;
 
-    $upath = $data->importpath;
+    $path = $data->importpath;
     if ($CFG->ostype == 'WINDOWS') {
-        $path = utf8_decode($upath);
+        $_path = utf8_decode($path);
     } else {
-        $path = $upath;
+        $_path = $path;
     }
 
-    if (file_exists($path.'/moodle_sharedlibrary_import.log')) {
-        unlink ($path.'/moodle_sharedlibrary_import.log');
+    if (file_exists($_path.'/moodle_sharedlibrary_import.log')) {
+        unlink ($_path.'/moodle_sharedlibrary_import.log');
     }
     $r = 0;
-    sharedresources_reset_volume_rec($upath, $r);
+    sharedresources_reset_volume_rec($path, $r);
 
     return get_string('reinitialized', 'local_sharedresources', $r);
 }
@@ -879,64 +875,65 @@ function sharedresources_reset_volume($data) {
  * In all the code, $_ variable contain filesystem compatible encodings, other
  * are all UTF8 variable
  */
-function sharedresources_reset_volume_rec($upath, &$r) {
+function sharedresources_reset_volume_rec($path, &$r) {
     global $CFG;
 
     if ($CFG->ostype == 'WINDOWS') {
-        $path = utf8_decode($upath);
+        $_path = utf8_decode($path);
     } else {
-        $path = $upath;
+        $_path = $path;
     }
 
-    if (!is_dir($path)) {
-        mtrace("Not existant dir $upath... skipping");
+    if (!is_dir($_path)) {
+        mtrace("Not existant dir $path... skipping");
         return;
     }
 
-    $dir = opendir($path);
-    while ($entry = readdir($dir)) {
-        if (preg_match('/^\\./', $entry)) {
+    $DIR = opendir($_path);
+    while ($_entry = readdir($DIR)) {
+        if (preg_match('/^\\./', $_entry)) {
             continue;
         }
-        if (preg_match('/(CVS|SVN)/', $entry)) {
+        if (preg_match('/(CVS|SVN)/', $_entry)) {
             continue;
         }
+        // if (!is_readable($path.'/'.$entry)) continue;
 
         if ($CFG->ostype == 'WINDOWS') {
-            $uentry = utf8_encode($entry);
+            $entry = utf8_encode($_entry);
         } else {
-            $uentry = $entry;
+            $entry = $_entry;
         }
 
-        if (is_dir($path.'/'.$entry)) {
-            sharedresources_reset_volume_rec($upath.'/'.$uentry, $r);
+        if (is_dir($_path.'/'.$_entry)) {
+            sharedresources_reset_volume_rec($path.'/'.$entry, $r);
         } else {
-            if (preg_match('/^__(.*)/', $entry, $matches)) {
-                $unmarked = $matches[1];
-                rename($path.'/'.$entry, $path.'/'.$unmarked);
+            if (preg_match('/^__(.*)/', $_entry, $matches)) {
+                $_unmarked = $matches[1];
+                rename($_path.'/'.$_entry, $_path.'/'.$_unmarked);
                 $r++;
             }
         }
     }
-    closedir($dir);
+    closedir($DIR);
 }
 
 /**
  * Renames an imported file so it would not be imported twice when
  * replaying an import.
  */
-function sharedresources_mark_file_imported($upath) {
+function sharedresources_mark_file_imported($path) {
     global $CFG;
 
     if ($CFG->ostype == 'WINDOWS') {
-        $path = utf8_decode($upath);
+        $_path = utf8_decode($path);
     } else {
-        $path = $upath;
+        $_path = $path;
     }
 
-    $parts = pathinfo($path);
-    $newname = $parts['dirname'].'/__'.$parts['basename'];
-    rename($path, $newname);
+    $_parts = pathinfo($_path);    
+    $_newname = $_parts['dirname'].'/__'.$_parts['basename'];
+    rename($_path, $_newname);
 }
 
 
@@ -946,12 +943,12 @@ function sharedresources_mark_file_imported($upath) {
  *
  * @param array $importlist The list of file physical paths to import
  */
-function sharedresources_aggregate($importlist, &$metadatadefines) {
+function sharedresources_aggregate($importlist, &$METADATA) {
     $aggregatedlist = array();
 
     foreach ($importlist as $entry) {
-        if (array_key_exists($entry, $metadatadefines)) {
-            $descriptor = $metadatadefines[$entry];
+        if (array_key_exists($entry, $METADATA)) {
+            $descriptor = $METADATA[$entry];
             $descriptor['fullpath'] = $entry;
         } else {
             $descriptor = array();
@@ -968,8 +965,7 @@ function sharedresources_aggregate($importlist, &$metadatadefines) {
 /**
 * checks if a user has a some named capability effective somewhere in a course.
 */
-function sharedresource_has_capability_somewhere($capability, $excludesystem = true, $excludesite = true,
-                                                 $fromcategorycontext = null, $doanything = false) {
+function sharedresource_has_capability_somewhere($capability, $excludesystem = true, $excludesite = true, $fromcategorycontext = null, $doanything = false) {
     global $USER;
 
     if (!$fromcategorycontext) {
@@ -988,9 +984,7 @@ function sharedresource_has_capability_somewhere($capability, $excludesystem = t
         }
     } else {
         // Return as soon as we can.
-        if (has_capability($capability, $fromcategorycontext)) {
-            return true;
-        }
+        if (has_capability($capability, $fromcategorycontext)) return true;
         if ($allsubcontexts = $DB->get_records_select('context', " path LIKE '{$fromcategorycontext->path}/%' ")) {
             foreach ($allsubcontexts as $sc) {
                 $c = context::create_instance_from_record($sc);

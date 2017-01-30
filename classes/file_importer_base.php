@@ -14,6 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+defined('MOODLE_INTERNAL') || die();
+
 /**
  * @package    local_sharedresources
  * @category   local
@@ -23,8 +25,6 @@
  *
  * an abstract class that represents a single file importer
  */
-defined('MOODLE_INTERNAL') || die();
-
 require_once $CFG->dirroot.'/mod/sharedresource/sharedresource_metadata.class.php';
 require_once $CFG->dirroot.'/mod/sharedresource/locallib.php';
 require_once $CFG->dirroot.'/course/lib.php';
@@ -34,23 +34,23 @@ class file_importer_base{
     /**
     * the file descriptor out from data collection. Descriptor is an array of properties
     */
-    protected $fd;
+    var $fd;
 
     /**
     * the created or matched sharedresource entry
     */
-    protected $sharedresourceentry;
+    var $sharedresourceentry;
 
-    protected $new;
+    var $new;
 
     /**
     * the final metadata entries
     */
-    protected $metadatadefines;
+    var $METADATA;
 
     static protected $mtdstandard;
 
-    protected $metadatakeymap = array('title' => '1_2:0_0', 
+    var $MTDKEYMAP = array('title' => '1_2:0_0', 
                            'language' => '1_3:0_0',
                            'description' => '1_4:0_0',
                            'documenttype' => '1_9:0_0',
@@ -60,12 +60,12 @@ class file_importer_base{
                            'guidance' => '5_10:0_0',
                           );
 
-    public function __construct($descriptor) {
+    function __construct($descriptor) {
         global $CFG;
 
         $this->fd = $descriptor;
         $this->sharedresourceentry = null;
-        $this->metadatadefines = array();
+        $this->METADATA = array();
         $this->new = true;
 
         $object = 'sharedresource_plugin_'.$CFG->pluginchoice;
@@ -79,13 +79,11 @@ class file_importer_base{
     * everything is in the descriptor
     * @param int $context the sharing context of the sharedresource
     */
-    public function make_resource_entry($context = 1) {
+    function make_resource_entry($context = 1) {
         global $CFG;
 
-        /*
-         * first we check we do not have this file yet. We must create a temporary file record for this
-         * this will allow us to access all the stored_file API for this file.
-         */
+        // first we check we do not have this file yet. We must create a temporary file record for this
+        // this will allow us to access all the stored_file API for this file.
         $systemcontext = context_system::instance();
         $filerecord = new StdClass();
         $filerecord->contextid = $systemcontext->id;
@@ -103,55 +101,46 @@ class file_importer_base{
 
         $fs = get_file_storage();
 
-        if (!$storedfile = $fs->get_file($filerecord->contextid, $filerecord->component, $filerecord->filearea,
-                                          $filerecord->itemid, $filerecord->filepath, $filerecord->filename)) {
+        if (!$stored_file = $fs->get_file($filerecord->contextid, $filerecord->component, $filerecord->filearea, $filerecord->itemid, $filerecord->filepath, $filerecord->filename)) {
             if (!defined('DO_NOT_WRITE')) {
                 if ($CFG->ostype == 'WINDOWS') {
-                    $storedfile = $fs->create_file_from_pathname($filerecord, utf8_decode(trim($this->fd['fullpath'])));
+                    $stored_file = $fs->create_file_from_pathname($filerecord, utf8_decode(trim($this->fd['fullpath'])));
                 } else {
-                    $storedfile = $fs->create_file_from_pathname($filerecord, trim($this->fd['fullpath']));
+                    $stored_file = $fs->create_file_from_pathname($filerecord, trim($this->fd['fullpath']));
                 }
             } else {
-                if (defined('CLI_SCRIPT')) {
-                    $message = "Test mode : File resource $filerecord->contextid, $filerecord->component, ";
-                    $message .= "$filerecord->filearea, $filerecord->itemid, $filerecord->filepath, $filerecord->filename created";
-                    mtrace($message);
-                }
+                if (defined('CLI_SCRIPT')) mtrace("Test mode : File resource $filerecord->contextid, $filerecord->component, $filerecord->filearea, $filerecord->itemid, $filerecord->filepath, $filerecord->filename created");
                 return;
             }
         }
 
-        // Now check we do not have it yet in the library? If we do, we load the library entry and we continue.
-        $newidentifier = $storedfile->get_contenthash();
+        // now check we do not have it yet in the library? If we do, we load the library entry and we continue.
+        $newidentifier = $stored_file->get_contenthash();
         if (!$this->sharedresourceentry = sharedresource_entry::get_by_identifier($newidentifier)) {
 
-            // If not in library...
+            // if not in library, 
             $sharedresourceentry = new StdClass();
             $sharedresourceentry->type = 'file';
-            /*
-             * is this a local resource or a remote one?
-             * if resource uploaded then move to temp area until user has
-             * saved the file
-             */
-            $sharedresourceentry->identifier = $storedfile->get_contenthash();
-            $sharedresourceentry->file = $storedfile->get_id();
+            // is this a local resource or a remote one?
+            // if resource uploaded then move to temp area until user has
+            //save the file 
+            $sharedresourceentry->identifier = $stored_file->get_contenthash();
+            $sharedresourceentry->file = $stored_file->get_id();
             $sharedresourceentry->identifier = $newidentifier;
             $sharedresourceentry->url = '';
             $sharedresourceentry->context = $context;
             $this->sharedresourceentry = new sharedresource_entry($sharedresourceentry);
-            $this->sharedresourceentry->storedfile = $storedfile;
+            $this->sharedresourceentry->storedfile = $stored_file;
 
-            // This is a default title (with a bit formatting) that can be overriden by explicit metadata.
+            // this is a default title (with a bit formatting) that can be overriden by explicit metadata 
             if (!array_key_exists('title', $this->fd)) {
-                $this->fd['title'] = str_replace('_', ' ', $storedfile->get_filename());
+                $this->fd['title'] = str_replace('_', ' ', $stored_file->get_filename());
             }
 
         } else {
             $this->new = false;
         }
-        if (defined('CLI_SCRIPT')) {
-            mtrace('Sharedresource entry prepared for '.$storedfile->get_filepath().'/'.$storedfile->get_filename());
-        }
+        if (defined('CLI_SCRIPT')) mtrace('Sharedresource entry prepared for '.$stored_file->get_filepath().'/'.$stored_file->get_filename());
     }
 
     /**
@@ -163,37 +152,35 @@ class file_importer_base{
      *
      * transformer 
      */
-    public function metadata_preprocess() {
+    function metadata_preprocess() {
         foreach ($this->fd as $inputkey => $inputvalue) {
             // we can defer all metadata preparation to an external handler.
             if (method_exists('file_importer_base', 'prepare_'.$inputkey)) {
                 $f = 'prepare_'.$inputkey;
                 $fd[$inputkey] = $this->$f($inputvalue);
             } else {
-                // Or we just transfer the value into metadata stub after keymapping to Dublin Core node identifier.
+                // or we just transfer the value into metadata stub after keymapping to Dublin Core node identifier.
                 if (array_key_exists($inputkey, $this->MTDKEYMAP)) {
                     $instancekey = $this->MTDKEYMAP[$inputkey];
                     list ($nodekey, $instance) = explode(':', $instancekey);
-                    // This adapts to really used metadata standard, whatever rich the metadata.csv file is.
+                    // this adapts to really used metadata standard, whatever rich the metadata.csv file is.
                     if (self::$mtdstandard->hasNode($nodekey)) {
-                        $this->metadatadefines[$instancekey] = $inputvalue;
+                        $this->METADATA[$instancekey] = $inputvalue;
                     }
                 }
             }
         }
     }
 
-    // Aggregates metadata along within sharedresource entry.
-    public function aggregate_metadata() {
+    // aggregates metadata along within sharedresource entry    
+    function aggregate_metadata() {
         global $CFG;
-
-        // We do not have correct sharedresource entry to attach metadata to.
-        if (empty($this->sharedresourceentry) && !defined('DO_NOT_WRITE')) {
-            return;
-        }
-
-        if (!empty($this->metadatadefines)) {
-            foreach ($this->metadatadefines as $node => $mtdentry) {
+        
+        // we do not have correct sharedresource entry to attach metadata to.
+        if (empty($this->sharedresourceentry) && !defined('DO_NOT_WRITE')) return;
+                
+        if (!empty($this->METADATA)) {
+            foreach ($this->METADATA as $node => $mtdentry) {
                 if (!defined('DO_NOT_WRITE')) {
                     $this->sharedresourceentry->add_element($node, $mtdentry, $CFG->pluginchoice);
                 } else {
@@ -202,8 +189,8 @@ class file_importer_base{
             }
         }
     }
-
-    public function save() {
+    
+    function save() {
         if (!defined('DO_NOT_WRITE')) {
             if ($this->new == true) {
                 $this->sharedresourceentry->add_instance();
@@ -217,14 +204,14 @@ class file_importer_base{
     }
 
     /**
-     * if a course is mentionned in file description in field course
-     * (based on course shortname), and an eventual section (field section) number is given,
-     * this will add a course module to the relevant section of the course, on this entry.
+     * if a course is mentionned in file description in field course 
+     * (based on course shortname), and an eventual section (field section) number is given, 
+     * this will add a course module to the relevant section of the course, on this entry. 
      * an optional field (coursemoduletype) let you decide if the attached module is a sharedresource
      * or a standard "file" resource (unshared, cloned)
      * this function DOES NOT HANDLE paged formats
      */
-    public function attach() {
+    function attach() {
         global $DB, $CFG;
 
         if (empty($this->fd['shortname'])) {
@@ -242,14 +229,12 @@ class file_importer_base{
         }
 
         if (defined('CLI_SCRIPT')) mtrace('attaching to '.$this->fd['shortname']);
-        $sectionnum = (!empty($this->fd['section'])) ? $this->fd['section'] : 0;
+        $sectionnum = (!empty($this->fd['section'])) ? $this->fd['section'] : 0 ;
 
-        $visible = (isset($this->fd['visible'])) ? $this->fd['visible'] : 1;
+        $visible = (isset($this->fd['visible'])) ? $this->fd['visible'] : 1 ;
 
-        /*
-         * if we ever have collected pedagogic description as a guidance, and we want to make
-         * automatically labels from them...
-         */
+        // if eve we have collected pédagogic description as a guidance, and we want to make
+        // automatically labels from them...
         $guidance = $this->sharedresourceentry->element('5_10:0_0', $CFG->pluginchoice);
         if (defined('MAKE_LABELS_FROM_GUIDANCE') && $guidance) {
             $this->add_label_to_section($guidance, $course, $sectionnum, $visible);
@@ -265,7 +250,7 @@ class file_importer_base{
         $instance->alltext = '';
         $instance->id = $instance->add_instance();
 
-        // Make a new course module for the initial sharedresource instanceid.
+        // make a new course module for the initial sharedresource instanceid
         $module = $DB->get_record('modules', array('name'=> 'sharedresource'));
         $cm = new StdClass;
         $cm->instance = $instance->id;
@@ -273,16 +258,15 @@ class file_importer_base{
         $cm->course = $course->id;
         $cm->visible = $visible;
         $cm->visibleold = $visible;
-        $cm->section = 1;
-        // This is fake ! will be postfed after reals section number is known.
+        $cm->section = 1; // this is fake ! will be postfed after reals section number is known
 
-        // Remoteid may be obtained by $sharedresource_entry->add_instance() plugin hooking !!
-        // Valid also if LTI tool.
+        /// remoteid may be obtained by $sharedresource_entry->add_instance() plugin hooking !! ;
+        // valid also if LTI tool
         if (!empty($this->sharedresourceentry->remoteid)) {
             $cm->idnumber = $this->sharedresourceentry->remoteid;
         }
 
-        // Insert the course module in course.
+        // insert the course module in course
         if (!$cm->id = add_course_module($cm)) {
             print_error('errorcmaddition', 'sharedresource');
         }
@@ -293,36 +277,34 @@ class file_importer_base{
 
         $context = context_module::instance($cm->id);
 
-        // Now we have the real value for the $cm->section.
+        // now we have the real value for the $cm->section    
         if (!$DB->set_field('course_modules', 'section', $sectionid, array('id' => $cm->id))) {
             print_error('errorcmsectionbinding', 'sharedresource');
         }
 
-        // We can post process a resource conversion when everything is clear.
+        // we can post process a resource conversion when everything is clear
         if ((!empty($this->fd->coursemoduletype) && $this->fd->coursemoduletype == 'resource') || defined('CONVERT_TO_RESOURCE')) {
-            if (defined('CLI_SCRIPT')) {
-                mtrace("Converting to legacy resource");
-            }
+            if (defined('CLI_SCRIPT')) mtrace("Converting to legacy resource");
             $instanceid = sharedresource_convertfrom($instance, false);
 
-            // We can autodeploy zips if required.
+            // We can autodeploy zips if required
             if (defined('AUTO_DEPLOY') && preg_match('/\.zip$/', $this->fd['file'])) {
                 $this->deploy($cm);
             }
         }
 
-        // Reset the course modinfo cache for rebuilding it all.
+        // reset the course modinfo cache for rebuilding it all
         $course->modinfo = null;
         $DB->update_record('course', $course);
     }
 
     /**
      * makes a label course module and add it to section
-     * @param string $guidance a guidance text
+     * @param string $guidance a guidance text 
      * @param int $courseid The course ID
      * @param int $sectionnum relative section number in course
      */
-    public function add_label_to_section($guidance, $course, $sectionnum, $visible = 1) {
+    function add_label_to_section($guidance, $course, $sectionnum, $visible = 1) {
         global $DB;
 
         $instance = new StdClass;
@@ -334,7 +316,7 @@ class file_importer_base{
 
         $instance->id = $DB->insert_record('label', $instance);
 
-        // Make a new course module.
+        // make a new course module
         $module = $DB->get_record('modules', array('name' => 'label'));
         $cm = new StdClass;
         $cm->instance = $instance->id;
@@ -343,12 +325,12 @@ class file_importer_base{
         $cm->course = $course->id;
         $cm->section = 1;
 
-        // Insert the course module in course.
+        // insert the course module in course
         if (!$cm->id = add_course_module($cm)) {
             print_error('errorcmaddition', 'sharedresource');
         }
 
-        // Reset the course modinfo cache.
+        // reset the course modinfo cache
         $DB->set_field('course', 'modinfo', '', array('id' => $course->id));
 
         if (!$sectionid = course_add_cm_to_section($course, $cm->id, $sectionnum)) {
@@ -366,20 +348,19 @@ class file_importer_base{
      * this function should be overriden by more specific format dedicated
      * subclass if any metdata can be guessed from the file content itself
      */
-    public function get_metadata_from_file() {
-        return;
+    function get_metadata_from_file() {
     }
 
-    /* * static handlers for metadata inputs * */
+    /** static handlers for metadata inputs **/
 
-    // From a list of keywords, build a set of metadata nodes.
-    public function prepare_keywords($keywords) {
+    // from a list of keywords, build a set of metadata nodes
+    function prepare_keywords($keywords) {
         $kws = explode(',', $keywords);
         $kwfield = self::$mtdstandard->getKeywordElement();
         $i = 0;
         foreach ($kws as $kw) {
             $kw = trim($kw);
-            $this->metadatadefines[$kwfield->name.':0_'.$i] = $kw;
+            $this->METADATA[$kwfield->name.':0_'.$i] = $kw;
             $i++;
         }
     }
@@ -388,11 +369,11 @@ class file_importer_base{
      * real wrappers from the CSV file format
      * add both in sharedresource record AND metadata
      */
-    public function prepare_description($description) {
+    function prepare_description($description) {
         $descfield = self::$mtdstandard->getDescriptionElement();
-        $this->metadatadefines[$descfield->name.':0_0'] = $description;
+        $this->METADATA[$descfield->name.':0_0'] = $description;
         if (!defined('DO_NOT_WRITE')) {
-            $this->sharedresourceentry->description = $description; // We must simulate htmleditor return.
+            $this->sharedresourceentry->description = $description; // we must simulate htmleditor return
         }
     }
 
@@ -400,9 +381,9 @@ class file_importer_base{
      * real wrappers from the CSV file format
      * add both in sharedresource record AND metadata
      */
-    public function prepare_title($title) {
+    function prepare_title($title) {
         $titlefield = self::$mtdstandard->getTitleElement();
-        $this->metadatadefines[$titlefield->name.':0_0'] = $title;
+        $this->METADATA[$titlefield->name.':0_0'] = $title;
         if (!defined('DO_NOT_WRITE')) {
             $this->sharedresourceentry->title = $title;
         }
@@ -411,14 +392,14 @@ class file_importer_base{
     /**
      * real wrappers from the CSV file format
      */
-    public function prepare_authors($authors) {
+    function prepare_authors($authors) {
         $this->prepare_person($authors, 'author');
     }
 
-    /**
+    /** 
      * real wrappers from the CSV file format
      */
-    public function prepare_contributors($authors) {
+    function prepare_contributors($authors) {
         $this->prepare_person($authors, 'contributor');
     }
 
@@ -442,49 +423,45 @@ class file_importer_base{
                 $person = $auth;
             }
 
-            // Prepare date format.
+            // prepare date format
             if (isset($date)) {
                 $date = self::format_date($date);
             } else {
                 $date = self::format_date(date('Y-m-d'));
             }
 
-            // Make vcard.
+            // make vcard
             $vcard = self::build_vcard($person);
 
-            // Create role node.
-            $this->metadatadefines["2_3_1:0_{$i}_0"] = $role;
+            // create role node
+            $this->METADATA["2_3_1:0_{$i}_0"] = $role;
 
-            // Create entity subnodes.
-            $this->metadatadefines["2_3_2:0_{$i}_0"] = $vcard;
+            // create entity subnodes
+            $this->METADATA["2_3_2:0_{$i}_0"] = $vcard;
 
-            // Create date subnodes.
-            $this->metadatadefines["2_3_3:0_{$i}_0"] = $date;
+            // create date subnodes
+            $this->METADATA["2_3_3:0_{$i}_0"] = $date;
             $i++;
         }
     }
 
-    /**
-     * Taxonomy must be processed in two steps :
+    /** 
+     * Taxonomy must be processed in two steps : 
      * 1 - The taxonomy reference must be fed with taxonomy entries
      * 2 - Some metadata entries must be prepared for the imported resource
      * this is done accordingly to what has been configured in classifarray in shared resource site configuration
      */
-    public function prepare_taxonomy($taxons) {
+    function prepare_taxonomy($taxons) {
         global $CFG, $DB;
 
-        $classifconfig = unserialize(get_config(null, 'classifarray'));
+        $classifconfig = unserialize(get_config(NULL, 'classifarray'));
 
-        if (empty($classifconfig)) {
-            return;
-        }
+        if (empty($classifconfig)) return;
 
-        // First ensure taxonomy items are in taxonomy table.
+        // first ensure taxonomy items are in taxonomy table 
 
-        /*
-         * TODO : Change to a purpose driven classifarray storage
-         * in the future, we should define one classification definition per purpose
-         */
+        // TODO : Change to a purpose driven classifarray storage 
+        // in the future, we should define one classification definition per purpose
         $classifkeys = array_keys($classifconfig);
         $table = array_shift($classifkeys);
         $classif = array_shift($classifconfig);
@@ -512,16 +489,14 @@ class file_importer_base{
                 $parent = $records[$i - 1]->id;
             }
 
-            $params = array('purpose' => $defaultpurpose, $parentfield => $parent);
-            $maxorderingvalue = $DB->get_record($table, $params, "id, MAX({$orderingfield})");
+            $maxorderingvalue = $DB->get_record($table, array('purpose' => $defaultpurpose, $parentfield => $parent), "id, MAX({$orderingfield})");
             if ($maxorderingvalue === false) {
                 $orderingvalue = ++$maxorderingvalue;
             } else {
                 $orderingvalue = $minordering;
             }
 
-            $params = array($labelfield => $taxonarr[$i], $parentfield => $parent, 'purpose' => $defaultpurpose);
-            if (!$taxon = $DB->get_record($table, $params)) {
+            if (!$taxon = $DB->get_record($table, array($labelfield => $taxonarr[$i], $parentfield => $parent, 'purpose' => $defaultpurpose))) {
                 $taxon = new StdClass();
                 $taxon->$labelfield = $taxonarr[$i];
                 $taxon->purpose = $defaultpurpose;
@@ -540,31 +515,29 @@ class file_importer_base{
             $hastaxonomy = true;
         }
 
-        // Pursue preparing metadata binding : $records[$i] is the last taxon in the path.
+        // pursue preparing metadata binding : $records[$i] is the last taxon in the path
         if ($hastaxonomy) {
 
             $i = 0;
-            // Check if not already available instances in the original sharedresource.
+            // check if not already available instances in the original sharedresource
             if (!$this->new) {
-                $select = " entry_id = ? AND element LIKE '9_2_1:%' ";
-                $params = array($this->sharedresourceentry->id);
-                if ($allrecs = $DB->get_records_select('sharedresource_metadata', $select, $params, 'id,element')) {
+                if ($allrecs = $DB->get_records_select('sharedresource_metadata', " entry_id = ? AND element LIKE '9_2_1:%' ", array($this->sharedresourceentry->id), 'id,element')) {
                     $elementixs = array();
                     foreach ($allrecs as $r) {
-                        $elementixs[] = str_replace('9_2_1:0_0_', '', $r->element);
+                        $elementixs[] = str_replace('9_2_1:0_0_', '', $r->element);                        
                     }
                     $i = max($elementixs);
                     $i++;
                 }
             }
 
-            $this->metadatadefines["9_2_1:0_0_{$i}"] = $defaultpurpose;
-            $this->metadatadefines["9_2_1_1:0_0_{$i}_0"] = $taxon->id;
-            $this->metadatadefines["9_2_1_2:0_0_{$i}_0"] = $taxon->$labelfield;
+            $this->METADATA["9_2_1:0_0_{$i}"] = $defaultpurpose;
+            $this->METADATA["9_2_1_1:0_0_{$i}_0"] = $taxon->id;
+            $this->METADATA["9_2_1_2:0_0_{$i}_0"] = $taxon->$labelfield;
         }
     }
 
-    public static function build_vcard($person) {
+    static function build_vcard($person) {
 
         $person = trim($person);
         if (preg_match('/(\S+)\s+(.*)/', $person, $matches)) {
@@ -590,25 +563,28 @@ class file_importer_base{
 
     /**
      * a date format wrapper from csv file to metadata standard formats
+     *
      */
-    public static function format_date($date) {
+    static function format_date($date) {
 
         if (preg_match('/(\d{2})\/(\d{2})\/(\d{4})/', $date, $matches)) {
             $y = $matches[3];
             $m = $matches[2];
             $d = $matches[1];
             return "$y-$m-$d";
-        } else if (preg_match('/(\d{4})-(\d{2})-(\d{2})/', $date, $matches)) {
+        }
+
+        elseif (preg_match('/(\d{4})-(\d{2})-(\d{2})/', $date, $matches)) {
             return $date;
         }
     }
 
     /**
-     * given a resorce instance id containing a single zip file,
+     * given a resorce instance id containing a single zip file, 
      * @param int $resourceid
      * @param object $cm
      */
-    public function deploy($cm) {
+    function deploy($cm) {
         global $DB, $CFG;
 
         $context = context_module::instance($cm->id);
@@ -618,35 +594,28 @@ class file_importer_base{
         $areafiles = $fs->get_area_files($context->id, 'mod_resource', 'content', 0);
 
         if (empty($areafiles)) {
-            if (defined('CLI_SCRIPT')) {
-                mtrace("\tDeploy : Skipping as no files in area");
-            }
+            if (defined('CLI_SCRIPT')) mtrace("\tDeploy : Skipping as no files in area");
             return;
         }
 
         $archivefile = array_pop($areafiles);
 
-        include_once($CFG->libdir.'/filestorage/zip_packer.php');
+        include_once $CFG->libdir.'/filestorage/zip_packer.php';
         $packer = new zip_packer();
-        if (defined('CLI_SCRIPT')) {
-            mtrace("\nExtracting archive...\n");
-        }
+        if (defined('CLI_SCRIPT')) mtrace("\nExtracting archive...\n");
         $packer->extract_to_storage($archivefile, $context->id, 'mod_resource', 'content', 0, '/');
 
-        // Pointing to some special file.
+        // pointing to some special file
 
         if (empty($this->fd['mainfile'])) {
 
             if (defined('DEFAULT_MAIN_FILES')) {
                 $mainfiles = explode(',', DEFAULT_MAIN_FILES);
-                list($filepath, $filename) = $this->find_main_file($archivefile, $mainfiles, $context->id,
-                                                                   'mod_resource', 'content', 0, '/');
+                list($filepath, $filename) = $this->find_main_file($archivefile, $mainfiles, $context->id, 'mod_resource', 'content', 0, '/');
             }
 
             if (is_null($filename)) {
-                if (defined('CLI_SCRIPT')) {
-                    mtrace("\tDeploy : Skipping as no main file in descriptor or no default file found\n");
-                }
+                if (defined('CLI_SCRIPT')) mtrace("\tDeploy : Skipping as no main file in descriptor or no default file found\n");
                 return;
             }
         }
@@ -657,13 +626,13 @@ class file_importer_base{
             $filename = pathinfo($this->fd['mainfile'], PATHINFO_BASENAME);
         }
 
-        // Reset sort order.
+        // reset sort order
         file_reset_sortorder($context->id, 'mod_resource', 'content', 0);
-        // Set main file.
+        // set main file
         $return = file_set_sortorder($context->id, 'mod_resource', 'content', 0, $filepath, $filename, 1);
     }
 
-    public function pre_process_file($realpath) {
+    function pre_process_file($realpath) {
         global $CFG;
 
         if ($CFG->ostype == 'WINDOWS') {
@@ -674,20 +643,20 @@ class file_importer_base{
             $filestream = implode('', file($realpath));
             if (preg_match('/charset=iso-.*/', $filestream)) {
                 $this->filter_to_utf8($filestream);
-                if ($file = fopen($realpath, 'w')) {
-                    fputs($file, $filestream);
-                    fclose($file);
+                if ($FILE = fopen($realpath, 'w')) {
+                    fputs($FILE, $filestream);
+                    fclose($FILE);
                 }
             }
         }
     }
 
-    public function filter_to_utf8(&$content) {
+    function filter_to_utf8(&$content) {
         $content = utf8_encode($content);
         $content = preg_replace('/charset=iso-.*"/', 'charset=utf-8"', $content);
     }
 
-    public function find_main_file($archivefile, $mainfiles, $contextid, $component, $filearea, $itemid, $path) {
+    function find_main_file($archivefile, $mainfiles, $contextid, $component, $filearea, $itemid, $path) {
 
         $fs = get_file_storage();
 
@@ -695,18 +664,15 @@ class file_importer_base{
         $archivefilename = pathinfo($archivefile->get_filename(), PATHINFO_FILENAME);
 
         foreach ($mainfiles as $guessname) {
-            // This is for something as %FILENAME%.htm pattern f.e.
-            $guessname = str_replace('%FILENAME%', $archivefilename, $guessname);
+            $guessname = str_replace('%FILENAME%', $archivefilename, $guessname); // This is for something as %FILENAME%.htm pattern f.e.
             mtrace("Searching for ... $guessname\n");
-
+            
             $allarea = $fs->get_area_tree($contextid, $component, $filearea, $itemid);
             $candidate = $this->_file_search_rec($allarea, $guessname);
-            if ($candidate) {
-                return array($candidate->get_filepath(), $candidate->get_filename()); // First positive result traps.
-            }
+            if ($candidate) return array($candidate->get_filepath(), $candidate->get_filename()); // first positive result traps
         }
 
-        return array(null, null);
+        return array(null,null);
     }
 
     protected function _file_search_rec($dirstruct, $guessname) {
@@ -719,14 +685,14 @@ class file_importer_base{
                 }
             }
         }
-        // If not found in immediate files, search deeper in directories.
+        // if not found in immediate files, search deeper in directories
         if (!empty($dirstruct['subdirs'])) {
             foreach ($dirstruct['subdirs'] as $dirname => $d) {
                 $ret = $this->_file_search_rec($d, $guessname);
-                if ($ret) return $ret; // Trap positive result or continue.
+                if ($ret) return $ret; // trap positive result or continue
             }
         }
-        // If nothing found.
+        // if nothing found
         return null;
     }
 }

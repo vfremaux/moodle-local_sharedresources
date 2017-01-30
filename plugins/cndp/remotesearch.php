@@ -14,9 +14,11 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * include wrapper for /mod/cndpindexing
- */
 defined('MOODLE_INTERNAL') || die();
 
-include($CFG->dirroot.'/mod/cndpindexing/remotesearch.php');
+/**
+* include wrapper for /mod/cndpindexing
+*
+*/
+
+include $CFG->dirroot.'/mod/cndpindexing/remotesearch.php';

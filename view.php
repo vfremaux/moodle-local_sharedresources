@@ -15,15 +15,16 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package     local_sharedresources
- * @category    local
- * @author      Valery Fremaux <valery.fremaux@club-internet.fr>
- * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL
- * @copyright   (C) 1999 onwards Martin Dougiamas  http://dougiamas.com
+ *
+ * @package    local_sharedresources
+ * @category   local
+ * @author Valery Fremaux <valery.fremaux@club-internet.fr>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
+ * @copyright  (C) 1999 onwards Martin Dougiamas  http://dougiamas.com
  *
  * This file allows acceding to resources in a platform instance independant way.
  * The user will only need to present a local id (internal resource id) or remote id
- *
+ * 
  * The resource access layer is for use with mod/taoresource resource plugin.
  */
 require('../../config.php');
@@ -71,7 +72,7 @@ if (!$resource = $DB->get_record('sharedresource_entry', array($idfield => $idva
     print_error('errorinvalidresource', 'local_sharedresource');
 }
 
-// Is resource valid for public delivery ?
+// is resource valid for public delivery ?
 if (!$resource->isvalid) {
     if (!$isloggedin) {
         require_login();
@@ -79,7 +80,7 @@ if (!$resource->isvalid) {
     }
 }
 
-// Is resource shared in lower context ?
+// is resource shared in lower context ?
 if ($resource->context > 1) {
     $context = $DB->get_record('context', array('id' => $resource->context));
     if (!$isloggedin) {
@@ -90,12 +91,12 @@ if ($resource->context > 1) {
     }
 }
 
-// TODO : implement logging.
+// TODO : implement logging
 
 if (empty($resource->file) && !empty($resource->url)) {
     redirect($resource->url);
 } else {
-    // First form.
+    // first form
     $fs = get_file_storage();
     $stored_file = $fs->get_file_by_id($resource->file);
     send_stored_file($stored_file, 60*60, 0, $forcedownload);

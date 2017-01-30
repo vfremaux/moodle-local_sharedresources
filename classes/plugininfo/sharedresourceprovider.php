@@ -17,9 +17,9 @@
 /**
  * Subplugin info class.
  *
- * @package     local_sharedresources
- * @copyright   2014 Valery Fremaux (valery.Fremaux@gmail.com)
- * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   local_sharedresources
+ * @copyright 2014 Valery Fremaux (valery.Fremaux@gmail.com)
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 namespace local_sharedresources\plugininfo;
 

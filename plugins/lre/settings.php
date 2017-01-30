@@ -14,6 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+defined('MOODLE_INTERNAL') || die();
+
 /**
  * @package    local_sharedresources
  * @category   local
@@ -21,20 +23,20 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
  * @copyright  (C) 1999 onwards Martin Dougiamas  http://dougiamas.com
  */
-defined('MOODLE_INTERNAL') || die();
 
 /*$temp = new admin_settingpage('lre', get_string('lresettings', 'lre', '', $CFG->dirroot.'/local/sharedresources/plugins/lre/lang/'));
 */
 if ($ADMIN->fulltree) {
-
-    $key = 'lre_settings';
-    $settings->add(new admin_setting_heading($key, resources_get_string('lre_settings', 'sharedresourceprovider_lre'),''));
-
-    $key = 'sharedresourceprovider_lre/session_service_url';
-    $label = get_string('sessionserviceurl', 'sharedresourceprovider_lre');
-    $settings->add(new admin_setting_configtext($key, $label, '', ''));
-
-    $key = 'sharedresourceprovider_lre/query_service_url';
-    $label = get_string('queryserviceurl', 'sharedresourceprovider_lre');
-    $settings->add(new admin_setting_configtext($key, $label, '', ''));
+    
+    $settings->add(new admin_setting_heading('lre_settings', resources_get_string('lre_settings', 'sharedresourceprovider_lre'),''),'');
+ 
+    
+    $settings->add(new admin_setting_configtext('lre_session_service_url', resources_get_string('sessionserviceurl', 'sharedresourceprovider_lre'),
+                       '', @$CFG->lre_session_service_url));
+    
+    $settings->add(new admin_setting_configtext('lre_query_service_url', resources_get_string('queryserviceurl', 'sharedresourceprovider_lre'),
+                       '', @$CFG->lre_session_service_url));
 }
+
+
+?>

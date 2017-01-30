@@ -14,38 +14,32 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * @package     local_sharedresource
- * @category    local
- * @author      Valery Fremaux (valery.fremaux@gmail.com)
- */
-
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->libdir.'/formslib.php');
 
-class PushOut_Form extends moodleform {
+class PushOut_Form extends moodleform{
 
-    protected $resourceid;
+    var $resourceID;
 
-    public function __construct($resourceid) {
-        $this->resourceID = $resourceid;
+    function __construct($resourceID) {
+        $this->resourceID = $resourceID;
         parent::moodleform();
     }
 
-    public function definition() {
+    function definition() {
         global $CFG, $OUTPUT;
 
-        // Setting variables.
+        // Setting variables
         $mform =& $this->_form;
 
-        // Adding title and description.
+        // Adding title and description
         $mform->addElement('html', $OUTPUT->heading(get_string('export', 'sharedresource')));
 
         $buttonarray = array();
 
         $providers = get_providers();
-
+        
         if (count($providers) > 1) {
             foreach ($providers as $provider) {
                 $provideropts[$provider->id] = $provider->name;
@@ -57,7 +51,7 @@ class PushOut_Form extends moodleform {
             $mform->addElement('hidden', 'resourceid', $this->resourceID);
             $mform->setType('resourceid', PARAM_INT);
             $buttonarray[] = &$mform->createElement('submit', 'go_confirm', get_string('confirm'));
-        } else if (count($providers) == 1) {
+        } elseif (count($providers) == 1) {
             $providers = array_values($providers);
             $mform->addElement('html', get_string('pushtosingleprovider', 'sharedresource', $providers[0]->name));
 
@@ -72,23 +66,23 @@ class PushOut_Form extends moodleform {
             $mform->setType('resourceid', PARAM_INT);
             $mform->addElement('html', get_string('noprovidertopushto', 'sharedresource'));
         }
-
-        // Adding submit and reset button.
+        
+        // Adding submit and reset button
         $buttonarray[] = &$mform->createElement('cancel', 'go_cancel', get_string('cancel'));
 
         $mform->addGroup($buttonarray, 'buttonar', '', array(' '), false);
     }
 
     /**
-     * validates the form and incomming data
-     */
-    public function validation($data, $files) {
+    * validates the form and incomming data
+    */        
+    function validation($data, $files) {
         $errors = parent::validation($data, $files);
-
+        
         if (empty($data['provider'])) {
             $errors['provider'] = get_string('emptyprovidererror', 'sharedresource');
         }
-
+        
         return $errors;
     }
 }

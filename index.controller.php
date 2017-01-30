@@ -14,11 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * @package     local_sharedresource
- * @category    local
- * @author      Valery Fremaux (valery.fremaux@gmail.com)
- */
 defined('MOODLE_INTERNAL') || die();
 
 if ($action == 'forcedelete' || $action == 'delete') {
@@ -33,9 +28,8 @@ if ($action == 'forcedelete' || $action == 'delete') {
         $module = $DB->get_record('modules', array('name' => 'sharedresource'));
 
         foreach ($sharedresources as $sharedresource) {
-            if ($cm = get_coursemodule_from_instance('sharedresource', $sharedresource->id)) {
-                course_delete_module($cm->id);
-            }
+            $cm = get_coursemodule_from_instance('sharedresource', $sharedresource->id);
+            course_delete_module($cm->id);
         }
     }
 }

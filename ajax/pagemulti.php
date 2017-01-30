@@ -18,11 +18,14 @@
  *
  * @author  Frédéric GUILLOU
  * @version 0.0.1
- * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource
- * is a work derived from Moodle mod/resource
+ * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resource
  * @package local_sharedresources
  * @status May be obsolete code
  */
+
+// This php script is called using ajax
+// It display a page of resources
+//-----------------------------------------------------------
 
 require('../../../config.php');
 require_once($CFG->dirroot.'/local/sharedresources/lib.php');

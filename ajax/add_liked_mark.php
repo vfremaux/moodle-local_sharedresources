@@ -32,12 +32,12 @@ if (!$repo) $repo = $CFG->mnet_localhost_id;
 $repohostroot = $DB->get_field('mnet_host', 'wwwroot', array('id' => $repo));
 
 if ($repohostroot == $CFG->wwwroot) {
-    // Do this locally.
+    // do this locally
     $oldvalue = $DB->get_field('sharedresource_entry', 'scorelike', array('identifier' => $resid));
     $value = $oldvalue + 1;
     $DB->set_field('sharedresource_entry', 'scorelike', $value, array('identifier' => $resid));
 } else {
-    // Fire remote ajax_liked_mark thru Curl direct shoot (No need MNET here).
+    // fire remote ajax_liked_mark thru Curl direct shoot (No need MNET here)
 
     $url = $repohostroot.'/local/sharedresources/ajax/add_liked_mark.php?resid='.$resid;
 
