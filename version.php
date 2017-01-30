@@ -15,20 +15,22 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Version details.
+ *
  * @package    local_sharedresources
  * @category   local
  * @author     Valery Fremaux <valery.fremaux@gmail.com>
- * @copyright  2008 onwards Valery Fremaux (http://www.mylearningfactory.com)
+ * @copyright  2010 Valery Fremaux <valery.fremaux@gmail.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->version  = 2014032700;   // The (date) version of this plugin.
-$plugin->requires = 2015111100;   // Requires this Moodle version.
+$plugin->requires = 2016051900;   // Requires this Moodle version.
 $plugin->component = 'local_sharedresources'; 
-$plugin->release = '3.0.0 (Build 2014032700)';
+$plugin->release = '3.1.0 (Build 2014032700)';
 $plugin->maturity = MATURITY_RC;
 
 // Non moodle attributes.
-$plugin->codeincrement = '3.0.0000';
+$plugin->codeincrement = '3.1.0000';

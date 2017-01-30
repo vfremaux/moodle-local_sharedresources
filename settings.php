@@ -26,23 +26,15 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot.'/local/sharedresources/lib.php');
 require_once($CFG->dirroot.'/mod/sharedresource/metadatalib.php');
 
-$hasconfig = false;
-$hassiteconfig = false;
+// settings default init
 if (is_dir($CFG->dirroot.'/local/adminsettings')) {
     // Integration driven code 
-    if (has_capability('local/adminsettings:nobody', context_system::instance())) {
-        $hasconfig = true;
-        $hassiteconfig = true;
-    } elseif (has_capability('moodle/site:config', context_system::instance())) {
-        $hasconfig = true;
-        $hassiteconfig = false;
-    }
-    $capability = 'local/adminsettings:nobody';
+    require_once($CFG->dirroot.'/local/adminsettings/lib.php');
+    list($hasconfig, $hassiteconfig, $capability) = local_adminsettings_access();
 } else {
     // Standard Moodle code
-    $hassiteconfig = has_capability('moodle/site:config', context_system::instance());
-    $hasconfig = true;
     $capability = 'moodle/site:config';
+    $hasconfig = $hassiteconfig = has_capability($capability, context_system::instance());
 }
 
 if ($hasconfig) { // Needs this condition or there is error on login page.
@@ -71,7 +63,7 @@ if ($hassiteconfig) {
     }
 
     $settings->add(new admin_setting_configcheckbox('local_sharedresources/privatecatalog', get_string('private_catalog', 'local_sharedresources'),
-                       get_string('config_private_catalog', 'local_sharedresources'), '0'));
+                       get_string('config_private_catalog', 'local_sharedresources'), 1));
 
 
     $plugins =  core_component::get_plugin_list('local/sharedresources/plugins');

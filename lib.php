@@ -555,7 +555,7 @@ function sharedresource_is_media($resource) {
     if ($resource->file) {
         if ($resourcefile = $fs->get_file_by_id($resource->file)) {
 
-            if (preg_match('#^video/#', $resourcefile->mimetype)) {
+            if (preg_match('#^video/#', $resourcefile->get_mimetype())) {
                 return true;
             }
 
