@@ -15,11 +15,11 @@
 }
 
 .resource-description{
-    font-weight:normal;
-    padding:5px;
-    margin:3px;
     border-radius:5px;
     border:1px solid #CFCFCF;
+    font-weight:normal;
+    margin:3px;
+    padding:5px;
 }
 
 .resourceitem .generalbox{

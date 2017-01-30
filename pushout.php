@@ -16,6 +16,12 @@
  * The index is public access. Browsing the catalog should although be done through a Guest identity,
  * having as a default the repository/sharedresources:manage capability.
  */
+
+/**
+ * @package     local_sharedresource
+ * @category    local
+ * @author      Valery Fremaux (valery.fremaux@gmail.com)
+ */
 require('../../config.php');
 require_once($CFG->libdir.'/blocklib.php');
 require_once($CFG->dirroot.'/course/lib.php');
@@ -43,7 +49,7 @@ $PAGE->set_heading($SITE->fullname);
 $PAGE->navbar->add(get_string('resourcesadministration', 'local_sharedresources'));
 $PAGE->navbar->add(get_string('resourcespushout', 'local_sharedresources'));
 
-// setup the dialog for pushing out
+// Setup the dialog for pushing out.
 $form = new PushOut_Form($resourceid);
 
 if ($form->is_cancelled()) {
@@ -51,7 +57,7 @@ if ($form->is_cancelled()) {
 }
 
 if ($data = $form->get_data()) {
-    // do the real thing !!
+    // Do the real thing !!
     $resourceentry = $DB->get_record('sharedresource_entry', array('id' => $resourceid));
     sharedresource_submit($data->provider, $resourceentry);
     redirect(new moodle_url('/local/sharedresources/index.php', array('course' => $course)));

@@ -17,21 +17,18 @@
 /**
  * Version details.
  *
- * @package    local_sharedresources
- * @category   local
- * @author     Valery Fremaux <valery.fremaux@gmail.com>
- * @copyright  2010 Valery Fremaux <valery.fremaux@gmail.com>
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package     local_sharedresources
+ * @category    local
+ * @author      Valery Fremaux <valery.fremaux@club-internet.fr>
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL
  */
-
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version  = 2014032700;   // The (date) version of this plugin
-$plugin->requires = 2016051900;   // Requires this Moodle version
+$plugin->version  = 2014032700;   // The (date) version of this plugin.
+$plugin->requires = 2014050800;   // Requires this Moodle version.
 $plugin->component = 'local_sharedresources'; 
-$plugin->release = '3.1.0 (Build 2014032700)';
+$plugin->release = '2.7.0 (Build 2014032700)';
 $plugin->maturity = MATURITY_RC;
-$plugin->dependencies = array('mod_sharedresource' => 2013032600);
 
 // Non moodle attributes.
-$plugin->codeincrement = '3.1.0000';
+$plugin->codeincrement = '2.7.0000';
