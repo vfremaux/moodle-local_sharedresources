@@ -31,7 +31,6 @@ $plugin->requires = 2014110400;   // Requires this Moodle version.
 $plugin->component = 'local_sharedresources'; 
 $plugin->release = '2.8.0 (Build 2014032700)';
 $plugin->maturity = MATURITY_RC;
-$plugin->dependencies = array('mod_sharedresource' => 2013032600);
 
 // Non moodle attributes.
 $plugin->codeincrement = '2.8.0000';
