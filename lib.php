@@ -15,11 +15,11 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package    local_sharedresources
- * @category   local
- * @author Valery Fremaux <valery.fremaux@club-internet.fr>
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
- * @copyright  (C) 1999 onwards Martin Dougiamas  http://dougiamas.com
+ * @package     local_sharedresources
+ * @category    local
+ * @author      Valery Fremaux <valery.fremaux@club-internet.fr>
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL
+ * @copyright   (C) 1999 onwards Martin Dougiamas  http://dougiamas.com
  *
  * Provides libraries for resource generic access.
  */
@@ -134,7 +134,9 @@ function get_local_resources($repo, &$fullresults, $metadatafilters = '', &$offs
 function get_remote_repo_resources($repo, &$fullresults, $metadatafilters = '', $offset = 0, $page = 20) {
     global $CFG, $USER, $DB;
 
-    if ($repo == 'local') print_error('errorrepoprogramming');
+    if ($repo == 'local') {
+        print_error('errorrepoprogramming');
+    }
 
     $remote_host = $DB->get_record('mnet_host', array('id' => $repo));
 
@@ -201,11 +203,12 @@ function update_resourcepage_icon() {
         $edit = '1';
     }
 
-    $return = "<form {$CFG->frametarget} method=\"get\" action=\"$CFG->wwwroot/resources/index.php\">";
-    $return .= "<div>";
-    $return .= "<input type=\"hidden\" name=\"edit\" value=\"$edit\" />";
-    $return .= "<input type=\"submit\" value=\"$string\" />";
-    $return .= "</div></form>";
+    $formurl = new moodle_url('/resources/index.php');
+    $return = '<form '.$CFG->frametarget.' method="get" action="'.$formurl.'">';
+    $return .= '<div>';
+    $return .= '<input type="hidden" name="edit" value="'.$edit.'" />';
+    $return .= '<input type="submit" value="'.$string.'" />';
+    $return .= '</div></form>';
 
     return $return;
 }
@@ -326,6 +329,7 @@ function sharedresource_get_usages($entry, &$response, $consumers = null, $user 
 
 /**
  * submits a resource to a remote provider
+ *
  */
 function sharedresource_submit($repo, $resourceentry) {
     global $CFG,$DB;

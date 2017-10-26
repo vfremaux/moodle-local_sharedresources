@@ -66,8 +66,7 @@ if ($unrecognized) {
 }
 
 if ($options['help']) {
-    $help =
-"Command line Moodle mass resource import.
+    $help = "Command line Moodle mass resource import.
 Please note you must execute this script with the same uid as apache!
 
 Options:

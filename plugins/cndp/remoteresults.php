@@ -16,6 +16,10 @@
 
 /**
  * include wrapper for /mod/cndpindexing
+ *
+ * @package     local_sharedresources
+ * @copyright   2014 Valery Fremaux (valery.Fremaux@gmail.com)
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 defined('MOODLE_INTERNAL') || die();
 

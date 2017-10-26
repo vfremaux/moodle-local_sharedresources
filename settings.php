@@ -26,9 +26,8 @@ require_once($CFG->dirroot.'/local/sharedresources/lib.php');
 require_once($CFG->dirroot.'/mod/sharedresource/metadatalib.php');
 
 // Settings default init.
-
 if (is_dir($CFG->dirroot.'/local/adminsettings')) {
-    // Integration driven code 
+    // Integration driven code.
     require_once($CFG->dirroot.'/local/adminsettings/lib.php');
     list($hasconfig, $hassiteconfig, $capability) = local_adminsettings_access();
 } else {
@@ -44,7 +43,8 @@ if ($hasconfig) {
 
     $label = get_string('pluginname', 'local_sharedresources');
     $pageurl = new moodle_url('/local/sharedresources/index.php');
-    $ADMIN->add('resources', new admin_externalpage('resourcelibrary', $label, $pageurl, 'repository/sharedresources:view'));
+    $settingspage = new admin_externalpage('resourcelibrary', $label, $pageurl, 'repository/sharedresources:view');
+    $ADMIN->add('resources', $settingspage);
 }
 if ($hassiteconfig) {
     $settings = new admin_settingpage('local_sharedresources', get_string('pluginname', 'sharedresource'));
@@ -60,9 +60,10 @@ if ($hassiteconfig) {
             $purposes[$purpose] = get_string(clean_string_key($purpose), 'sharedmetadata_'.$CFG->pluginchoice);
         }
 
-        $settingstr = get_string('defaulttaxonomypurposeonimport', 'local_sharedresources');
-        $settingdesc = get_string('configdefaulttaxonomypurposeonimport', 'local_sharedresources');
-        $settings->add(new admin_setting_configselect('defaulttaxonomypurposeonimport', $settingstr, $settingdesc, 0, $purposes));
+        $key = 'local_sharedresources/defaulttaxonomypurposeonimport';
+        $label = get_string('defaulttaxonomypurposeonimport', 'local_sharedresources');
+        $desc = get_string('configdefaulttaxonomypurposeonimport', 'local_sharedresources');
+        $settings->add(new admin_setting_configselect($key, $label, $desc, 0, $purposes));
     }
 
     $key = 'local_sharedresources/privatecatalog';

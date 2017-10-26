@@ -3,6 +3,7 @@
  */
 // jshint undef:false, unused:false
 function search_widget_toggle(id) {
+
     key = '#search-widget-' + id;
     if ($(key).css('display') == 'none') {
         $(key).css('display', '');

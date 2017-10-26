@@ -204,7 +204,8 @@ class local_sharedresources_renderer extends plugin_renderer_base {
                     $resourcehost = $DB->get_record('mnet_host', array('id' => $repo));
                     $reswwwroot = $resourcehost->wwwroot;
                 }
-    
+
+                // Librarian controls.
                 $commands = '';
                 if ($isediting) {
                     $editstr = get_string('update');
@@ -218,21 +219,21 @@ class local_sharedresources_renderer extends plugin_renderer_base {
                                     'mode' => 'update',
                                     'entry_id' => $resource->id);
                     $editurl = new moodle_url('/mod/sharedresource/edit.php', $params);
-                    $commands = '<a href="'.$editurl.'" title="'.$editstr.'"><img src="'.$OUTPUT->pix_url('t/edit').'" /></a>';
+                    $commands = '<a href="'.$editurl.'" title="'.$editstr.'"><img src="'.$this->output->pix_url('t/edit').'" /></a>';
                     if ($resource->uses == 0) {
                         $params = array('what' => 'delete', 'course' => $courseid, 'id' => $resource->id);
                         $deleteurl = new moodle_url('/local/sharedresources/index.php', $params);
-                        $pix = '<img src="'.$OUTPUT->pix_url('delete', 'sharedresource').'" />';
+                        $pix = '<img src="'.$this->output->pix_url('delete', 'sharedresource').'" />';
                         $commands .= '&nbsp;<a href="'.$deleteurl.'" title="'.$deletestr.'">'.$pix.'</a>';
                     } else {
                         $params = array('what' => 'forcedelete', 'course' => $courseid, 'id' => $resource->id);
                         $deleteurl = new moodle_url('/local/sharedresources/index.php', $params);
-                        $pix = '<img src="'.$OUTPUT->pix_url('t/delete').'" />';
+                        $pix = '<img src="'.$this->output->pix_url('t/delete').'" />';
                         $commands .= '&nbsp;<a href="'.$deleteurl.'" title="'.$forcedeletestr.'">'.$pix.'</a>';
                     }
                     $params = array('course' => $courseid, 'resourceid' => $resource->id);
                     $pushurl = new moodle_url('/local/sharedresources/pushout.php', $params);
-                    $pix = '<img src="'.$OUTPUT->pix_url('export', 'sharedresource').'" />';
+                    $pix = '<img src="'.$this->output->pix_url('export', 'sharedresource').'" />';
                     $commands .= '&nbsp;<a href="'.$pushurl.'" title="'.$exportstr.'">'.$pix.'</a>';
                 }
     
@@ -240,33 +241,68 @@ class local_sharedresources_renderer extends plugin_renderer_base {
                 $str .= "<div class='resourceitem'>"; // Resource item.
 
                 // Resource heading.
-                $title = '<span class="title">'.$resource->title.'</span>';
-                $pix = '<img src="'.$OUTPUT->pix_url($icon, 'sharedresource').'" class="iconlarge" />';
-                $str .= '<h3> '.$pix.' '.$title.' '.$commands.'</h3>';
+                $pix = '<img src="'.$this->output->pix_url($icon, 'sharedresource').'" class="iconlarge" />';
+                $pixurl = $this->output->pix_url('download', 'local_sharedresources');
 
-                // Resource descriptors.
-                $str .= $OUTPUT->box_start('generalbox');
-                $str .= '<a class="smalllink" href="'.$resource->url.'" target="_blank">'.$resource->url.'</a><br/>';
-    
+                $str .= '<div>';
+                $str .= '<div class="resource-download">';
+                $str .= '<a href="'.$resource->url.'" target="_blank"><img src="'.$pixurl.'" /></a>';
+                $str .= '</div>';
+                $str .= '<div class="resource-title">';
+                $str .= '<h3 class="title"> '.$pix.' '.$resource->title.' '.$commands.'</h3>';
+                $str .= '</div>';
+                $str .= '</div>';
+
                 // Print notice access.
                 $readnotice = get_string('readnotice', 'sharedresource');
                 $url = "{$reswwwroot}/mod/sharedresource/metadatanotice.php?identifier={$resource->identifier}";
                 $popupaction = new popup_action('click', $url, 'popup', array('width' => 800, 'height' => 600));
-                $str .= $OUTPUT->action_link($url, $readnotice, $popupaction);
+                $str .= $this->output->action_link($url, $readnotice, $popupaction);
                 $str .= '<br/>';
-                if (!empty($resource->description)) {
-                    $thumbnail = $this->thumbnail($resource);
-                    $str .= '<div class="resource-description">'.$resource->description.$thumbnail.'</div><br/>';
-                }
-                $str .= '<span class="smalltext">'.get_string('keywords', 'sharedresource'). ": $resource->keywords</span><br/>";
-                $str .= get_string('used', 'local_sharedresources', $resource->uses).'</br>';
-                $str .= get_string('viewed', 'local_sharedresources', $resource->scoreview).'<br/>';
+
+                $str .= '<div>';
+
+                // Content toggler.
+                $jshandler = 'Javascript:toggle_info_panel(\''.$resource->identifier.'\')';
+                $pixurl = $this->output->pix_url('rightarrow', 'local_sharedresources');
+                $str .= '<a href="'.$jshandler.'"><img id="resource-toggle-'.$resource->identifier.'" src="'.$pixurl.'"></a> ';
+
+                // Usages.
+                $str .= '<div class="resource-usage">'.get_string('used', 'local_sharedresources', $resource->uses).'</div>';
+
+                // Views.
+                $str .= '<div class="resource-views">'.get_string('viewed', 'local_sharedresources', $resource->scoreview).'</div>';
+
+                // Likes.
+                $markliked = get_string('markliked', 'local_sharedresources');
+                $jshandler = 'javascript:ajax_mark_liked(\''.$repo.'\', \''.$resource->identifier.'\')';
+                $marklikelink = '<a href="'.$jshandler.'">'.$markliked.'</a>';
+
                 $spanid = 'sharedresource-liked-'.$resource->identifier;
                 $label = '<span id="'.$spanid.'">'.$this->stars($resource->scorelike, 15).'</span>';
-                $str .= get_string('liked', 'local_sharedresources', $label).'</p>';
-    
-                $markliked = get_string('markliked', 'local_sharedresources');
+                $str .= '<div class="resource-likes">'.get_string('liked', 'local_sharedresources', $label).' '.$marklikelink.'</div>';
 
+                $str .= '</div>';
+
+                // Resource descriptors.
+                $str .= $this->output->box_start('generalbox resource-info', 'resource-info-'.$resource->identifier, array('style' => 'display: none'));
+                if (!empty($resource->description)) {
+                    $thumbnail = $this->thumbnail($resource);
+                    $str .= '<div>';
+                    $str .= '<div class="resource-thumbnail">'.$thumbnail.'</div>';
+                    $str .= '<div class="resource-description">'.$resource->description.'</div>';
+
+                    // Keywords.
+                    $str .= '<div class="smalltext">'.get_string('keywords', 'sharedresource').': <b>'.$resource->keywords.'</b></div>';
+                    $str .= '</div>';
+
+                    // Searchable values.
+                }
+                $str .= $this->output->box_end();
+
+                $str .= $this->output->box_start('generalbox commands');
+
+                // Ressource commands.
                 if (!empty($course) && ($course->id > SITEID)) {
 
                     $context = context_course::instance($course->id);
@@ -275,7 +311,7 @@ class local_sharedresources_renderer extends plugin_renderer_base {
 
                         $isltitool = sharedresource_is_lti($resource);
                         $ismoodleactivity = sharedresource_is_moodle_activity($resource);
-                        $isPlayableMedia = sharedresource_is_media($resource);
+                        $isplayablemedia = sharedresource_is_media($resource);
 
                         $addtocourse = get_string('addtocourse', 'sharedresource');
                         $localizetocourse = get_string('localizetocourse', 'sharedresource');
@@ -302,9 +338,6 @@ class local_sharedresources_renderer extends plugin_renderer_base {
                         $str .= '<input type="hidden" name="url" value="'.$resource->url.'" />';
                         $str .= '</form>';
     
-                        $str .= '<div style="text-align:right" class="commands">';
-                        $jshandler = 'javascript:ajax_mark_liked(\''.$CFG->wwwroot.'\', \''.$repo.'\', \''.$resource->identifier.'\')';
-                        $str .= '<a href="'.$jshandler.'">'.$markliked.'</a>';
                         if (!$isltitool) {
                             $str .= ' - <a href="javascript:document.forms[\'add'.$i.'\'].submit();">'.$addtocourse.'</a>';
                             if (!$ismoodleactivity) {
@@ -337,11 +370,6 @@ class local_sharedresources_renderer extends plugin_renderer_base {
         
                         $str .= '</div>';
                     }
-                } else {
-                    $str .= '<div style="text-align:right" class="commands">';
-                    $jshandler = 'javascript:ajax_mark_liked(\''.$CFG->wwwroot.'\', \''.$repo.'\', \''.$resource->identifier.'\')';
-                    $str .= '<a href="'.$jshandler.'">'.$markliked.'</a>';
-                    $str .= '</div>';
                 }
                 $str .= "</div>"; // Resource item.
                 $str .= $OUTPUT->box_end();
@@ -521,13 +549,13 @@ class local_sharedresources_renderer extends plugin_renderer_base {
             $context = context_system::instance();
         }
 
-        $files = $fs->get_area_files($context->id, 'mod_sharedresource', 'thumbnail', $resource->id, true);
+        $files = $fs->get_area_files($context->id, 'mod_sharedresource', 'thumbnail', $resource->id, 'filepath,filename', true);
 
         if ($file = array_pop($files)) {
             $thumbfileurl = moodle_url::make_pluginfile_url($file->get_contextid(), $file->get_component(),
                                                             $file->get_filearea(), $file->get_itemid(),
                                                             $file->get_filepath(), $file->get_filename());
-            return '<img style="float:right;padding-left:30px" src="'.$thumbfileurl.'" />';
+            return '<img src="'.$thumbfileurl.'" />';
         }
 
         return '';

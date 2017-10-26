@@ -15,11 +15,11 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package     local_sharedresources
- * @category    local
- * @author      Valery Fremaux <valery.fremaux@gmail.com>
- * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL
- * @copyright   (C) 1999 onwards Martin Dougiamas  http://dougiamas.com
+ * @package    local_sharedresources
+ * @category   local
+ * @author     Valery Fremaux <valery.fremaux@gmail.com>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
+ * @copyright  (C) 1999 onwards Martin Dougiamas  http://dougiamas.com
  */
 require('../../../config.php');
 require_once($CFG->libdir.'/adminlib.php');
