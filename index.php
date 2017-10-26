@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package sharedresource
- * @subpackage local_sharedresources
- * @category local
+ * @package     local_sharedresource
+ * @category    local
+ * @author      Valery Fremaux (valery.fremaux@gmail.com)
  *
  * This file provides access to a master shared resources index, intending
  * to allow a public browsing of resources.
@@ -39,12 +39,14 @@ require('../../config.php');
 require_once($CFG->libdir.'/blocklib.php');
 require_once($CFG->dirroot.'/course/lib.php');
 require_once($CFG->dirroot.'/mod/sharedresource/rpclib.php');
-require_once($CFG->dirroot.'/mod/sharedresource/search_widget.class.php');
+require_once($CFG->dirroot.'/mod/sharedresource/classes/search_widget.class.php');
 require_once($CFG->dirroot.'/local/sharedresources/lib.php');
 
 $PAGE->requires->jquery();
 $PAGE->requires->js('/local/sharedresources/js/library.js', true);
 $PAGE->requires->js('/local/sharedresources/js/search.js', true);
+
+$config = get_config('sharedresource');
 
 $edit = optional_param('edit', -1, PARAM_BOOL);
 $blockaction = optional_param('blockaction', '', PARAM_ALPHA);
@@ -67,6 +69,7 @@ require_capability('repository/sharedresources:view', $context);
 // Prepare the page.
 
 $PAGE->set_context($context);
+$PAGE->set_pagelayout('course');
 $PAGE->navbar->add(get_string('sharedresources_library', 'local_sharedresources'));
 $PAGE->set_title(get_string('sharedresources_library', 'local_sharedresources'));
 $PAGE->set_heading(get_string('sharedresources_library', 'local_sharedresources'));
@@ -81,8 +84,6 @@ $PAGE->set_url('/local/sharedresources/index.php', $params);
 
 $renderer = $PAGE->get_renderer('local_sharedresources');
 
-echo $OUTPUT->header();
-
 $page = 20;
 
 if ($action) {
@@ -93,18 +94,10 @@ $course = $DB->get_record('course', array('id' => $courseid));
 
 $resourcesmoodlestr = get_string('resources', 'sharedresource');
 
-if (empty($CFG->pluginchoice)) {
+if (empty($config->schema)) {
     print_error('nometadataplugin', 'sharedresource');
     die;
 }
-
-echo $renderer->browse_tabs($repo, $course);
-
-if (($repo == 'local') || empty($repo)) {
-    echo $renderer->tools($course);
-}
-
-echo '<table width="100%" cellspacing="10" ><tr valign="top"><td id="side-pre-like" width="200">';
 
 $visiblewidgets = array();
 resources_setup_widgets($visiblewidgets, $context);
@@ -114,13 +107,47 @@ if (resources_process_search_widgets($visiblewidgets, $searchfields)) {
     $offset = 0;
 }
 
-echo $renderer->search_widgets_tableless($courseid, $repo, $offset, $context, $visiblewidgets, $searchfields);
+$regions = $PAGE->blocks->get_regions();
 
-echo $renderer->top_keywords($courseid);
+if (file_exists($CFG->dirroot.'/blocks/search')) {
+    $block = block_instance('search');
+    $bc = new block_contents();
+    $bc->attributes['id'] = 'local_sharedresource_globalsearch_block';
+    $bc->attributes['role'] = 'search';
+    $bc->attributes['aria-labelledby'] = 'local_sharedresouces_search_title';
+    $bc->title = html_writer::span(get_string('textsearch', 'local_sharedresources'), '', array('id' => 'local_sharedresources_globalsearch_title'));
+    $bc->content = $block->get_content()->text;
+    $PAGE->blocks->add_fake_block($bc, reset($regions));
+}
 
-echo '</td><td>';
+$bc = new block_contents();
+$bc->attributes['id'] = 'local_sharedresource_searchblock';
+$bc->attributes['role'] = 'search';
+$bc->attributes['aria-labelledby'] = 'local_sharedresouces_search_title';
+$bc->title = html_writer::span(get_string('searchinlibrary', 'sharedresource'), '', array('id' => 'local_sharedresources_search_title'));
+$bc->content = $renderer->search_widgets_tableless($courseid, $repo, $offset, $context, $visiblewidgets, $searchfields);
+$PAGE->blocks->add_fake_block($bc, reset($regions));
 
-$isediting = has_capability('repository/sharedresources:manage', $context, $USER->id) && $repo == 'local';
+$topkeywords = $renderer->top_keywords($courseid);
+if (!empty($topkeywords)) {
+    $bc = new block_contents();
+    $bc->attributes['id'] = 'local_sharedresource_searchblock';
+    $bc->attributes['role'] = 'search';
+    $bc->attributes['aria-labelledby'] = 'local_sharedresouces_search_title';
+    $bc->title = html_writer::span(get_string('topkeywords', 'local_sharedresources'), '', array('id' => 'local_sharedresources_topkeywords_title'));
+    $bc->content = $topkeywords;
+    $PAGE->blocks->add_fake_block($bc, reset($regions));
+}
+
+echo $OUTPUT->header();
+
+echo $renderer->browse_tabs($repo, $course);
+
+if (($repo == 'local') || empty($repo)) {
+    echo $renderer->tools($course);
+}
+
+$isediting = has_capability('repository/sharedresources:manage', $context, $USER->id) && ($repo == 'local');
 
 $fullresults = array();
 
@@ -161,6 +188,4 @@ if ($courseid > SITEID) {
     echo '</p></center>';
 }
  
-echo '</td></tr></table>';
-
 echo $OUTPUT->footer();
