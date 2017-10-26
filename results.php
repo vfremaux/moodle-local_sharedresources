@@ -62,18 +62,19 @@ $PAGE->navbar->add($searchresultsstr);
 
 echo $OUTPUT->header();
 
-/// get repos and make tabs
+// Get repos and make tabs.
 
 resources_search_print_tabs($repo, $course);
 
-/// get repo and get search page
+// Get repo and get search page.
 
 echo $OUTPUT->heading($searchresultsstr);
 
 include($CFG->dirroot."/local/sharedresources/plugins/{$repo}/remoteresults.php");
 
 echo '<center>';
-echo $OUTPUT->single_button(new moodle_url.'/local/sharedresources/search.php', array('repo' => $repo, 'id' => $courseid), get_string('othersearch', 'sharedresource'));
+$params = array('repo' => $repo, 'id' => $courseid), get_string('othersearch', 'sharedresource');
+echo $OUTPUT->single_button(new moodle_url.'/local/sharedresources/search.php', $params);
 echo $OUTPUT->continue_button($CFG->wwwroot);
 echo '</center>';
 

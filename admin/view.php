@@ -15,11 +15,11 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package    local_sharedresources
- * @category   local
- * @author     Valery Fremaux <valery.fremaux@club-internet.fr>
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
- * @copyright  (C) 1999 onwards Martin Dougiamas  http://dougiamas.com
+ * @package     local_sharedresources
+ * @category    local
+ * @author      Valery Fremaux <valery.fremaux@club-internet.fr>
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL
+ * @copyright   (C) 1999 onwards Martin Dougiamas  http://dougiamas.com
  * the master shared resources administration view entry point.
  * the administration view let you browse through resources with a
  * capacity to validate, delete, suspend and reindex resources on the
@@ -36,7 +36,7 @@ $PAGE->set_pagelayout('standard');
 $PAGE->set_context($context);
 $PAGE->set_title(get_string('adminrepository', 'local_sharedresources'));
 $PAGE->set_heading($SITE->fullname); 
-$PAGE->navbar->add(get_string('adminrepository', 'local_sharedresources'),'view.php','misc');
+$PAGE->navbar->add(get_string('adminrepository', 'local_sharedresources'), 'view.php', 'misc');
 
 $PAGE->set_focuscontrol('');
 $PAGE->set_cacheable(false);

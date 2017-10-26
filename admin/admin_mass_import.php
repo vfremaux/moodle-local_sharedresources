@@ -15,14 +15,12 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- *
  * @package    local_sharedresources
  * @category   local
- * @author Valery Fremaux <valery.fremaux@gmail.com>
+ * @author     Valery Fremaux <valery.fremaux@gmail.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
  * @copyright  (C) 1999 onwards Martin Dougiamas  http://dougiamas.com
  */
-
 require('../../../config.php');
 require_once($CFG->libdir.'/adminlib.php');
 require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
@@ -58,11 +56,12 @@ $PAGE->set_title(get_string('resourceimport', 'local_sharedresources'));
 $PAGE->set_heading(get_string('resourceimport', 'local_sharedresources'));
 $PAGE->set_url($url, array('course' => $courseid));
 
-// navigation
+// Navigation.
+
 $PAGE->navbar->add(get_string('resourceimport', 'local_sharedresources'));
 $PAGE->navbar->add(get_string('massimport', 'local_sharedresources'));
 
-/// get courses
+// Get courses.
 
 $form = new sharedresource_massimport_form($url, array('course' => $courseid));
 $confirm = optional_param('confirm', '', PARAM_TEXT);
@@ -87,61 +86,63 @@ if ($confirm) {
     $data->deducetaxonomyfrompath = required_param('deducetaxonomyfrompath', PARAM_BOOL);
     $data->context = required_param('context', PARAM_INT);
 
-    // process import
+    // Process import.
+
     $importlist = array();
-    sharedresources_scan_importpath($data->importpath, $importlist, $METADATA, $data);
-    $importlist = sharedresources_aggregate($importlist, $METADATA);
+    sharedresources_scan_importpath($data->importpath, $importlist, $metadatadefines, $data);
+    $importlist = sharedresources_aggregate($importlist, $metadatadefines);
     $processor = new import_processor();
     $processor->run($data, $importlist);
 
-    echo $OUTPUT->continue_button($CFG->wwwroot.'/local/sharedresources/index.php?courseid='.$courseid);
+    $url = moodle_url('/local/sharedresources/index.php', array('courseid' => $courseid));
+    echo $OUTPUT->continue_button();
     echo $OUTPUT->footer();
     die;
-} elseif ($data = $form->get_data()) {
+} else if ($data = $form->get_data()) {
 
     if (isset($data->resetvolume)) {
 
         if (!is_dir($data->importpath)) {
-            print_error('errornotadir', 'local_sharedresources', '', $CFG->dirroot.'/local/sharedresources/admin/admin_mass_import.php');
+            print_error('errornotadir', 'local_sharedresources', '', $CFG->wwwroot.'/local/sharedresources/admin/admin_mass_import.php');
             return;
         }
 
         $result = sharedresources_reset_volume($data);
     } else {
         if (!is_dir($data->importpath)) {
-            print_error('errornotadir', 'local_sharedresources', '', $CFG->dirroot.'/local/sharedresources/admin/admin_mass_import.php');
+            print_error('errornotadir', 'local_sharedresources', '', $CFG->wwwroot.'/local/sharedresources/admin/admin_mass_import.php');
             return;
         }
 
-        // scan target and report what will be imported
+        // Scan target and report what will be imported.
         echo $OUTPUT->header();
 
         $excludepattern = str_replace('\*', '.*', preg_quote($data->importexclusionpattern));
 
         $importlist = array();
-        $METADATA = array();
-        sharedresources_scan_importpath($data->importpath, $importlist, $METADATA, $data);
+        $metadatadefines = array();
+        sharedresources_scan_importpath($data->importpath, $importlist, $metadatadefines, $data);
 
         echo $OUTPUT->heading(get_string('resourceimport', 'local_sharedresources'), 1);
         echo $OUTPUT->heading(get_string('filestoimport', 'local_sharedresources', $data->importpath), 2);
         echo '<pre>';
         foreach ($importlist as $entry) {
             echo "<b>$entry</b>\n";
-            if (array_key_exists($entry, $METADATA)) {
-                foreach ($METADATA[$entry] as $mtdkey => $mtdvalue) {
+            if (array_key_exists($entry, $metadatadefines)) {
+                foreach ($metadatadefines[$entry] as $mtdkey => $mtdvalue) {
                     echo "\t{$mtdkey} => {$mtdvalue}\n";
                 }
             }
         }
-        echo '</pre>';    
+        echo '</pre>';
 
-        echo '<p><form action="#" name="confirm">';    
+        echo '<p><form action="#" name="confirm">';
         echo '<input type="hidden" name="importpath" value="'.$data->importpath.'"/>';
         echo '<input type="hidden" name="context" value="'.$data->context.'"/>';
         echo '<input type="hidden" name="importexclusionpattern" value="'.@$data->importexclusionpattern.'"/>';
         echo '<input type="hidden" name="deducetaxonomyfrompath" value="'.@$data->deducetaxonomyfrompath.'"/>';
         echo '<input type="submit" name="confirm" value="'.get_string('confirm', 'local_sharedresources').'" />';
-        echo '</form></p>';    
+        echo '</form></p>';
 
         echo $OUTPUT->footer();
         die;
@@ -157,6 +158,7 @@ echo $OUTPUT->heading(get_string('resourceimport', 'local_sharedresources'), 1);
 $form->display();
 
 if (has_capability('moodle/site:config', context_system::instance())) {
-    echo "<p><a href=\"{$CFG->wwwroot}/local/sharedresources/admin/admin_mass_import.php?killall=1\">Clean Everything Out</a></p>";
+    $outurl = new moodle_url('/local/sharedresources/admin/admin_mass_import.php', array('killall' => 1));
+    echo '<p><a href="'.$outurl.'">Clean Everything Out ?</a></p>';
 }
 echo $OUTPUT->footer();
