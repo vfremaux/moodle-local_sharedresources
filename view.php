@@ -15,11 +15,11 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package     local_sharedresources
- * @category    local
- * @author      Valery Fremaux <valery.fremaux@club-internet.fr>
- * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL
- * @copyright   (C) 1999 onwards Martin Dougiamas  http://dougiamas.com
+ * @package    local_sharedresources
+ * @category   local
+ * @author Valery Fremaux <valery.fremaux@club-internet.fr>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
+ * @copyright  (C) 1999 onwards Martin Dougiamas  http://dougiamas.com
  *
  * This file allows acceding to resources in a platform instance independant way.
  * The user will only need to present a local id (internal resource id) or remote id
@@ -55,7 +55,7 @@ if (!empty($resourceid)) {
         $idfield = 'id';
     }
     $idvalue = $resourceid;
-} elseif (!empty($identifier)) {
+} else if (!empty($identifier)) {
     if ($remote) {
         $idfield = 'remoteid';
     } else {

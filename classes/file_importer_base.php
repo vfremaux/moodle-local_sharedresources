@@ -29,28 +29,28 @@ require_once $CFG->dirroot.'/mod/sharedresource/sharedresource_metadata.class.ph
 require_once $CFG->dirroot.'/mod/sharedresource/locallib.php';
 require_once $CFG->dirroot.'/course/lib.php';
 
-class file_importer_base{
+class file_importer_base {
 
     /**
-    * the file descriptor out from data collection. Descriptor is an array of properties
-    */
+     * the file descriptor out from data collection. Descriptor is an array of properties
+     */
     protected $fd;
 
     /**
-    * the created or matched sharedresource entry
-    */
+     * the created or matched sharedresource entry
+     */
     protected $sharedresourceentry;
 
     protected $new;
 
     /**
-    * the final metadata entries
-    */
+     * the final metadata entries
+     */
     protected $metadatadefines;
 
     static protected $mtdstandard;
 
-    protected $metadatakeymap = array('title' => '1_2:0_0', 
+    protected $metadatakeymap = array('title' => '1_2:0_0',
                            'language' => '1_3:0_0',
                            'description' => '1_4:0_0',
                            'documenttype' => '1_9:0_0',
@@ -76,9 +76,9 @@ class file_importer_base{
     }
 
     /** creates the sharedresource entry or loads an existing one if matches for aggregating metadata to it, and saves physical file 
-    * everything is in the descriptor
-    * @param int $context the sharing context of the sharedresource
-    */
+     * everything is in the descriptor
+     * @param int $context the sharing context of the sharedresource
+     */
     public function make_resource_entry($context = 1) {
         global $CFG;
 
@@ -161,11 +161,11 @@ class file_importer_base{
      * calls autoadaptative transformer. If no transformer is found, just remap the
      * incoming csv fieldname to proper metadata node:instance.
      *
-     * transformer 
+     * transformer
      */
     public function metadata_preprocess() {
         foreach ($this->fd as $inputkey => $inputvalue) {
-            // we can defer all metadata preparation to an external handler.
+            // We can defer all metadata preparation to an external handler.
             if (method_exists('file_importer_base', 'prepare_'.$inputkey)) {
                 $f = 'prepare_'.$inputkey;
                 $fd[$inputkey] = $this->$f($inputvalue);
@@ -237,11 +237,15 @@ class file_importer_base{
         }
 
         if (defined('DO_NOT_WRITE')) {
-            if (defined('CLI_SCRIPT')) mtrace('Test mode : attaching to '.$this->fd['shortname']);
+            if (defined('CLI_SCRIPT')) {
+                mtrace('Test mode : attaching to '.$this->fd['shortname']);
+            }
             return;
         }
 
-        if (defined('CLI_SCRIPT')) mtrace('attaching to '.$this->fd['shortname']);
+        if (defined('CLI_SCRIPT')) {
+            mtrace('attaching to '.$this->fd['shortname']);
+        }
         $sectionnum = (!empty($this->fd['section'])) ? $this->fd['section'] : 0;
 
         $visible = (isset($this->fd['visible'])) ? $this->fd['visible'] : 1;
@@ -299,7 +303,8 @@ class file_importer_base{
         }
 
         // We can post process a resource conversion when everything is clear.
-        if ((!empty($this->fd->coursemoduletype) && $this->fd->coursemoduletype == 'resource') || defined('CONVERT_TO_RESOURCE')) {
+        if ((!empty($this->fd->coursemoduletype) && $this->fd->coursemoduletype == 'resource') ||
+                defined('CONVERT_TO_RESOURCE')) {
             if (defined('CLI_SCRIPT')) {
                 mtrace("Converting to legacy resource");
             }
@@ -432,7 +437,7 @@ class file_importer_base{
         $i = 0;
 
         foreach ($auths as $auth) {
-            // parse author string
+            // Parse author string.
             $auth = trim($auth);
 
             if (preg_match('/(.*)\s*\((\d{2}\/\d{2}\/\d{4}|\d{4}-\d{2}-\d{2})\)\s*/', $auth, $matches)) {
@@ -473,6 +478,8 @@ class file_importer_base{
     public function prepare_taxonomy($taxons) {
         global $CFG, $DB;
 
+        $config = get_config('local_sharedresources');
+
         $classifconfig = unserialize(get_config(null, 'classifarray'));
 
         if (empty($classifconfig)) {
@@ -493,11 +500,11 @@ class file_importer_base{
         $orderingfield = $classif['ordering'];
         $minordering = $classif['orderingmin'];
 
-        if (empty($CFG->defaulttaxonomypurposeonimport)) {
-            set_config('defaulttaxonomypurposeonimport', 'discipline');
+        if (empty($config->defaulttaxonomypurposeonimport)) {
+            set_config('defaulttaxonomypurposeonimport', 'discipline', 'local_sharedresources');
         }
 
-        $defaultpurpose = $CFG->defaulttaxonomypurposeonimport;
+        $defaultpurpose = $config->defaulttaxonomypurposeonimport;
 
         $taxonarr = explode(',', $taxons);
         $records = array();
@@ -604,7 +611,7 @@ class file_importer_base{
     }
 
     /**
-     * given a resorce instance id containing a single zip file,
+     * given a resource instance id containing a single zip file,
      * @param int $resourceid
      * @param object $cm
      */
@@ -691,7 +698,7 @@ class file_importer_base{
 
         $fs = get_file_storage();
 
-        // we seek for no extension here
+        // We seek for no extension here.
         $archivefilename = pathinfo($archivefile->get_filename(), PATHINFO_FILENAME);
 
         foreach ($mainfiles as $guessname) {
@@ -700,16 +707,17 @@ class file_importer_base{
             mtrace("Searching for ... $guessname\n");
 
             $allarea = $fs->get_area_tree($contextid, $component, $filearea, $itemid);
-            $candidate = $this->_file_search_rec($allarea, $guessname);
+            $candidate = $this->file_search_rec($allarea, $guessname);
             if ($candidate) {
-                return array($candidate->get_filepath(), $candidate->get_filename()); // First positive result traps.
+                // First positive result traps.
+                return array($candidate->get_filepath(), $candidate->get_filename());
             }
         }
 
         return array(null, null);
     }
 
-    protected function _file_search_rec($dirstruct, $guessname) {
+    protected function file_search_rec($dirstruct, $guessname) {
         mtrace("Searching for ... $guessname in ".$dirstruct['dirname']."\n");
         if (!empty($dirstruct['files'])) {
             foreach ($dirstruct['files'] as $f) {
@@ -719,13 +727,17 @@ class file_importer_base{
                 }
             }
         }
+
         // If not found in immediate files, search deeper in directories.
         if (!empty($dirstruct['subdirs'])) {
             foreach ($dirstruct['subdirs'] as $dirname => $d) {
                 $ret = $this->_file_search_rec($d, $guessname);
-                if ($ret) return $ret; // Trap positive result or continue.
+                if ($ret) {
+                    return $ret; // Trap positive result or continue.
+                }
             }
         }
+
         // If nothing found.
         return null;
     }

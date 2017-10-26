@@ -23,7 +23,6 @@
  * @package local_sharedresources
  * @status May be obsolete code
  */
-
 require('../../../config.php');
 require_once($CFG->dirroot.'/local/sharedresources/lib.php');
 
