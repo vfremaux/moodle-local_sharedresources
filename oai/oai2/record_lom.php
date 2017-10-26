@@ -25,13 +25,12 @@ $tr = new tag_renderer();
 
 $output .= $tr->start_tag('metadata');
 
-// load light-lom plugin
-include_once $CFG->dirroot.'/mod/sharedresource/sharedresource_plugin_base.class.php';
+// Load light-lom plugin.
+include_once $CFG->dirroot.'/mod/sharedresource/classes/sharedresource_plugin_base.class.php';
 include_once $CFG->dirroot.'/mod/sharedresource/plugins/lom/plugin.class.php';
 
-$plugin = new sharedresource_plugin_lom();
+$plugin = new \mod_sharedresource\plugin_lom();
 $sharedresource_entry = $DB->get_record('sharedresource_entry', array('identifier' => $record['identifier']));
 $output .= $plugin->get_metadata($sharedresource_entry);
 
 $output .= $tr->end_tag('metadata');
-?>

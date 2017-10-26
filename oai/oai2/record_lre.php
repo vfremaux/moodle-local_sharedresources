@@ -54,18 +54,18 @@ $output .= $tr->start_tag('metadata');
 $output .= $tr->full_tag('schema','http://ltsc.ieee.org/xsd/LOM');
 
 // load local-light-lom plugin
-include_once $CFG->dirroot.'/mod/taoresource/taoresource_plugin_base.class.php';
-include_once $CFG->dirroot.'/mod/taoresource/plugins/local/plugin.class.php';
+include_once($CFG->dirroot.'/mod/sharedresource/classes/sharedresource_plugin_base.class.php');
+include_once($CFG->dirroot.'/mod/sharedresource/plugins/local/plugin.class.php');
 
-$plugin = new taoresource_plugin_local();
+$plugin = new \mod_sharedresource\plugin_local();
 $taoresource_entry = $DB->get_record('taoresource_entry', array('identifier' => $record['identifier']));
 $output .= $plugin->get_metadata($taoresource_entry);
 $output .= $tr->end_tag('metadata');
 
 $output .= $tr->end_tag('description');
 
-// NOW THE KEY MANIFESTATIONS SECTION
-$manifestations = array('web'=>'','imscc'=>'imscc_v1p0','imscp'=>'imscp_v1p1p4','scorm'=>'scorm_v1p2');
+// NOW THE KEY MANIFESTATIONS SECTION.
+$manifestations = array('web' => '','imscc' => 'imscc_v1p0','imscp' => 'imscp_v1p1p4','scorm' => 'scorm_v1p2');
 // $formats = get_formats_list((object)$record);
 foreach ($manifestations as $format => $param) {
     // first some variables set up
@@ -74,7 +74,7 @@ foreach ($manifestations as $format => $param) {
         $title = 'web site';
         $url = $resourceBaseURL.$record['identifier'];
     } else {
-        if (!isset($formats[$format])) {continue;} // file doesn't exist
+        if (!isset($formats[$format])) {continue;} // File doesn't exist.
         $name = 'package in';
         $url = $formats[$format]['url'];
         $title = $formats[$format]['title'];
