@@ -23,7 +23,6 @@
  * Provides a pluggable search form for several external resources repositories.
  * @see resources/results.php
  */
-
 require('../../config.php');
 require_once($CFG->dirroot.'/local/sharedresources/lib.php');
 
@@ -56,14 +55,12 @@ $PAGE->set_url($url);
 
 echo $OUTPUT->header();
 
-// get repos and make tabs
+// Get repos and make tabs.
 
 resources_search_print_tabs($repo, $course);
 
-// get repo and get search page
+// Get repo and get search page.
 
 include($CFG->dirroot."/resources/plugins/{$repo}/remotesearch.php");
-
-// Footer.
 
 echo $OUTPUT->footer();
