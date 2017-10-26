@@ -17,13 +17,11 @@
 /**
  * Version details.
  *
- * @package    local_sharedresources
- * @category   local
- * @author     Valery Fremaux <valery.fremaux@gmail.com>
- * @copyright  2010 Valery Fremaux <valery.fremaux@gmail.com>
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package     local_sharedresources
+ * @category    local
+ * @author      Valery Fremaux <valery.fremaux@club-internet.fr>
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL
  */
-
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->version  = 2014032700;   // The (date) version of this plugin.
