@@ -14,13 +14,18 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+/**
+ * @package     local_sharedresource
+ * @category    local
+ * @author      Valery Fremaux (valery.fremaux@gmail.com)
+ */
 defined('MOODLE_INTERNAL') || die();
 
 if ($action == 'forcedelete' || $action == 'delete') {
     $resourceid = required_param('id', PARAM_INT);
 
     $identifier = $DB->get_field('sharedresource_entry', 'identifier', array('id' => $resourceid));
-    $DB->delete_records('sharedresource_metadata', array('entry_id' => $resourceid));
+    $DB->delete_records('sharedresource_metadata', array('entryid' => $resourceid));
     $DB->delete_records('sharedresource_entry', array('id' => $resourceid));
 
     if ($sharedresources = $DB->get_records('sharedresource', array('identifier' => $identifier))) {

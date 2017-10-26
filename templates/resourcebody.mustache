@@ -1,0 +1,76 @@
+{{!
+    This file is part of The Dashboard Block
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_sharedresource/resourcebody
+
+    Used when a resource is setup as popuped but accessed directly
+
+    Classes required for JS:
+    * mod/sharedresource/amd/view.js
+
+}}
+<div class="resource-item">
+
+<div class="sharedresource-heading">
+    <div class="resource-download">
+        <a href="{{url}}" target="_blank"><img src="{{downloadpixurl}}" /></a>
+    </div>
+
+    <div class="resource-title">
+        <h3 class="title"><img src="{{pixurl}}" class="iconlarge" /> {{title}} {{{editioncommands}}}</h3>
+    </div>
+</div>
+
+{{{noticepopupactionlink}}}
+<br/>
+
+<div class="sharedresource-info">
+    <a class="sharedressource-toggle-handle"><img id="sharedresource-toggle-{{identifier}}" src="{{handlepixurl}}"></a>
+
+    {{^uses}}
+    <div class="resource-usage">{{strnotused}}</div>
+    {{/uses}}
+    {{#uses}}
+    <div class="resource-usage"><a href="{{courselisturl}}">{{used}}</a></div>
+    {{/uses}}
+
+    <div class="resource-views">{{strviewed}}</div>
+
+    <div class="resource-likes">
+       {{strliked}}
+       <span id="sharedresource-likes-{{identifier}}">
+       {{{stars}}}
+       </span>
+        <a class="sharedresource-mark-like" id="sharedresource-{{identifier}}">{{strmarkliked}}</a>
+    </div>
+
+</div>
+
+<div class="generalbox resource-info" id="sharedresource-info-{{identifier}}" style="display:none">
+{{#description}}
+    <div class="sharedreosurce-description">
+        <div class="resource-thumbnail">{{{thumbnail}}}</div>
+        <div class="resource-description">{{{description}}}</div>
+
+        <div class="smalltext">{{strkeywords}}: <b>{{keywords}}</b></div>
+    </div>
+{{/description}}
+</div>
+
+{{{rescommands}}}
+
+</div>

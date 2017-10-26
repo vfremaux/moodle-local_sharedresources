@@ -25,7 +25,6 @@
  * @copyright  (C) 1999 onwards Martin Dougiamas  http://dougiamas.com
  *
  */
-
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->libdir.'/formslib.php');
@@ -33,14 +32,14 @@ require_once($CFG->dirroot.'/local/sharedresources/plugins/lre/sqilib.php');
 
 class Remote_Search_Form extends moodleform {
 
-    function __construct($action) {
+    public function __construct($action) {
         parent::__construct($action);
     }
 
-    function definition() {
+    public function definition() {
         global $CFG;
 
-        // Setting variables
+        // Setting variables.
         $mform =& $this->_form;
         
         $langroot = $CFG->dirroot.'/resources/plugins/lre/lang/';
@@ -73,11 +72,11 @@ class Remote_Search_Form extends moodleform {
     }
 
     /**
-    * validates inputs
-    */
-    function validation($data, $files = array()) {
-        $errors = array();
+     * validates inputs
+     */
+    public function validation($data, $files = array()) {
+        $errors = parent::validation($data, $files);
 
-        return $errors; 
+        return $errors;
     }
 }
