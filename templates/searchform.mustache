@@ -21,6 +21,7 @@
     * none
 
 }}
+<!-- searchform -->
 {{^haswidgets))
 <br/>
 <center>{{strnowidgets}}</center>
@@ -38,7 +39,7 @@
 <input type="hidden" name="repo" value="{{repo}}">
 <input type="hidden" name="offset" value="{{offset}}">
 <fieldset>
-<legend>{{strsearchinlibrary}}</legend>
+<legend>{{searchinlibrarystr}}</legend>
 
 <table>
     <tr>
@@ -50,7 +51,7 @@
     </tr>
     <tr>
         <td colspan="{{n}}" align="center">
-            input type="submit" name="go" value="{{strsearch}}" />
+            input type="submit" name="go" value="{{searchstr}}" />
         </td>
     </tr>
 </table>
@@ -58,3 +59,4 @@
 </form>
 
 {{/haswidgets}}
+<!-- /searchform -->

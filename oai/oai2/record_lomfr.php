@@ -14,9 +14,10 @@ if (!$myformat['defaultnamespace']) {
     $atts['xmlns'] = $myformat['metadataNamespace'];
 }
 
-if (!isset($lom)) { // allows reuse of the class for listrecords
+if (!isset($lom)) {
+    // allows reuse of the class for listrecords.
     $lomatts = array(
-        'xsi:schemaLocation' => $METADATAFORMATS['shared_lom']['metadataNamespace'].'       http://ltsc.ieee.org/xsd/lomv1.0/lomLoose.xsd',
+        'xsi:schemaLocation' => $METADATAFORMATS['oai_lom']['metadataNamespace'].'       http://ltsc.ieee.org/xsd/lomv1.0/lomLoose.xsd',
         'xmlns' => $METADATAFORMATS['oai_lom']['metadataNamespace']
     );
 }

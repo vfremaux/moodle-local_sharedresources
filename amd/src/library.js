@@ -38,8 +38,9 @@ define(['jquery', 'core/config', 'core/log'], function ($, cfg, log) {
                 }
             );
 
-            $('.sharedressource-toggle-handle').on('click', this.toggle_info_panel);
+            $('.sharedresource-toggle-handle').bind('click', this.toggle_info_panel);
             $('.sharedresource-mark-like').on('click', '', args, this.ajax_mark_like);
+            $('.sharedresource-actionlink').bind('click', this.integrate);
         },
 
         ajax_mark_like: function (e) {
@@ -80,5 +81,17 @@ define(['jquery', 'core/config', 'core/log'], function ($, cfg, log) {
                 $('#sharedresource-toggle-' + residentifier).attr('src', iconsrc);
             }
         },
+
+        integrate: function() {
+
+            var that = $(this);
+
+            var matches = that.attr('id').match(/id-(\w+)-(\d+)/);
+            command = matches[1];
+            ix = matches[2];
+            document.forms['add' + ix].mode.value = command;
+            document.forms['add' + ix].submit();
+        }
+
     };
 });

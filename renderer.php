@@ -62,7 +62,7 @@ class local_sharedresources_renderer extends plugin_renderer_base {
         $template->courseid = $courseid;
         $template->repo = $repo;
         $template->offset = $offset;
-        $template->strsearch = get_string('search');
+        $template->searchstr = get_string('search');
 
         $template->widgets = array();
         $n = 0;
@@ -211,18 +211,18 @@ class local_sharedresources_renderer extends plugin_renderer_base {
                 } else {
                     $params = array('courseid' => $course->id, 'entryid' => $resource->id);
                     $template->courselisturl = new moodle_url('/local/sharedresources/courses.php', $params);
-                    $template->strused = get_string('used', 'local_sharedresources', $resource->uses);
+                    $template->usedstr = get_string('used', 'local_sharedresources', $resource->uses);
                 }
 
                 // Views.
-                $template->strviewed = get_string('viewed', 'local_sharedresources', $resource->scoreview);
+                $template->viewedstr = get_string('viewed', 'local_sharedresources', $resource->scoreview);
 
                 // Likes.
-                $template->strmarkliked = get_string('markliked', 'local_sharedresources');
+                $template->marklikedstr = get_string('markliked', 'local_sharedresources');
                 // $jshandler = 'javascript:ajax_mark_liked(\''.$repo.'\', \''.$resource->identifier.'\')';
 
                 $template->stars = $this->stars($resource->scorelike, 15);
-                $template->strliked = get_string('liked', 'local_sharedresources');
+                $template->likedstr = get_string('liked', 'local_sharedresources');
 
                 // Resource descriptors.
                 if (!empty($resource->description)) {
@@ -230,7 +230,7 @@ class local_sharedresources_renderer extends plugin_renderer_base {
                     $template->description = $resource->description;
 
                     // Keywords.
-                    $template->strkeywords = get_string('keywords', 'sharedresource');
+                    $template->keywordsstr = get_string('keywords', 'sharedresource');
                     $template->keywords = $resource->keywords;
                 }
 
@@ -242,14 +242,17 @@ class local_sharedresources_renderer extends plugin_renderer_base {
                     if (has_capability('moodle/course:manageactivities', $context)) {
 
                         $cmdtemplate = new StdClass;
+
+                        $cmdtemplate->installtoolstr = get_string('installltitool', 'local_sharedresources');
+                        $cmdtemplate->addtocoursestr = get_string('addtocourse', 'sharedresource');
+                        $cmdtemplate->localizetocoursestr = get_string('localizetocourse', 'sharedresource');
+                        $cmdtemplate->addfiletocoursestr = get_string('addfiletocourse', 'sharedresource');
+
                         $cmdtemplate->i = $i;
                         $cmdtemplate->isltitool = sharedresource_is_lti($resource);
                         $ismoodleactivity = sharedresource_is_moodle_activity($resource);
                         $isplayablemedia = sharedresource_is_media($resource);
 
-                        $cmdtemplate->straddtocourse = get_string('addtocourse', 'sharedresource');
-                        $cmdtemplate->strlocalizetocourse = get_string('localizetocourse', 'sharedresource');
-                        $cmdtemplate->straddfiletocourse = get_string('addfiletocourse', 'sharedresource');
                         $cmdtemplate->isremote = $isremote;
                         if (!$isremote) {
                             // If is local or already proxied.
@@ -278,11 +281,9 @@ class local_sharedresources_renderer extends plugin_renderer_base {
                                 }
                             }
                             */
-                            $cmdtemplate->strinstalltool = get_string('installltitool', 'local_sharedresources');
                             $cmdtemplate->islocalizable = true;
                         }
 
-                        $cmdtemplate->strinstalltool = get_string('installltitool', 'local_sharedresources');
                         /**
                             $jshandler = 'javascript:document.forms[\'add'.$i.'\'].mode.value = \'ltiinstall\';';
                             $jshandler .= 'document.forms[\'add'.$i.'\'].submit();';
@@ -293,12 +294,16 @@ class local_sharedresources_renderer extends plugin_renderer_base {
                         // Check deployable moodle activity.
                             if (file_exists($CFG->dirroot.'/blocks/activity_publisher/lib/activity_publisher.class.php')) {
                                 include_once($CFG->dirroot.'/blocks/activity_publisher/lib/activity_publisher.class.php');
-                                $cmdtemplate->strdeployincourse = get_string('deployincourse', 'block_activity_publisher');
-                                /*
-                                $jshandler = 'javascript:document.forms[\'add'.$i.'\'].mode.value = \'deploy\';';
-                                $jshandler = 'document.forms[\'add'.$i.'\'].submit();';
-                                */
+                                $cmdtemplate->deployincoursestr = get_string('deployincourse', 'block_activity_publisher');
                                 $cmdtemplate->isdeployable = true;
+                            }
+                        }
+
+                        if ($isplayablemedia) {
+                            if (file_exists($CFG->dirroot.'/blocks/activity_publisher/lib/activity_publisher.class.php')) {
+                                $cmdtemplate->deployinmplayerstr = get_string('deployinmplayer', 'mediaplayer');
+                                $cmdtemplate->isvideo = true;
+                                $cmdtemplate->formurl = new moodle_url('/mod/mplayer/deployincourse.php');
                             }
                         }
                     }
@@ -438,35 +443,6 @@ class local_sharedresources_renderer extends plugin_renderer_base {
         return $str;
     }
 
-
-    /**
-     * TODO : May be obsolete, possibly delete
-     */
-    public function update_resourcepage_icon() {
-        global $CFG, $USER;
-
-        if (!isloggedin()) {
-            return '';
-        }
-
-        if (!empty($USER->editing)) {
-            $string = get_string('updateresourcepageoff', 'sharedresource');
-            $edit = '0';
-        } else {
-            $string = get_string('updateresourcepageon', 'sharedresource');
-            $edit = '1';
-        }
-
-        $updateurl = new moodle_url('/local/sharedresources/index.php');
-        $str = '<form '.$CFG->frametarget.' method="get" action="'.$updateurl.'">';
-        $str .= '<div>';
-        $str .= '<input type="hidden" name="edit" value="'.$edit.'" />';
-        $str .= '<input type="submit" value="'.$string.'" />';
-        $str .= '</div></form>';
-
-        return $str;
-    }
-
     public function thumbnail($resource) {
         static $fs;
         static $context;
@@ -569,7 +545,7 @@ class local_sharedresources_renderer extends plugin_renderer_base {
     public function searchlink() {
 
         $str = '';
-        $searchstr = get_string('searchengine', 'local_sharedresources');
+        $searchstr = get_string('searchinlibrary', 'local_sharedresources');
         $exploreurl = new moodle_url('/local/sharedresources/index.php');
         $str .= '<div id="sharedresources-link-to-search">';
         $str .= '<a href="'.$exploreurl.'"><input type="button" value="'.$searchstr.'"></a>';
@@ -590,5 +566,15 @@ class local_sharedresources_renderer extends plugin_renderer_base {
         $str .= '</div>';
 
         return $str;
+    }
+
+    /**
+     * Prints a taxonomy selector if more than one activated.
+     */
+    public function taxonomy_select() {
+        global $DB;
+
+        $enabledtaxonomies = $DB->get_records('sharedresource_classif', array('enabled' => true));
+
     }
 }

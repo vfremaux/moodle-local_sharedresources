@@ -23,6 +23,7 @@
     * mod/sharedresource/amd/view.js
 
 }}
+<!-- resourcebody -->
 <div class="resource-item">
 
 <div class="sharedresource-heading">
@@ -42,31 +43,31 @@
     <a class="sharedressource-toggle-handle"><img id="sharedresource-toggle-{{identifier}}" src="{{handlepixurl}}"></a>
 
     {{^uses}}
-    <div class="resource-usage">{{strnotused}}</div>
+    <div class="resource-usage">{{notusedstr}}</div>
     {{/uses}}
     {{#uses}}
     <div class="resource-usage"><a href="{{courselisturl}}">{{used}}</a></div>
     {{/uses}}
 
-    <div class="resource-views">{{strviewed}}</div>
+    <div class="resource-views">{{viewedstr}}</div>
 
     <div class="resource-likes">
-       {{strliked}}
+       {{likedstr}}
        <span id="sharedresource-likes-{{identifier}}">
        {{{stars}}}
        </span>
-        <a class="sharedresource-mark-like" id="sharedresource-{{identifier}}">{{strmarkliked}}</a>
+        <a class="sharedresource-mark-like" id="sharedresource-{{identifier}}">{{marklikedstr}}</a>
     </div>
 
 </div>
 
 <div class="generalbox resource-info" id="sharedresource-info-{{identifier}}" style="display:none">
 {{#description}}
-    <div class="sharedreosurce-description">
+    <div class="sharedresource-description">
         <div class="resource-thumbnail">{{{thumbnail}}}</div>
         <div class="resource-description">{{{description}}}</div>
 
-        <div class="smalltext">{{strkeywords}}: <b>{{keywords}}</b></div>
+        <div class="smalltext">{{keywordsstr}}: <b>{{keywords}}</b></div>
     </div>
 {{/description}}
 </div>
@@ -74,3 +75,4 @@
 {{{rescommands}}}
 
 </div>
+<!-- /resourcebody -->

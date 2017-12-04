@@ -65,7 +65,10 @@ class navigation {
         return $DB->get_record('sharedresource_taxonomy', array('id' => $catid));
     }
 
-    // Counts the total number of entries 
+    /**
+     * Counts the total number of entries recusrsively in the subtree.
+     * @param int $catid
+     */
     function count_entries_rec($catid) {
         global $DB;
 
@@ -86,8 +89,13 @@ class navigation {
         }
     }
 
+    /**
+     * Get children of a category
+     */
     function get_children(&$categoryorid) {
         global $DB;
+
+        $config = get_config('sharedresource');
 
         if (is_object($categoryorid)) {
             $catid = $category->id;
