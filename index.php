@@ -43,10 +43,10 @@ require_once($CFG->dirroot.'/mod/sharedresource/classes/search_widget.class.php'
 require_once($CFG->dirroot.'/local/sharedresources/lib.php');
 
 $PAGE->requires->jquery();
-$PAGE->requires->js('/local/sharedresources/js/library.js', true);
 $PAGE->requires->js('/local/sharedresources/js/search.js', true);
 
 $config = get_config('sharedresource');
+$mtdplugin = sharedresource_get_plugin($config->schema);
 
 $edit = optional_param('edit', -1, PARAM_BOOL);
 $blockaction = optional_param('blockaction', '', PARAM_ALPHA);
@@ -55,6 +55,8 @@ $section = optional_param('section', '', PARAM_INT); // Optional course section 
 $repo = optional_param('repo', 'local', PARAM_TEXT);
 $offset = optional_param('offset', 0, PARAM_INT);
 $action = optional_param('what', '', PARAM_TEXT);
+
+$PAGE->requires->js_call_amd('local_sharedresources/library', 'init', array('repo' => $repo));
 
 // Security.
 
@@ -179,6 +181,14 @@ if ($fullresults['maxobjects'] <= $page) {
     echo $renderer->pager($courseid, $repo, $nbrpages, $page, $offset, $isediting);
 }
 echo '</div>';
+
+if ($mtdplugin->getTaxonomyValueElement()) {
+    // Only browse if there is a taxonomy in the metadata schema.
+    echo '<center>';
+    echo '<br/>';
+    echo $renderer->browserlink();
+    echo '</center>';
+}
 
 if ($courseid > SITEID) {
     $options['id'] = $course->id;

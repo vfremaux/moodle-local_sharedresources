@@ -116,6 +116,12 @@ function get_local_resources($repo, &$fullresults, $metadatafilters = '', &$offs
 
     if (!empty($fullresults['entries'])) {
         foreach ($fullresults['entries'] as $id => $r) {
+
+            if (!sharedresource_has_access($r)) {
+                unset($fullresults['entries'][$id]);
+                continue;
+            }
+
             $select = array('entryid' => $id, 'namespace' => $config->schema);
             if ($metadata = $DB->get_records('sharedresource_metadata', $select, 'element', 'id, element, namespace, value')) {
                 $fullresults['entries'][$id]->metadata = $metadata;
@@ -186,34 +192,6 @@ function get_remote_repo_resources($repo, &$fullresults, $metadatafilters = '', 
     unset($mnetrequest);
 
     return $fullresults['entries'];
-}
-
-/**
- *
- */
-function update_resourcepage_icon() {
-    global $CFG, $USER;
-
-    if (!isloggedin()) {
-        return '';
-    }
-
-    if (!empty($USER->editing)) {
-        $string = get_string('updateresourcepageoff', 'sharedresource');
-        $edit = '0';
-    } else {
-        $string = get_string('updateresourcepageon', 'sharedresource');
-        $edit = '1';
-    }
-
-    $formurl = new moodle_url('/resources/index.php');
-    $return = '<form '.$CFG->frametarget.' method="get" action="'.$formurl.'">';
-    $return .= '<div>';
-    $return .= '<input type="hidden" name="edit" value="'.$edit.'" />';
-    $return .= '<input type="submit" value="'.$string.'" />';
-    $return .= '</div></form>';
-
-    return $return;
 }
 
 /**
@@ -424,7 +402,7 @@ function resources_repo($wwwroot) {
 }
 
 /**
-* setup visible search widgets depenging on metadata plugin and
+* setup visible search widgets depending on metadata plugin and
 * user quality
 * @param array ref $visiblewidgets an array to be filled by the function with objets reprensenting visible widgets
 * @param object $context course or site context
@@ -434,9 +412,13 @@ function resources_setup_widgets(&$visiblewidgets, $context) {
 
     $config = get_config('sharedresource');
 
+    /*
+    // TODO : complete the code when setting up new capabilities related to widgets usage (read).
+
     // Setup the catalog view separating providers with tabs.
     $plugins = sharedresource_get_plugins();
-    $pluginname = $plugins[$CFG->pluginchoice]->pluginname;
+    $pluginname = $plugins[$config->schema]->pluginname;
+
     if (has_capability('repository/sharedresources:systemmetadata', $context)) {
         $capability = 'system';
     } else if (has_capability('repository/sharedresources:indexermetadata', $context)) {
@@ -444,16 +426,22 @@ function resources_setup_widgets(&$visiblewidgets, $context) {
     } else if (has_capability('repository/sharedresources:authormetadata', $context)) {
         $capability = 'author';
     } else {
-        error(get_string('noaccessform', 'sharedresource'));
+        print_error(get_string('noaccessform', 'sharedresource'));
     }
+    */
 
     if ($activewidgets = unserialize(@$config->activewidgets)) {
         $count = 0;
         foreach ($activewidgets as $key => $widget) {
+        /*
+        // TODO : complete the code when setting up new capabilities related to widgets usage (read).
             if ($DB->record_exists_select('config_plugins', "name LIKE 'config_{$pluginname}_{$capability}_{$widget->id}'")) {
+        */
                 $count++;
                 array_push($visiblewidgets, $widget);
+        /*
             }
+        */
         }
     }
 }
@@ -621,9 +609,19 @@ function sharedresource_is_moodle_activity($resource) {
  * @TODO : turn implementation to more portable IN() statement
  */
 function sharedresource_get_top_keywords($courseid) {
-    global $DB;
+    global $DB, $CFG;
 
     $config = get_config('sharedresource');
+
+    $mtdclass = '\\mod_sharedresource\\plugin_'.$config->schema;
+    require_once($CFG->dirroot.'/mod/sharedresource/plugins/'.$config->schema.'/plugin.class.php');
+    $mtdstandard = new $mtdclass();
+    $kwelement = $mtdstandard->getKeywordElement();
+
+    if (!$kwelement) {
+        // Some metadata standard have no keywords. (DC)
+        return '';
+    }
 
     $contexts[] = 1;
 
@@ -641,11 +639,6 @@ function sharedresource_get_top_keywords($courseid) {
     }
 
     $contextlist = implode(',', $contexts);
-
-    $mtdclass = '\\mod_sharedresource\\plugin_'.$config->schema;
-    $mtdstandard = new $mtdclass();
-
-    $kwelement = $mtdstandard->getKeywordElement();
 
     $topranksize = 20;
 
@@ -1000,39 +993,61 @@ function sharedresources_aggregate($importlist, &$metadatadefines) {
 }
 
 /**
-* checks if a user has a some named capability effective somewhere in a course.
-*/
-function sharedresource_has_capability_somewhere($capability, $excludesystem = true, $excludesite = true,
-                                                 $fromcategorycontext = null, $doanything = false) {
-    global $USER;
+ * This is a relocalized function in order to get local_my more compact.
+ * checks if a user has a some named capability effective somewhere in a course.
+ * @param string $capability;
+ * @param bool $excludesystem
+ * @param bool $excludesite
+ * @param bool $doanything
+ * @param string $contextlevels restrict to some contextlevel may speedup the query.
+ */
+function sharedresources_has_capability_somewhere($capability, $excludesystem = true, $excludesite = true,
+                                           $doanything = false, $contextlevels = '') {
+    global $USER, $DB;
 
-    if (!$fromcategorycontext) {
-        // This will not be very efficient.
-        $hassome = get_user_capability_course($capability, $USER->id, false);
-        if ($excludesite && !empty($hassome) && array_key_exists(SITEID, $hassome)) {
-            unset($hassome[SITEID]);
-        }
-        if (!empty($hassome)) {
-            return true;
-        }
+    $contextclause = '';
 
-        $systemcontext = context_system::instance();
-        if (!$excludesystem && has_capability($capability, $systemcontext, $USER->id, $doanything)) {
-            return true;
-        }
-    } else {
-        // Return as soon as we can.
-        if (has_capability($capability, $fromcategorycontext)) {
-            return true;
-        }
-        if ($allsubcontexts = $DB->get_records_select('context', " path LIKE '{$fromcategorycontext->path}/%' ")) {
-            foreach ($allsubcontexts as $sc) {
-                $c = context::create_instance_from_record($sc);
-                if (has_capability($capability, $c)) {
-                    return true;
-                }
-            }
-        }
+    if ($contextlevels) {
+        list($sql, $params) = $DB->get_in_or_equal(explode(',', $contextlevels), SQL_PARAMS_NAMED);
+        $contextclause = "
+           AND ctx.contextlevel $sql
+        ";
+    }
+    $params['capability'] = $capability;
+    $params['userid'] = $USER->id;
+
+    $sitecontextexclclause = '';
+    if ($excludesite) {
+        $sitecontextexclclause = " ctx.id != 1  AND ";
+    }
+
+    // This is a a quick rough query that may not handle all role override possibility.
+
+    $sql = "
+        SELECT
+            COUNT(DISTINCT ra.id)
+        FROM
+            {role_capabilities} rc,
+            {role_assignments} ra,
+            {context} ctx
+        WHERE
+            rc.roleid = ra.roleid AND
+            ra.contextid = ctx.id AND
+            $sitecontextexclclause
+            rc.capability = :capability
+            $contextclause
+            AND ra.userid = :userid AND
+            rc.permission = 1
+    ";
+    $hassome = $DB->count_records_sql($sql, $params);
+
+    if (!empty($hassome)) {
+        return true;
+    }
+
+    $systemcontext = context_system::instance();
+    if (!$excludesystem && has_capability($capability, $systemcontext, $USER->id, $doanything)) {
+        return true;
     }
 
     return false;
