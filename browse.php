@@ -65,7 +65,7 @@ $filters = null;
 
 $navigator = new \local_sharedresources\browser\navigation();
 
-$classificationfilters = $navigator->get_category_filters();
+// $classificationfilters = $navigator->get_category_filters();
 
 $i = 0;
 foreach ($classificationfilters as $afilter) {
@@ -89,7 +89,10 @@ if (is_dir($CFG->dirroot.'/local/staticguitexts')) {
 
 // Making filters.
 
-echo $renderer->filters($catid, $catpath);
+echo $renderer->searchlink();
+// echo $renderer->filters($catid, $catpath);
+
+echo $renderer->taxonomy_select();
 
 // Calling navigation.
 
@@ -98,10 +101,14 @@ if ($catid) {
     echo $renderer->category($category, $catpath, $navigator->count_entries_rec($category), 'current', true);
 
     // Root of the catalog cannot have resourses.
-    echo $renderer->resourcelist(array_keys($cattree->entries));
+    echo $renderer->resourcelist(array_keys($category->entries));
+} else {
+    $category = new StdClass;
+    $catid = 0;
+    $category->cats = $navigator->get_children($$catid);
 }
 
-echo $renderer->children($cattree, $catpath);
+echo $renderer->children($category, $catpath);
 
 echo $renderer->searchlink();
 

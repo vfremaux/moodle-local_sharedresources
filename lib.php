@@ -195,34 +195,6 @@ function get_remote_repo_resources($repo, &$fullresults, $metadatafilters = '', 
 }
 
 /**
- *
- */
-function update_resourcepage_icon() {
-    global $CFG, $USER;
-
-    if (!isloggedin()) {
-        return '';
-    }
-
-    if (!empty($USER->editing)) {
-        $string = get_string('updateresourcepageoff', 'sharedresource');
-        $edit = '0';
-    } else {
-        $string = get_string('updateresourcepageon', 'sharedresource');
-        $edit = '1';
-    }
-
-    $formurl = new moodle_url('/resources/index.php');
-    $return = '<form '.$CFG->frametarget.' method="get" action="'.$formurl.'">';
-    $return .= '<div>';
-    $return .= '<input type="hidden" name="edit" value="'.$edit.'" />';
-    $return .= '<input type="submit" value="'.$string.'" />';
-    $return .= '</div></form>';
-
-    return $return;
-}
-
-/**
  * Resources providers are mnet_hosts for which we have a subscription to its provider
  * service
  */
@@ -637,9 +609,19 @@ function sharedresource_is_moodle_activity($resource) {
  * @TODO : turn implementation to more portable IN() statement
  */
 function sharedresource_get_top_keywords($courseid) {
-    global $DB;
+    global $DB, $CFG;
 
     $config = get_config('sharedresource');
+
+    $mtdclass = '\\mod_sharedresource\\plugin_'.$config->schema;
+    require_once($CFG->dirroot.'/mod/sharedresource/plugins/'.$config->schema.'/plugin.class.php');
+    $mtdstandard = new $mtdclass();
+    $kwelement = $mtdstandard->getKeywordElement();
+
+    if (!$kwelement) {
+        // Some metadata standard have no keywords. (DC)
+        return '';
+    }
 
     $contexts[] = 1;
 
@@ -657,11 +639,6 @@ function sharedresource_get_top_keywords($courseid) {
     }
 
     $contextlist = implode(',', $contexts);
-
-    $mtdclass = '\\mod_sharedresource\\plugin_'.$config->schema;
-    $mtdstandard = new $mtdclass();
-
-    $kwelement = $mtdstandard->getKeywordElement();
 
     $topranksize = 20;
 

@@ -23,6 +23,7 @@
     * mod/sharedresource/amd/view.js
 
 }}
+<!-- resourcecommands -->
 <div class="generalbox sharedresources-commands">
 
 {{#isremote}}
@@ -45,19 +46,24 @@
 </form>
 
 {{^isltitool}}
-<a href="javascript:document.forms[\'add'.$i.'\'].submit();">'.$addtocourse.'</a>
+<a id="id-shared-{{i}}">{{addtocoursestr}}</a>
 
 {{#islocalizable}}
-<a class="sharedresource-localize" id="sharedresource-localize-{{identifier}}">'.$localizetocourse.'</a>
-{{/islocalizable}}}}
+ - <a id="id-local-{{i}}" class="sharedresource-actionlink">{{localizetocoursestr}}</a>
+{{/islocalizable}}
 {{/isltitool}}
 
 {{#isltitool}}
- - <a class="sharedresource-lti-install" id="sharedresource-lti-install-{{identifier}}">{{strinstalltool}}</a>
-{{/isltitool}}}
+ - <a id="id-ltiinstall-{{i}}" class="sharedresource-actionlink">{{installtoolstr}}</a>
+{{/isltitool}}
 
-{{#isdeployeable}}
- - <a href="'.$jshandler.'">'.$deployincourse.'</a>
-{{/isdeployeable}}
+{{#isdeployable}}
+ - <a id="id-deploy-{{i}}" class="sharedresource-actionlink">{{deployincoursestr}}</a>
+{{/isdeployable}}
+
+{{#isvideo}}
+ - <a id="id-mplayerdeploy-{{i}}" class="sharedresource-actionlink">{{deployinmplayerstr}}</a>
+{{/isvideo}}
 
 </div>
+<!-- /resourcecommands -->

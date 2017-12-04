@@ -23,10 +23,11 @@
     * none
 
 }}
+<!-- searchform_tableless -->
 {{^haswidgets}}
 <div class="block">
     <div class="content">
-        <center>{{strnowidgets}}</center><br/>
+        <center>{{nowidgetsstr}}</center><br/>
     </div>
 </div>
 {{/haswidgets}}
@@ -45,7 +46,7 @@
 <div class="block">
     <div id="sharedresource-search-button content">
         <center>
-        <input type="submit" name="go" value="{{strsearch}}" />';
+        <input type="submit" name="go" value="{{searchstr}}" />
         </center>
     </div>
 </div>
@@ -59,7 +60,7 @@
 <div class="block" id="sharedresource-search-button">
     <div class="content">
         <center>
-        <input type="submit" name="go" value="{{strsearch}}" />
+        <input type="submit" name="go" value="{{searchstr}}" />
         </center>
     </div>
 </div>
@@ -67,3 +68,4 @@
 </form>
 </div>
 {{/haswidgets}}
+<!-- /searchform_tableless -->

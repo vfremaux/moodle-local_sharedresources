@@ -46,6 +46,7 @@ $PAGE->requires->jquery();
 $PAGE->requires->js('/local/sharedresources/js/search.js', true);
 
 $config = get_config('sharedresource');
+$mtdplugin = sharedresource_get_plugin($config->schema);
 
 $edit = optional_param('edit', -1, PARAM_BOOL);
 $blockaction = optional_param('blockaction', '', PARAM_ALPHA);
@@ -181,10 +182,13 @@ if ($fullresults['maxobjects'] <= $page) {
 }
 echo '</div>';
 
-echo '<center>';
-echo '<br/>';
-echo $renderer->browserlink();
-echo '</center>';
+if ($mtdplugin->getTaxonomyValueElement()) {
+    // Only browse if there is a taxonomy in the metadata schema.
+    echo '<center>';
+    echo '<br/>';
+    echo $renderer->browserlink();
+    echo '</center>';
+}
 
 if ($courseid > SITEID) {
     $options['id'] = $course->id;
