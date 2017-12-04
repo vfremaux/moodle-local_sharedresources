@@ -1,0 +1,71 @@
+{{!
+    This file is part of The Sharedresource Library
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_sharedresource/searchform_tableless
+
+    Shows a library search form with search widgets.
+
+    Classes required for JS:
+    * none
+
+}}
+<!-- searchform_tableless -->
+{{^haswidgets}}
+<div class="block">
+    <div class="content">
+        <center>{{nowidgetsstr}}</center><br/>
+    </div>
+</div>
+{{/haswidgets}}
+
+{{#haswidgets}}
+
+<div id="search-form">
+<form name="cat" action="{{formurl}}" style="display:inline">
+{{#courseid}}
+<input type="hidden" name="course" value="{{courseid}}">
+{{/courseid}}
+
+<input type="hidden" name="repo" value="{{repo}}">
+<input type="hidden" name="offset" value="{{offset}}">
+
+<div class="block">
+    <div id="sharedresource-search-button content">
+        <center>
+        <input type="submit" name="go" value="{{searchstr}}" />
+        </center>
+    </div>
+</div>
+
+{{#widgets}}
+<div class="block" id="widget-{{key}}" >
+    {{{widget}}}
+</div>
+{{/widgets}}
+
+<div class="block" id="sharedresource-search-button">
+    <div class="content">
+        <center>
+        <input type="submit" name="go" value="{{searchstr}}" />
+        </center>
+    </div>
+</div>
+
+</form>
+</div>
+{{/haswidgets}}
+<!-- /searchform_tableless -->

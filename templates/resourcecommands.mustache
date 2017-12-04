@@ -1,0 +1,69 @@
+{{!
+    This file is part of The Dashboard Block
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_sharedresource/resourcebody
+
+    Used when a resource is setup as popuped but accessed directly
+
+    Classes required for JS:
+    * mod/sharedresource/amd/view.js
+
+}}
+<!-- resourcecommands -->
+<div class="generalbox sharedresources-commands">
+
+{{#isremote}}
+    <form name="add{{i}}" action="{{formurl}}" style="display:inline">
+{{/isremote}}
+
+{{^isremote}}
+    <form name="add{{i}}" action="{{formurl}}" style="display:inline" method="POST" >
+{{/isremote}}
+
+<input type="hidden" name="id" value="{{courseid}}" />
+<input type="hidden" name="mode" value="shared" />
+<input type="hidden" name="section" value="{{section}}" />
+<input type="hidden" name="identifier" value="{{identifier}}" />
+<input type="hidden" name="description" value="{{quoteddesc}}" />
+<input type="hidden" name="title" value="{{quotedtitle}}" />
+<input type="hidden" name="provider" value="{{repo}}" />
+<input type="hidden" name="file" value="{{file}}" />
+<input type="hidden" name="url" value="{{url}}" />
+</form>
+
+{{^isltitool}}
+<a id="id-shared-{{i}}">{{addtocoursestr}}</a>
+
+{{#islocalizable}}
+ - <a id="id-local-{{i}}" class="sharedresource-actionlink">{{localizetocoursestr}}</a>
+{{/islocalizable}}
+{{/isltitool}}
+
+{{#isltitool}}
+ - <a id="id-ltiinstall-{{i}}" class="sharedresource-actionlink">{{installtoolstr}}</a>
+{{/isltitool}}
+
+{{#isdeployable}}
+ - <a id="id-deploy-{{i}}" class="sharedresource-actionlink">{{deployincoursestr}}</a>
+{{/isdeployable}}
+
+{{#isvideo}}
+ - <a id="id-mplayerdeploy-{{i}}" class="sharedresource-actionlink">{{deployinmplayerstr}}</a>
+{{/isvideo}}
+
+</div>
+<!-- /resourcecommands -->

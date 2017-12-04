@@ -47,57 +47,39 @@ class local_sharedresources_renderer extends plugin_renderer_base {
      * @param object $context the current course or site context
      * @param array ref $visiblewidgets an array of widgets to print
      */
-    public function search_widgets_tableless($courseid, $repo, $offset, $context, &$visiblewidgets, &$searchvalues) {
-        global $OUTPUT;
+    public function search_widgets($courseid, $repo, $offset, $context, &$visiblewidgets, &$searchvalues, $layout = '') {
 
-        $str = '';
+        $template = new StdClass;
+        $template->strnowidgets = get_string('nowidget', 'sharedresource');
 
         if (empty($visiblewidgets)) {
-            $str .= $OUTPUT->box_start('block');
-            $str .= $OUTPUT->box_start('content');
-            $str .= '<br/><center>'.get_string('nowidget', 'sharedresource').'</center><br/>';
-            $str .= $OUTPUT->box_end();
-            $str .= $OUTPUT->box_end();
-        } else {
-            $libraryurl = new moodle_url('/local/sharedresources/index.php');
-            $str .= '<div id="search-form">';
-            $str .= '<form name="cat" action="'.$libraryurl.'" style="display:inline">';
-            if ($courseid) {
-                $str .= '<input type="hidden" name="course" value="'.$courseid.'">';
-            }
-            $str .= '<input type="hidden" name="repo" value="'.$repo.'">';
-            $str .= '<input type="hidden" name="offset" value="'.$offset.'">';
-
-            // Top button submit.
-            $str .= $OUTPUT->box_start('block');
-            $str .= '<div id="sharedresource-search-button content"><center>';
-            $search = get_string('search');
-            $str .= '<input type="submit" name="go" value="'.$search.'" />';
-            $str .= '</center></div>';
-            $str .= $OUTPUT->box_end();
-
-            $n = 0;
-            foreach ($visiblewidgets as $key => $widget) {
-                $str .= $OUTPUT->box_start('block', 'widget-'.$key);
-                $str .= $widget->print_search_widget('column', @$searchvalues[$widget->id]);
-                $str .= $OUTPUT->box_end();
-                $n++;
-            }
-
-            // Bottom button submit.
-            $str .= $OUTPUT->box_start('block', 'sharedresource-search-button');
-            $str .= '<div class="content"><center>';
-            $search = get_string('search');
-            $str .= '<input type="submit" name="go" value="'.$search.'" />';
-            $str .= '</center></div>';
-            $str .= $OUTPUT->box_end();
-
-            $str .= '</fieldset>';
-            $str .= '</form>';
-            $str .= '</div>';
+            return;
         }
 
-        return $str;
+        $template->haswidgets = true;
+
+        $template->formurl = new moodle_url('/local/sharedresources/index.php');
+        $template->courseid = $courseid;
+        $template->repo = $repo;
+        $template->offset = $offset;
+        $template->searchstr = get_string('search');
+
+        $template->widgets = array();
+        $n = 0;
+        foreach ($visiblewidgets as $key => $searchwidget) {
+            $widget = new StdClass;
+            $widget->key = $key;
+            $widget->widget = $searchwidget->print_search_widget('column', @$searchvalues[$searchwidget->id]);
+            $template->widgets[] = $widget;
+            $n++;
+        }
+        $template->n = $n;
+
+        if ($layout == 'tableless') {
+            return $this->render_from_template('local_sharedresources/searchform_tableless', $template);
+        } else {
+            return $this->render_from_template('local_sharedresources/searchform', $template);
+        }
     }
 
     /**
@@ -108,40 +90,8 @@ class local_sharedresources_renderer extends plugin_renderer_base {
      * @param object $context the current course or site context
      * @param array ref $visiblewidgets an array of widgets to print
      */
-    public function search_widgets($courseid, $repo, $offset, $context, &$visiblewidgets, &$searchvalues) {
-
-        $str = '';
-        $libraryurl = new moodle_url('/local/sharedresources/index.php');
-
-        if (empty($visiblewidgets)) {
-            $str .= '<br/><center>'.get_string('nowidget', 'sharedresource').'</center><br/>';
-        } else {
-            $str .= '<form name="cat" action="'.$libraryurl.'" style="display:inline">';
-            if ($courseid) {
-                $str .= '<input type="hidden" name="course" value="'.$courseid.'">';
-            }
-            $str .= '<input type="hidden" name="repo" value="'.$repo.'">';
-            $str .= '<input type="hidden" name="offset" value="'.$offset.'">';
-            $str .= '<fieldset>';
-            $searchstr = get_string('searchinlibrary', 'sharedresource');
-            $str .= "<legend>$searchstr</legend>";
-            $str .= '<table>';
-            $str .= '<tr>';
-            $n = 0;
-            foreach ($visiblewidgets as $key => $widget) {
-                $str .= '<td>';
-                $str .= $widget->print_search_widget('column', @$searchvalues[$widget->id]);
-                $str .= '</td>';
-                $n++;
-            }
-            $str .= '</tr><tr><td colspan="'.$n.'" align="center">';
-            $search = get_string('search');
-            $str .= '<input type="submit" name="go" value="'.$search.'" />';
-            $str .= '</td></tr>';
-            $str .= '</table>';
-            $str .= '</fieldset>';
-            $str .= '</form>';
-        }
+    public function search_widgets_tableless($courseid, $repo, $offset, $context, &$visiblewidgets, &$searchvalues) {
+        return $this->search_widgets($courseid, $repo, $offset, $context, $visiblewidgets, $searchvalues, 'tableless');
     }
 
     /**
@@ -234,74 +184,55 @@ class local_sharedresources_renderer extends plugin_renderer_base {
                     $commands .= '&nbsp;<a href="'.$pushurl.'" title="'.$exportstr.'">'.$pix.'</a>';
                 }
 
-                $icon = ($isremote) ? 'remoteicon' : 'icon';
-                $str .= $this->output->box_start('resourceitem'); // Resource item.
+                $template = new StdClass;
 
                 // Resource heading.
-                $pix = '<img src="'.$this->output->pix_url($icon, 'sharedresource').'" class="iconlarge" />';
-                $pixurl = $this->output->pix_url('download', 'local_sharedresources');
+                $icon = ($isremote) ? 'remoteicon' : 'icon';
+                $template->pixurl = $this->output->pix_url($icon, 'sharedresource');
+                $template->downloadpixurl = $this->output->pix_url('download', 'local_sharedresources');
 
-                $str .= '<div>';
-                $str .= '<div class="resource-download">';
-                $str .= '<a href="'.$resource->url.'" target="_blank"><img src="'.$pixurl.'" /></a>';
-                $str .= '</div>';
-                $str .= '<div class="resource-title">';
-                $str .= '<h3 class="title"> '.$pix.' '.$resource->title.' '.$commands.'</h3>';
-                $str .= '</div>';
-                $str .= '</div>';
+                $template->url = $resource->url;
+                $template->title = $resource->title;
+                $template->editioncommands = $commands;
+                $template->identifier = $resource->identifier;
 
                 // Print notice access.
                 $readnotice = get_string('readnotice', 'sharedresource');
                 $url = "{$reswwwroot}/mod/sharedresource/metadatanotice.php?identifier={$resource->identifier}";
                 $popupaction = new popup_action('click', $url, 'popup', array('width' => 800, 'height' => 600));
-                $str .= $this->output->action_link($url, $readnotice, $popupaction);
-                $str .= '<br/>';
-
-                $str .= '<div>';
+                $template->noticepopupactionlink = $this->output->action_link($url, $readnotice, $popupaction);
 
                 // Content toggler.
-                $jshandler = 'Javascript:toggle_info_panel(\''.$resource->identifier.'\')';
-                $pixurl = $this->output->pix_url('rightarrow', 'local_sharedresources');
-                $str .= '<a href="'.$jshandler.'"><img id="resource-toggle-'.$resource->identifier.'" src="'.$pixurl.'"></a> ';
+                // $jshandler = 'Javascript:toggle_info_panel(\''.$resource->identifier.'\')';
+                $template->handlepixurl = $this->output->pix_url('rightarrow', 'local_sharedresources');
 
-                // Usages.
                 if (empty($resource->uses)) {
-                    $str .= '<div class="resource-usage">'.get_string('used', 'local_sharedresources', $resource->uses).'</div>';
+                    $template->strnotused = get_string('notused', 'local_sharedresources');
                 } else {
                     $params = array('courseid' => $course->id, 'entryid' => $resource->id);
-                    $courselisturl = new moodle_url('/local/sharedresources/courses.php', $params);
-                    $str .= '<div class="resource-usage"><a href="'.$courselisturl.'">'.get_string('used', 'local_sharedresources', $resource->uses).'</a></div>';
+                    $template->courselisturl = new moodle_url('/local/sharedresources/courses.php', $params);
+                    $template->usedstr = get_string('used', 'local_sharedresources', $resource->uses);
                 }
 
                 // Views.
-                $str .= '<div class="resource-views">'.get_string('viewed', 'local_sharedresources', $resource->scoreview).'</div>';
+                $template->viewedstr = get_string('viewed', 'local_sharedresources', $resource->scoreview);
 
                 // Likes.
-                $markliked = get_string('markliked', 'local_sharedresources');
-                $jshandler = 'javascript:ajax_mark_liked(\''.$repo.'\', \''.$resource->identifier.'\')';
-                $marklikelink = '<a href="'.$jshandler.'">'.$markliked.'</a>';
+                $template->marklikedstr = get_string('markliked', 'local_sharedresources');
+                // $jshandler = 'javascript:ajax_mark_liked(\''.$repo.'\', \''.$resource->identifier.'\')';
 
-                $spanid = 'sharedresource-liked-'.$resource->identifier;
-                $label = '<span id="'.$spanid.'">'.$this->stars($resource->scorelike, 15).'</span>';
-                $str .= '<div class="resource-likes">'.get_string('liked', 'local_sharedresources', $label).' '.$marklikelink.'</div>';
-
-                $str .= '</div>';
+                $template->stars = $this->stars($resource->scorelike, 15);
+                $template->likedstr = get_string('liked', 'local_sharedresources');
 
                 // Resource descriptors.
-                $str .= $this->output->box_start('generalbox resource-info', 'resource-info-'.$resource->identifier, array('style' => 'display: none'));
                 if (!empty($resource->description)) {
-                    $thumbnail = $this->thumbnail($resource);
-                    $str .= '<div>';
-                    $str .= '<div class="resource-thumbnail">'.$thumbnail.'</div>';
-                    $str .= '<div class="resource-description">'.$resource->description.'</div>';
+                    $template->thumbnail = $this->thumbnail($resource);
+                    $template->description = $resource->description;
 
                     // Keywords.
-                    $str .= '<div class="smalltext">'.get_string('keywords', 'sharedresource').': <b>'.$resource->keywords.'</b></div>';
-                    $str .= '</div>';
-
-                    // Searchable values.
+                    $template->keywordsstr = get_string('keywords', 'sharedresource');
+                    $template->keywords = $resource->keywords;
                 }
-                $str .= $this->output->box_end();
 
                 // Ressource commands.
                 if (!empty($course) && ($course->id > SITEID)) {
@@ -310,38 +241,37 @@ class local_sharedresources_renderer extends plugin_renderer_base {
 
                     if (has_capability('moodle/course:manageactivities', $context)) {
 
-                        $str .= $this->output->box_start('generalbox sharedresources-commands'); // Command block.
+                        $cmdtemplate = new StdClass;
 
-                        $isltitool = sharedresource_is_lti($resource);
+                        $cmdtemplate->installtoolstr = get_string('installltitool', 'local_sharedresources');
+                        $cmdtemplate->addtocoursestr = get_string('addtocourse', 'sharedresource');
+                        $cmdtemplate->localizetocoursestr = get_string('localizetocourse', 'sharedresource');
+                        $cmdtemplate->addfiletocoursestr = get_string('addfiletocourse', 'sharedresource');
+
+                        $cmdtemplate->i = $i;
+                        $cmdtemplate->isltitool = sharedresource_is_lti($resource);
                         $ismoodleactivity = sharedresource_is_moodle_activity($resource);
                         $isplayablemedia = sharedresource_is_media($resource);
 
-                        $addtocourse = get_string('addtocourse', 'sharedresource');
-                        $localizetocourse = get_string('localizetocourse', 'sharedresource');
-                        $addfiletocourse = get_string('addfiletocourse', 'sharedresource');
+                        $cmdtemplate->isremote = $isremote;
                         if (!$isremote) {
                             // If is local or already proxied.
-                            $addtocourseurl = new moodle_url('/mod/sharedresource/addlocaltocourse.php');
-                            $str .= '<form name="add'.$i.'" action="'.$addtocourseurl.'" style="display:inline">';
+                            $cmdtemplate->formurl = new moodle_url('/mod/sharedresource/addlocaltocourse.php');
                         } else {
                             // If is a true remote.
-                            $addremoteurl = new moodle_url('/mod/sharedresource/addremotetocourse.php');
-                            $str .= '<form name="add'.$i.'" action="'.$addremoteurl.'" style="display:inline" method="POST" >';
+                            $cmdtemplate->formurl = new moodle_url('/mod/sharedresource/addremotetocourse.php');
                         }
-                        $str .= '<input type="hidden" name="id" value="'.$course->id.'" />';
-                        $str .= '<input type="hidden" name="mode" value="shared" />';
-                        $str .= '<input type="hidden" name="section" value="'.$section.'" />';
-                        $str .= '<input type="hidden" name="identifier" value="'.$resource->identifier.'" />';
-                        $desc = htmlentities($resource->description, ENT_QUOTES, 'UTF-8');
-                        $str .= '<input type="hidden" name="description" value="'.$desc.'" />';
-                        $title = $resource->title;
-                        $str .= '<input type="hidden" name="title" value="'.$title.'" />';
-                        $str .= '<input type="hidden" name="provider" value="'.$repo.'" />';
-                        $str .= '<input type="hidden" name="file" value="'.$resource->file.'" />';
-                        $str .= '<input type="hidden" name="url" value="'.$resource->url.'" />';
-                        $str .= '</form>';
-    
-                        if (!$isltitool) {
+                        $cmdtemplate->courseid = $courseid;
+                        $cmdtemplate->section = $section;
+                        $cmdtemplate->identifier = $resource->identifier;
+                        $cmdtemplate->quoteddesc = htmlentities($resource->description, ENT_QUOTES, 'UTF-8');
+                        $cmdtemplate->quotedtitle = htmlentities($resource->title, ENT_QUOTES, 'UTF-8');
+                        $cmdtemplate->repo = $repo;
+                        $cmdtemplate->file = $resource->file;
+                        $cmdtemplate->url = $resource->url;
+
+                        if (!$cmdtemplate->isltitool && !$ismoodleactivity) {
+                            /*
                             $str .= '<a href="javascript:document.forms[\'add'.$i.'\'].submit();">'.$addtocourse.'</a>';
                             if (!$ismoodleactivity) {
                                 if (!empty($resource->file) || ($isremote && empty($resource->isurlproxy))) {
@@ -350,33 +280,42 @@ class local_sharedresources_renderer extends plugin_renderer_base {
                                     $str .= ' - <a href="'.$jshandler.'">'.$localizetocourse.'</a>';
                                 }
                             }
-                        } else {
-                            $installtool = get_string('installltitool', 'local_sharedresources');
+                            */
+                            $cmdtemplate->islocalizable = true;
+                        }
+
+                        /**
                             $jshandler = 'javascript:document.forms[\'add'.$i.'\'].mode.value = \'ltiinstall\';';
                             $jshandler .= 'document.forms[\'add'.$i.'\'].submit();';
                             $str .= ' - <a href="'.$jshandler.'">'.$installtool.'</a>';
-                        }
+                        */
 
                         if ($ismoodleactivity) {
                         // Check deployable moodle activity.
                             if (file_exists($CFG->dirroot.'/blocks/activity_publisher/lib/activity_publisher.class.php')) {
                                 include_once($CFG->dirroot.'/blocks/activity_publisher/lib/activity_publisher.class.php');
-                                $deployincourse = get_string('deployincourse', 'block_activity_publisher');
-                                $jshandler = 'javascript:document.forms[\'add'.$i.'\'].mode.value = \'deploy\';';
-                                $jshandler = 'document.forms[\'add'.$i.'\'].submit();';
-                                $str .= ' - <a href="'.$jshandler.'">'.$deployincourse.'</a>';
+                                $cmdtemplate->deployincoursestr = get_string('deployincourse', 'block_activity_publisher');
+                                $cmdtemplate->isdeployable = true;
                             }
                         }
-    
-                        $str .= $this->output->box_end(); // Command block.
+
+                        if ($isplayablemedia) {
+                            if (file_exists($CFG->dirroot.'/blocks/activity_publisher/lib/activity_publisher.class.php')) {
+                                $cmdtemplate->deployinmplayerstr = get_string('deployinmplayer', 'mediaplayer');
+                                $cmdtemplate->isvideo = true;
+                                $cmdtemplate->formurl = new moodle_url('/mod/mplayer/deployincourse.php');
+                            }
+                        }
                     }
+                    $template->rescommands = $this->render_from_template('local_sharedresources/resourcecommands', $cmdtemplate);
                 }
 
-                $str .= $OUTPUT->box_end(); // Resource item.
+                $str .= $this->render_from_template('local_sharedresources/resourcebody', $template);
+
                 $i++;
             }
         } else {
-            $str .= get_string('noresources', 'local_sharedresources');
+            $str .= $OUTPUT->notification(get_string('noresources', 'local_sharedresources'));
         }
 
         return $str;
@@ -504,35 +443,6 @@ class local_sharedresources_renderer extends plugin_renderer_base {
         return $str;
     }
 
-
-    /**
-     * TODO : May be obsolete, possibly delete
-     */
-    public function update_resourcepage_icon() {
-        global $CFG, $USER;
-
-        if (!isloggedin()) {
-            return '';
-        }
-
-        if (!empty($USER->editing)) {
-            $string = get_string('updateresourcepageoff', 'sharedresource');
-            $edit = '0';
-        } else {
-            $string = get_string('updateresourcepageon', 'sharedresource');
-            $edit = '1';
-        }
-
-        $updateurl = new moodle_url('/local/sharedresources/index.php');
-        $str = '<form '.$CFG->frametarget.' method="get" action="'.$updateurl.'">';
-        $str .= '<div>';
-        $str .= '<input type="hidden" name="edit" value="'.$edit.'" />';
-        $str .= '<input type="submit" value="'.$string.'" />';
-        $str .= '</div></form>';
-
-        return $str;
-    }
-
     public function thumbnail($resource) {
         static $fs;
         static $context;
@@ -568,5 +478,103 @@ class local_sharedresources_renderer extends plugin_renderer_base {
         $str .= '</li>';
 
         return $str;
+    }
+
+    function category(&$cat, &$catpath, $resourcecount, $current = 'current', $up = false) {
+
+        $template = new StdClass;
+
+        $template->current = $current;
+
+        $nextpath = (empty($catpath)) ? $cat->id : $catpath.','.$cat->id;
+
+        if (strpos($catpath, ',') === false) {
+            $prevpath =  '';
+        } else {
+            $prevpath = preg_replace('/,'.$cat->id.'$/', '', $catpath);
+        }
+
+        if ($up && !is_null($cat->parent)) {
+            $params = array('catid' => $cat->parent->id, 'catpath' => $prevpath);
+            $template->parentcaturl = new moodle_url('/local/sharedresources/browse.php', $params);
+            $template->upiconurl = $this->pix_url('up', 'local_courseindex');
+            $template->catspan = 9;
+        } else {
+            $template->catspan = 11;
+        }
+
+        if ($current == 'sub') {
+            $params = array('catid' => $cat->id, 'catpath' => $nextpath);
+            $template->caturl = new moodle_url('/local/sharedresources/browse.php', $params);
+        }
+        $template->catname = format_string($cat->name);
+        $template->catid = $cat->id;
+
+        return $this->render_from_template('local_sharedresources/resourcecategory', $template);
+    }
+
+    /**
+     * Print all current children of the current category.
+     * @param object $cat
+     * @param string $catpath
+     */
+    public function children(&$cat, $catpath) {
+
+        $str = '';
+
+        if (!empty($cat->cats)) {
+
+            $str .= $this->output->heading(get_string('subcategories'));
+
+            foreach ($cat->cats as $child) {
+                $str .= $this->child($child, $catpath);
+            }
+        }
+
+        return $str;
+    }
+
+    protected function child(&$cat, $catpath) {
+        return $this->category($cat, $catpath, local_sharedresources_count_entries_rec($cat), 'sub', false);
+    }
+
+    public function filters() {
+        return '';
+    }
+
+    public function searchlink() {
+
+        $str = '';
+        $searchstr = get_string('searchinlibrary', 'local_sharedresources');
+        $exploreurl = new moodle_url('/local/sharedresources/index.php');
+        $str .= '<div id="sharedresources-link-to-search">';
+        $str .= '<a href="'.$exploreurl.'"><input type="button" value="'.$searchstr.'"></a>';
+        $str .= '</div>';
+
+        return $str;
+    }
+
+    public function browserlink() {
+
+        $str = '';
+
+        $browserstr = get_string('browse', 'local_sharedresources');
+        $browserurl = new moodle_url('/local/sharedresources/browse.php');
+
+        $str .= '<div id="sharedresources-link-to-browser">';
+        $str .= '<a href="'.$browserurl.'"><input type="button" value="'.$browserstr.'"></a>';
+        $str .= '</div>';
+
+        return $str;
+    }
+
+    /**
+     * Prints a taxonomy selector if more than one activated.
+     */
+    public function taxonomy_select() {
+        global $DB;
+
+        $enabledtaxonomies = $DB->get_records('sharedresource_classif', array('enabled' => true));
+
     }
 }
