@@ -42,6 +42,11 @@ $courseid = optional_param('course', SITEID, PARAM_INT); // Optional course if w
 $repo = optional_param('repo', '', PARAM_TEXT);
 $entryid = required_param('entryid', PARAM_INT);
 
+$params = array('course' => $courseid,
+                'repo' => $repo,
+                'entryid' => $entryid);
+$PAGE->set_url('/local/sharedresources/courses.php', $params);
+
 // Security.
 
 if ($courseid) {
@@ -55,28 +60,36 @@ require_capability('repository/sharedresources:view', $context);
 // Prepare the page.
 
 $PAGE->set_context($context);
-$PAGE->navbar->add(get_string('sharedresource_library', 'local_sharedresources'));
+$PAGE->navbar->add(get_string('library', 'local_sharedresources'));
 $PAGE->set_title(get_string('courselist', 'local_sharedresources'));
 $PAGE->set_heading(get_string('courselist', 'local_sharedresources'));
 
-$params = array('course' => $courseid,
-                'repo' => $repo);
-$PAGE->set_url('/local/sharedresources/index.php', $params);
-
 $renderer = $PAGE->get_renderer('local_sharedresources');
 
-$entryrec = $DB->get_record('sharedresource_entry');
+$entryrec = $DB->get_record('sharedresource_entry', array('id' => $entryid));
 $courses = resources_get_courses($entryrec);
 
 echo $OUTPUT->header();
 
+echo $OUTPUT->heading(get_string('resourceusage', 'local_sharedresources'));
+
+echo $OUTPUT->box_start();
+
 if (!empty($courses)) {
+    echo '<ul>';
     foreach ($courses as $c) {
         echo $renderer->resource_course($c);
     }
+    echo '</ul>';
 }
 
+echo $OUTPUT->box_end();
+
+echo '<center>';
+
 $buttonurl = new moodle_url('/local/sharedresource/index.php', array('course' => $courseid, 'repo' => $repo));
-echo $OUTPUT->single_button($buttonurl, get_string('backtoindex', 'local_sharedresource'));
+echo $OUTPUT->single_button($buttonurl, get_string('backtoindex', 'local_sharedresources'));
+
+echo '</center>';
 
 echo $OUTPUT->footer();
