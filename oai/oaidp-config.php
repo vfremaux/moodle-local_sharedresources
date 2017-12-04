@@ -190,7 +190,7 @@ $METADATAFORMATS = array (
                                         'record_prefix' => 'lom',
                                         'defaultnamespace' => false,
                                         'record_namespace' => 'http://ltsc.ieee.org/xsd/LOM'),
-                        
+
                         'oai_lomfr' => array('metadataPrefix' => 'oai_lomfr',
                                         'schema' => 'http://www.lom-fr.fr/xsd/LOMFR',
                                         'metadataNamespace' => 'http://www.lom-fr.fr/xsd/LOMFR',
@@ -214,7 +214,7 @@ $METADATAFORMATS = array (
                                         'record_prefix' => 'suplomfr',
                                         'defaultnamespace' => 'http://www.lom-fr.fr/xsd/LOMFR',
                                         'record_namespace' => 'http://www.lom-fr.fr/xsd/SUPLOMFR'),
-            
+
                         'oai_lre' => array('metadataPrefix'=>'oai_lre',
                                         'schema' => 'http://fire.eun.org/lode/imslorsltitm_v1p0.xsd',
                                         'metadataNamespace' => 'http://www.imsglobal.org/xsd/imslorsltitm_v1p0',
@@ -222,7 +222,6 @@ $METADATAFORMATS = array (
                                         'record_prefix' => 'lre',
                                         'defaultnamespace' => false,
                                         'record_namespace' => 'http://www.w3.org/2001/XMLSchema-instancehttp://www.w3.org/2001/XMLSchema-instance')
-
                     );
 
 // the charset you store your metadata in your database

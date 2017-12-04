@@ -16,18 +16,21 @@
 
 $string['adminrepository'] = 'Admin Repository';
 $string['backtocourse'] = 'Back to course';
-$string['configdefaulttaxonomypurposeonimport'] = 'The taxonomy purpose tells why the taxonomy is used for. some metadata schema allows multiple taxonomies to be used at once for distinct purposes.';
-$string['confirm'] = 'Confirm';
+$string['backtoindex'] = 'Back to index';
+$string['browse'] = 'Browse by categories';
+$string['browser'] = 'Taxonomy based browser';
+$string['clinonexistingcontext'] = 'Error: Non existing context';
+$string['clinonexistingpath'] = 'Error: Path does not exist';
+$string['configdefaulttaxonomypurposeonimport'] = 'Taxonomy purpose for import';
+$string['configdefaultlibraryindexpage'] = 'Default index page of the library';
 $string['confignotfound'] = 'Config file not found';
+$string['configprivatecatalog'] = 'Private catalog';
+$string['confirm'] = 'Confirm';
 $string['courselist'] = 'Course list';
 $string['deducetaxonomyfrompath'] = 'Guess taxonomy from path';
-$string['clinonexistingpath'] = 'Error: Path does not exist';
-$string['clinonexistingcontext'] = 'Error: Non existing context';
-$string['defaulttaxonomypurposeonimport'] = 'Taxonomy purpose for import';
 $string['doresetvolume'] = 'Reset';
 $string['errorinvalidresource'] = 'Invalid resource';
 $string['errorinvalidresourceid'] = 'Invalid resource ID';
-$string['rpcsharedresourceerror'] = 'RPC mod/sharedresource/get_list:<br/>{$a}';
 $string['errormnetpeer'] = 'MNET client initialisation error';
 $string['errornotadir'] = 'The import directory does not exist or is not accessible';
 $string['exclusionpattern'] = 'Exclusion pattern';
@@ -37,27 +40,38 @@ $string['importpath'] = 'Import path';
 $string['importvolume'] = 'Import documents';
 $string['installltitool'] = 'Install the LTI Tool';
 $string['keywords'] = 'Mots clefs';
-$string['liked'] = 'Liked: {$a}';
+$string['library'] = 'Librairy';
+$string['liked'] = 'Liked: ';
 $string['markliked'] = 'I like it!';
 $string['massimport'] = 'Mass import';
 $string['newresource'] = 'Add a new resource';
 $string['noresources'] = 'This repository has no local resources';
+$string['notused'] = 'Never used in this site';
 $string['pluginname'] = 'Shared Resources Center';
 $string['publish_sharedresource'] = 'Publish Sharedresource';
-$string['private_catalog'] = 'Private catalog';
-$string['config_private_catalog'] = 'If checked, the sharedresource library is not accessible to unlogged users. sharedresources indexs will NOT be harveastable by OAI endpoint';
 $string['reinitialized'] = '{$a} files unmarked';
 $string['resetvolume'] = 'Reset volume';
 $string['resourceimport'] = 'Resource Import';
 $string['resources'] = 'Resources';
 $string['resourcesadministration'] = 'Resources administration';
 $string['resourcespushout'] = 'Exporting to a provider library';
+$string['rpcsharedresourceerror'] = 'RPC mod/sharedresource/get_list:<br/>{$a}';
+$string['searchinlibrary'] = 'Search in library';
+$string['searchengine'] = 'Search engine';
 $string['sharedresources_library'] = 'Shared resources library';
+$string['sharedresourcesindex'] = 'Shared resources index';
+$string['textsearch'] = 'Full text search';
 $string['topkeywords'] = 'Top keywords';
 $string['updateresourcespageoff'] = 'Quit edit mode';
 $string['updateresourcespageon'] = 'Edit this page';
 $string['used'] = 'Used: {$a}';
 $string['viewed'] = 'Viewed: {$a}';
+
+$string['configdefaulttaxonomypurposeonimport_desc'] = 'The taxonomy purpose tells why the taxonomy is used for.
+some metadata schema allows multiple taxonomies to be used at once for distinct purposes.';
+
+$string['configprivatecatalog_desc'] = 'If checked, the sharedresource library is not accessible to unlogged users.
+sharedresources indexs will NOT be harveastable by OAI endpoint';
 
 $string['resetvolume_help'] = 'When processing, files are marked with a "__" prefix to allow respawn of the import if
 memory or processing limits failure. You can reset the initial state of files using this option.';
@@ -74,3 +88,5 @@ will ignore all JPEG images)';
 
 $string['deducetaxonomyfrompath_help'] = 'If enabled, the relative path of the resource denotes the taxonomy. The discipline taxonomy
 will be automatically be filled with taxonomy entries. The imported taxonomy hierarchy will reflect the directory organisation.';
+
+$string['configdefaultlibraryindexpage_desc'] = 'The default index page choice may depend of the activated metadata plugin';

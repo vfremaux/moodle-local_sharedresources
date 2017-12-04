@@ -25,7 +25,7 @@ if ($action == 'forcedelete' || $action == 'delete') {
     $resourceid = required_param('id', PARAM_INT);
 
     $identifier = $DB->get_field('sharedresource_entry', 'identifier', array('id' => $resourceid));
-    $DB->delete_records('sharedresource_metadata', array('entry_id' => $resourceid));
+    $DB->delete_records('sharedresource_metadata', array('entryid' => $resourceid));
     $DB->delete_records('sharedresource_entry', array('id' => $resourceid));
 
     if ($sharedresources = $DB->get_records('sharedresource', array('identifier' => $identifier))) {

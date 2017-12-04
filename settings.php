@@ -36,40 +36,72 @@ if (is_dir($CFG->dirroot.'/local/adminsettings')) {
     $hasconfig = $hassiteconfig = has_capability($capability, context_system::instance());
 }
 
-if ($hasconfig) {
+$shcaps = array(
+    'repository/sharedresouces:use',
+    'repository/sharedresouces:view',
+    'repository/sharedresouces:manage',
+);
+
+$usecap = sharedresources_has_capability_somewhere('repository/sharedresources:use', false, false, false, CONTEXT_COURSECAT.','.CONTEXT_COURSE);
+$viewcap = sharedresources_has_capability_somewhere('repository/sharedresources:view', false, false, false, CONTEXT_COURSECAT.','.CONTEXT_COURSE);
+$managecap = sharedresources_has_capability_somewhere('repository/sharedresources:manage', false, false, false, CONTEXT_COURSECAT.','.CONTEXT_COURSE);
+
+if ($hasconfig || $usecap || $viewcap || $managecap) {
     // Needs this condition or there is error on login page.
 
-    $ADMIN->add('root', new admin_category('resources', get_string('resources', 'local_sharedresources')));
+    if ($DB->get_field('modules', 'visible', array('name' => 'sharedresource'))) {
 
-    $label = get_string('pluginname', 'local_sharedresources');
-    $pageurl = new moodle_url('/local/sharedresources/index.php');
-    $settingspage = new admin_externalpage('resourcelibrary', $label, $pageurl, 'repository/sharedresources:view');
-    $ADMIN->add('resources', $settingspage);
+        $ADMIN->add('root', new admin_category('resources', get_string('resources', 'local_sharedresources')));
+
+        $label = get_string('pluginname', 'local_sharedresources');
+        $pageurl = new moodle_url('/local/sharedresources/index.php');
+        $settingspage = new admin_externalpage('resourcelibrary', $label, $pageurl, 'repository/sharedresources:view');
+        $ADMIN->add('resources', $settingspage);
+    }
 }
 if ($hassiteconfig) {
     $settings = new admin_settingpage('local_sharedresources', get_string('pluginname', 'sharedresource'));
 
-    if (!empty($CFG->pluginchoice)) {
-        require_once($CFG->dirroot.'/mod/sharedresource/plugins/'.$CFG->pluginchoice.'/plugin.class.php');
-        $object = 'sharedresource_plugin_'.$CFG->pluginchoice;
-        $mtdstandard = new $object;
+    $config = get_config('sharedresource');
+
+    if (!empty($config->schema)) {
+        include_once($CFG->dirroot.'/mod/sharedresource/plugins/'.$config->schema.'/plugin.class.php');
+        $mtdclass = '\\mod_sharedresource\\plugin_'.$config->schema;
+        $mtdstandard = new $mtdclass();
 
         $purposes = array();
         $purposefield = $mtdstandard->getTaxonomyPurposeElement();
-        foreach ($purposefield->values as $purpose) {
-            $purposes[$purpose] = get_string(clean_string_key($purpose), 'sharedmetadata_'.$CFG->pluginchoice);
+        if ($purposefield) {
+            foreach ($purposefield->values as $purpose) {
+                $purposes[$purpose] = get_string(clean_string_key($purpose), 'sharedmetadata_'.$config->schema);
+            }
+
+            $key = 'local_sharedresources/defaulttaxonomypurposeonimport';
+            $label = get_string('configdefaulttaxonomypurposeonimport', 'local_sharedresources');
+            $desc = get_string('configdefaulttaxonomypurposeonimport_desc', 'local_sharedresources');
+            $settings->add(new admin_setting_configselect($key, $label, $desc, 0, $purposes));
         }
 
-        $key = 'local_sharedresources/defaulttaxonomypurposeonimport';
-        $label = get_string('defaulttaxonomypurposeonimport', 'local_sharedresources');
-        $desc = get_string('configdefaulttaxonomypurposeonimport', 'local_sharedresources');
-        $settings->add(new admin_setting_configselect($key, $label, $desc, 0, $purposes));
+        $defaultpages = array(
+            'index' => get_string('searchengine', 'local_sharedresources')
+        );
+
+        $plugin = sharedresource_get_plugin($config->schema);
+        if (!empty($plugin->getTaxonomyValueElement())) {
+            $defaultpages['browse'] = get_string('browser', 'local_sharedresources');
+        }
+
+        $key = 'local_sharedresources/defaultlibraryindexpage';
+        $label = get_string('configdefaultlibraryindexpage', 'local_sharedresources');
+        $desc = get_string('configdefaultlibraryindexpage_desc', 'local_sharedresources');
+        $settings->add(new admin_setting_configselect($key, $label, $desc, 'index', $defaultpages));
     }
 
     $key = 'local_sharedresources/privatecatalog';
-    $label = get_string('private_catalog', 'local_sharedresources');
-    $desc = get_string('config_private_catalog', 'local_sharedresources');
-    $settings->add(new admin_setting_configcheckbox($key, $label, $desc, 1));
+    $label = get_string('configprivatecatalog', 'local_sharedresources');
+    $desc = get_string('configprivatecatalog_desc', 'local_sharedresources');
+    $default = true;
+    $settings->add(new admin_setting_configcheckbox($key, $label, $desc, $default));
 
     $plugins =  core_component::get_plugin_list('local/sharedresources/plugins');
     foreach ($plugins as $plugin) {

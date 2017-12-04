@@ -25,7 +25,7 @@
  */
 defined('MOODLE_INTERNAL') || die();
 
-require_once $CFG->dirroot.'/mod/sharedresource/sharedresource_metadata.class.php';
+require_once $CFG->dirroot.'/mod/sharedresource/classes/sharedresource_metadata.class.php';
 require_once $CFG->dirroot.'/mod/sharedresource/locallib.php';
 require_once $CFG->dirroot.'/course/lib.php';
 
@@ -63,15 +63,17 @@ class file_importer_base {
     public function __construct($descriptor) {
         global $CFG;
 
+        $config = get_config('sharedresource');
+
         $this->fd = $descriptor;
         $this->sharedresourceentry = null;
         $this->metadatadefines = array();
         $this->new = true;
 
-        $object = 'sharedresource_plugin_'.$CFG->pluginchoice;
-        require_once($CFG->dirroot.'/mod/sharedresource/plugins/'.$CFG->pluginchoice.'/plugin.class.php');
+        $mtdclass = '\\mod_sharedresource\\plugin_'.$config->schema;
+        include_once($CFG->dirroot.'/mod/sharedresource/plugins/'.$config->schema.'/plugin.class.php');
         if (empty(self::$mtdstandard)) {
-            self::$mtdstandard = new $object;
+            self::$mtdstandard = new $mtdclass();
         }
     }
 
@@ -183,9 +185,12 @@ class file_importer_base {
         }
     }
 
-    // Aggregates metadata along within sharedresource entry.
+    /**
+     * Aggregates metadata along within sharedresource entry.
+     */
     public function aggregate_metadata() {
-        global $CFG;
+
+        $config = get_config('sharedresource');
 
         // We do not have correct sharedresource entry to attach metadata to.
         if (empty($this->sharedresourceentry) && !defined('DO_NOT_WRITE')) {
@@ -195,7 +200,7 @@ class file_importer_base {
         if (!empty($this->metadatadefines)) {
             foreach ($this->metadatadefines as $node => $mtdentry) {
                 if (!defined('DO_NOT_WRITE')) {
-                    $this->sharedresourceentry->add_element($node, $mtdentry, $CFG->pluginchoice);
+                    $this->sharedresourceentry->add_element($node, $mtdentry, $config->schema);
                 } else {
                     mtrace("Test mode : Adding MTD : $node, $mtdentry");
                 }
@@ -227,6 +232,8 @@ class file_importer_base {
     public function attach() {
         global $DB, $CFG;
 
+        $config = get_config('sharedresouce');
+
         if (empty($this->fd['shortname'])) {
             return;
         }
@@ -254,7 +261,7 @@ class file_importer_base {
          * if we ever have collected pedagogic description as a guidance, and we want to make
          * automatically labels from them...
          */
-        $guidance = $this->sharedresourceentry->element('5_10:0_0', $CFG->pluginchoice);
+        $guidance = $this->sharedresourceentry->element('5_10:0_0', $config->schema);
         if (defined('MAKE_LABELS_FROM_GUIDANCE') && $guidance) {
             $this->add_label_to_section($guidance, $course, $sectionnum, $visible);
         }
@@ -553,7 +560,7 @@ class file_importer_base {
             $i = 0;
             // Check if not already available instances in the original sharedresource.
             if (!$this->new) {
-                $select = " entry_id = ? AND element LIKE '9_2_1:%' ";
+                $select = " entryid = ? AND element LIKE '9_2_1:%' ";
                 $params = array($this->sharedresourceentry->id);
                 if ($allrecs = $DB->get_records_select('sharedresource_metadata', $select, $params, 'id,element')) {
                     $elementixs = array();
