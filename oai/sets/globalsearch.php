@@ -8,6 +8,7 @@
 // all records
 // the useless condition id_column = id_column is just there to ease
 // further extensions to the query, please leave it as it is.
+<<<<<<< HEAD
 function selectallQuery ($id = ''){
 	global $CFG;
 
@@ -54,10 +55,59 @@ function idQuery ($id = ''){
 	}
 
 	return $query;
+=======
+function selectallQuery ($id = '') {
+    global $CFG;
+
+    $query = "
+        SELECT 
+            *,
+            docdate as datestamp,
+            MD5(url) as oaiid,
+            'globalsearch' as `set`
+        FROM 
+            {$CFG->prefix}block_search_documents
+        WHERE 
+    ";
+
+    if ($id == '') {
+        $query .= 'id = id';
+    } else {
+        $query .= " MD5(url) = '$id' ";
+    }
+    return $query;
+}
+
+// this function will return identifier and datestamp for all records
+function idQuery ($id = '') {
+    global $CFG;
+    global $OAI;
+
+    $query = "
+        SELECT 
+            MD5(url) as oaiid,
+            doctype,
+            itemtype,
+            docdate as datestamp,
+            'globalsearch' as `set`
+        FROM 
+            {$CFG->prefix}block_search_documents 
+        WHERE 
+    ";
+
+    if ($id == '') {
+        $query .= 'id = id';
+    } else {
+        $query .= " MD5(url) = '$id' ";
+    }
+
+    return $query;
+>>>>>>> MOODLE_33_STABLE
 }
 
 // filter for until
 function untilQuery($until) {
+<<<<<<< HEAD
 	return " AND docdate <= '$OAI->until' ";
 }
 
@@ -68,13 +118,29 @@ function fromQuery($from){
 
 // filter for sets
 function setQuery($set){
+=======
+    return " AND docdate <= '$OAI->until' ";
+}
+
+// filter for from
+function fromQuery($from) {
+    return " AND docdate >= '$OAI->from' ";
+}
+
+// filter for sets
+function setQuery($set) {
+>>>>>>> MOODLE_33_STABLE
     return '';
 }
 
 /**
 * tels if
 */
+<<<<<<< HEAD
 function isDeleted($id){
+=======
+function isDeleted($id) {
+>>>>>>> MOODLE_33_STABLE
     return false;
 }
 

@@ -36,11 +36,16 @@ global $DB;
 if (!isset($OAI)) $OAI = new StdClass;
 
 // parse and check arguments
+<<<<<<< HEAD
 foreach($args as $key => $val) {
+=======
+foreach ($args as $key => $val) {
+>>>>>>> MOODLE_33_STABLE
 
     // TODO remove those unusefull checks and 
     // perform real parameter value format check
 
+<<<<<<< HEAD
 	switch ($key) { 
 		case 'from':
 			$OAI->from = $val;
@@ -83,10 +88,55 @@ foreach($args as $key => $val) {
 		default:
 			$errors .= oai_error('badArgument', $key, $val);
 	}
+=======
+    switch ($key) { 
+        case 'from':
+            $OAI->from = $val;
+            break;
+
+        case 'until':
+            $OAI->until = $val; 
+            break;
+
+        case 'set':
+            if (oai_find_set($val)) {
+                $OAI->set = $val;
+            } else {
+                $errors .= oai_error('badArgument', $key, $val);
+            }
+            break;      
+
+        case 'metadataPrefix':
+            if (!isset($OAI->metadataPrefix)) {
+                if (array_key_exists($val, $METADATAFORMATS) && is_array($METADATAFORMATS[$val]) 
+                    && isset($METADATAFORMATS[$val]['myhandler'])) {
+                    $OAI->metadataPrefix = $val;
+                    $inc_record  = $METADATAFORMATS[$val]['myhandler'];
+                } else {
+                    $errors .= oai_error('cannotDisseminateFormat', $key, $val);
+                }
+            } else {
+                $errors .= oai_error('badArgument', $key, $val);
+            }
+            break;
+
+        case 'resumptionToken':
+            if (!isset($OAI->resumptionToken)) {
+                $OAI->resumptionToken = $val;
+            } else {
+                $errors .= oai_error('badArgument', $key, $val);
+            }
+            break;
+
+        default:
+            $errors .= oai_error('badArgument', $key, $val);
+    }
+>>>>>>> MOODLE_33_STABLE
 }
 
 // Resume previous session?
 if (isset($args['resumptionToken'])) {            
+<<<<<<< HEAD
 	if (count($args) > 1) {
 		// overwrite all other errors
 		$errors = oai_error('exclusiveArgument');
@@ -125,6 +175,46 @@ if (isset($args['resumptionToken'])) {
 		    $errors .= oai_error('badGranularity', 'until', $until); 
 	    }
 	    $extquery .= untilQuery($until);
+=======
+    if (count($args) > 1) {
+        // overwrite all other errors
+        $errors = oai_error('exclusiveArgument');
+    } else {
+        if (is_file("tokens/id-$resumptionToken")) {
+            $fp = fopen("tokens/id-$resumptionToken", 'r');
+            $filetext = fgets($fp, 255);
+            $textparts = explode('#', $filetext);
+            $deliveredrecords = (int)$textparts[0];
+            $extquery = $textparts[1];
+            $metadataPrefix = $textparts[2];
+            fclose($fp); 
+            unlink ("tokens/id-$resumptionToken");
+        } else {
+            $errors .= oai_error('badResumptionToken', '', $resumptionToken);
+        }
+    }
+} else {
+    // no, new session
+    $deliveredrecords = 0;
+    $extquery = '';
+
+    if (!isset($args['metadataPrefix'])) {
+        $errors .= oai_error('missingArgument', 'metadataPrefix');
+    }
+
+    if (isset($args['from'])) {
+        if (!checkDateFormat($from)) {
+            $errors .= oai_error('badGranularity', 'from', $from);
+        }
+        $extquery .= fromQuery($from);     
+    }
+
+    if (isset($args['until'])) {
+        if (!checkDateFormat($until)) {
+            $errors .= oai_error('badGranularity', 'until', $until); 
+        }
+        $extquery .= untilQuery($until);
+>>>>>>> MOODLE_33_STABLE
     }
 
     if (isset($args['set'])) {
@@ -132,6 +222,7 @@ if (isset($args['resumptionToken'])) {
     } else {
         $OAI->set = $default_set;
         include oai_find_set($OAI->set);
+<<<<<<< HEAD
 	}
 }
 
@@ -142,6 +233,18 @@ if (empty($errors)) {
 	}
 } else {
 	oai_exit();
+=======
+    }
+}
+
+if (empty($errors)) {
+    $query = idQuery();
+    if (!$res = $DB->get_records_sql($query)) {
+        oai_exit();
+    }
+} else {
+    oai_exit();
+>>>>>>> MOODLE_33_STABLE
 }
 
 $num_rows = count($res);
@@ -152,6 +255,7 @@ $output .= " <ListIdentifiers>\n";
 
 // Will we need a ResumptionToken?
 if ($num_rows - $deliveredrecords > $MAXIDS) {
+<<<<<<< HEAD
 	$token = get_token(); 
 	$fp = fopen ("tokens/id-$token", 'w');
 	$thendeliveredrecords = (int)$deliveredrecords + $MAXIDS;
@@ -159,13 +263,26 @@ if ($num_rows - $deliveredrecords > $MAXIDS) {
 	fputs($fp, "$extquery#"); 
 	fclose($fp); 
 	$restoken = 
+=======
+    $token = get_token(); 
+    $fp = fopen ("tokens/id-$token", 'w');
+    $thendeliveredrecords = (int)$deliveredrecords + $MAXIDS;
+    fputs($fp, "$thendeliveredrecords#"); 
+    fputs($fp, "$extquery#"); 
+    fclose($fp); 
+    $restoken = 
+>>>>>>> MOODLE_33_STABLE
 '  <resumptionToken expirationDate="'.$expirationdatetime.'"
      completeListSize="'.$num_rows.'"
      cursor="'.$deliveredrecords.'">'.$token."</resumptionToken>\n";
 }
 // Last delivery, return empty ResumptionToken
 elseif (isset($set_resumptionToken)) {
+<<<<<<< HEAD
 	$restoken = 
+=======
+    $restoken = 
+>>>>>>> MOODLE_33_STABLE
 '  <resumptionToken completeListSize="'.$num_rows.'"
      cursor="'.$deliveredrecords.'"></resumptionToken>'."\n";
 }
@@ -176,6 +293,7 @@ $countrec = 0;
 foreach ($res as $record) {
     $countrec++;
 
+<<<<<<< HEAD
 	$identifier = $oaiprefix.$record->oaiid; 
 	$datestamp = formatDatestamp($record->datestamp); 
 
@@ -199,11 +317,40 @@ foreach ($res as $record) {
 	if (!$status_deleted) 
 		$output .= xmlrecord($record->set, 'setSpec', '', 3);
 	$output .= '  </header>'."\n"; 
+=======
+    $identifier = $oaiprefix.$record->oaiid; 
+    $datestamp = formatDatestamp($record->datestamp); 
+
+    if (isDeleted($record->oaiid) && ($deletedRecord == 'transient' || $deletedRecord == 'persistent')) {
+        $status_deleted = TRUE;
+    } else {
+        $status_deleted = FALSE;
+    }
+
+
+    $output .= 
+'  <header';
+    if ($status_deleted) {
+        $output .= ' status="deleted"';
+    }  
+    $output .='>'."\n";
+
+    // use xmlrecord since we use stuff from database
+    $output .= xmlrecord($identifier, 'identifier', '', 3);
+    $output .= xmlformat($datestamp, 'datestamp', '', 3);
+    if (!$status_deleted) 
+        $output .= xmlrecord($record->set, 'setSpec', '', 3);
+    $output .= '  </header>'."\n"; 
+>>>>>>> MOODLE_33_STABLE
 }
 
 // ResumptionToken
 if (isset($restoken)) {
+<<<<<<< HEAD
 	$output .= $restoken;
+=======
+    $output .= $restoken;
+>>>>>>> MOODLE_33_STABLE
 }
 
 $output .= " </ListIdentifiers>\n"; 

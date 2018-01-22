@@ -31,15 +31,26 @@
 //
 
 // parse and check args : no arguments expected
+<<<<<<< HEAD
 if (empty($errors) && (count($args) > 0)){
 	foreach ($args as $key => $val) {
 		$errors .= oai_error('badArgument', $key, $val);
 	}
+=======
+if (empty($errors) && (count($args) > 0)) {
+    foreach ($args as $key => $val) {
+        $errors .= oai_error('badArgument', $key, $val);
+    }
+>>>>>>> MOODLE_33_STABLE
 }
 
 // break and clean up on error
 if ($errors != '') {
+<<<<<<< HEAD
 	oai_exit();
+=======
+    oai_exit();
+>>>>>>> MOODLE_33_STABLE
 }
 // see http://www.openarchives.org/OAI/2.0/guidelines-oai-identifier.htm 
 // for details
@@ -62,7 +73,11 @@ $output .= xmlformat($compression, 'compression', '', $indent);
 // for details
 
 if ($show_identifier && $repositoryIdentifier && $delimiter && $sampleIdentifier) {
+<<<<<<< HEAD
 	$output .= 
+=======
+    $output .= 
+>>>>>>> MOODLE_33_STABLE
 '  <description>
    <oai-identifier xmlns="http://www.openarchives.org/OAI/2.0/oai-identifier"
                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -82,7 +97,11 @@ if ($show_identifier && $repositoryIdentifier && $delimiter && $sampleIdentifier
 
 // To include, change 'false' to 'true'.
 if (false) {
+<<<<<<< HEAD
 	$output .= 
+=======
+    $output .= 
+>>>>>>> MOODLE_33_STABLE
 '  <description>
    <eprints xmlns="http://www.openarchives.org/OAI/1.1/eprints"
             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -105,7 +124,11 @@ if (false) {
 
 // To include, change 'false' to 'true'.
 if (false) {
+<<<<<<< HEAD
 	$output .= 
+=======
+    $output .= 
+>>>>>>> MOODLE_33_STABLE
 '  <description>
    <friends xmlns="http://www.openarchives.org/OAI/2.0/friends/" 
             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -128,7 +151,11 @@ if (false) {
 
 // To include, change 'false' to 'true'.
 if (false) {
+<<<<<<< HEAD
 	$output .= 
+=======
+    $output .= 
+>>>>>>> MOODLE_33_STABLE
 '  <description>
    <branding xmlns="http://www.openarchives.org/OAI/2.0/branding/"
              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
