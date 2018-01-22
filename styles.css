@@ -58,3 +58,23 @@
 .resource-title {
     display: inline-block;
 }
+
+.browser-current-category {
+    margin-bottom: 15px;
+}
+
+.sharedresource-browse-up {
+    height: 36px;
+}
+
+.sharedresources-taxonomy-chooser {
+    margin-bottom: 15px;
+}
+
+#sharedresources-link-to-search {
+    margin-top: 15px;
+}
+
+.sharedresources-description .resource-keywords {
+    margin-top: 15px;
+}

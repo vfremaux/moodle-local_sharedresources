@@ -22,7 +22,7 @@
 // jshint unused: true, undef:true
 define(['jquery', 'core/config', 'core/log'], function ($, cfg, log) {
 
-    return {
+    var sharedresourceslibrary = {
 
         init: function (args) {
 
@@ -38,9 +38,11 @@ define(['jquery', 'core/config', 'core/log'], function ($, cfg, log) {
                 }
             );
 
-            $('.sharedresource-toggle-handle').bind('click', this.toggle_info_panel);
-            $('.sharedresource-mark-like').on('click', '', args, this.ajax_mark_like);
-            $('.sharedresource-actionlink').bind('click', this.integrate);
+            $('.sharedresource-toggle-handle').bind('click', sharedresourceslibrary.toggle_info_panel);
+            $('.sharedresource-mark-like').on('click', '', args, sharedresourceslibrary.ajax_mark_like);
+            $('.sharedresource-actionlink').bind('click', sharedresourceslibrary.integrate);
+
+            log.debug('ADM Shared resource Library JS initialized');
         },
 
         ajax_mark_like: function (e) {
@@ -65,8 +67,11 @@ define(['jquery', 'core/config', 'core/log'], function ($, cfg, log) {
         },
 
         toggle_info_panel: function (e) {
+
             that = $(this);
+
             imgid = that.find('img').attr('id');
+
             residentifier = imgid.replace('sharedresource-toggle-', '');
 
             if ($('#sharedresource-info-' + residentifier).css('display') === 'none') {
@@ -94,4 +99,6 @@ define(['jquery', 'core/config', 'core/log'], function ($, cfg, log) {
         }
 
     };
+
+    return sharedresourceslibrary;
 });

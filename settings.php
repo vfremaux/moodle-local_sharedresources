@@ -24,6 +24,7 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/local/sharedresources/lib.php');
 require_once($CFG->dirroot.'/mod/sharedresource/metadatalib.php');
+require_once($CFG->dirroot.'/local/sharedresources/classes/navigator.class.php');
 
 // Settings default init.
 if (is_dir($CFG->dirroot.'/local/adminsettings')) {
@@ -65,9 +66,21 @@ if ($hassiteconfig) {
     $config = get_config('sharedresource');
 
     if (!empty($config->schema)) {
+        if (@$debugwhitepage) {
+            echo "\t\tLoading active schema: $config->schema\n";
+        }
         include_once($CFG->dirroot.'/mod/sharedresource/plugins/'.$config->schema.'/plugin.class.php');
         $mtdclass = '\\mod_sharedresource\\plugin_'.$config->schema;
         $mtdstandard = new $mtdclass();
+
+        $taxonomies = \local_sharedresources\browser\navigation::get_taxonomies_menu(true);
+
+        if (!empty($taxonomies)) {
+            $key = 'local_sharedresources/defaulttaxonomyonimport';
+            $label = get_string('configdefaulttaxonomyonimport', 'local_sharedresources');
+            $desc = get_string('configdefaulttaxonomyonimport_desc', 'local_sharedresources');
+            $settings->add(new admin_setting_configselect($key, $label, $desc, 0, $taxonomies));
+        }
 
         $purposes = array();
         $purposefield = $mtdstandard->getTaxonomyPurposeElement();
@@ -76,25 +89,26 @@ if ($hassiteconfig) {
                 $purposes[$purpose] = get_string(clean_string_key($purpose), 'sharedmetadata_'.$config->schema);
             }
 
-            $key = 'local_sharedresources/defaulttaxonomypurposeonimport';
-            $label = get_string('configdefaulttaxonomypurposeonimport', 'local_sharedresources');
-            $desc = get_string('configdefaulttaxonomypurposeonimport_desc', 'local_sharedresources');
+            $key = 'local_sharedresources/defaulttaxonomypurposeonedit';
+            $label = get_string('configdefaulttaxonomypurposeonedit', 'local_sharedresources');
+            $desc = get_string('configdefaulttaxonomypurposeonedit_desc', 'local_sharedresources');
             $settings->add(new admin_setting_configselect($key, $label, $desc, 0, $purposes));
         }
 
         $defaultpages = array(
-            'index' => get_string('searchengine', 'local_sharedresources')
+            'explore' => get_string('searchengine', 'local_sharedresources')
         );
 
         $plugin = sharedresource_get_plugin($config->schema);
-        if (!empty($plugin->getTaxonomyValueElement())) {
+        $taxonelement = $plugin->getTaxonomyValueElement();
+        if (!empty($taxonelement)) {
             $defaultpages['browse'] = get_string('browser', 'local_sharedresources');
         }
 
         $key = 'local_sharedresources/defaultlibraryindexpage';
         $label = get_string('configdefaultlibraryindexpage', 'local_sharedresources');
         $desc = get_string('configdefaultlibraryindexpage_desc', 'local_sharedresources');
-        $settings->add(new admin_setting_configselect($key, $label, $desc, 'index', $defaultpages));
+        $settings->add(new admin_setting_configselect($key, $label, $desc, 'explore', $defaultpages));
     }
 
     $key = 'local_sharedresources/privatecatalog';
@@ -105,10 +119,27 @@ if ($hassiteconfig) {
 
     $plugins =  core_component::get_plugin_list('local/sharedresources/plugins');
     foreach ($plugins as $plugin) {
+        if (@$debugwhitepage) {
+            echo "Loading subsettings for plugin: $plugin\n";
+        }
         if (file_exists($CFG->dirroot.'/local/sharedresources/plugins/'.$plugin.'/settings.php')) {
             // Each plugin shoud add its proper page.
             include($CFG->dirroot.'/local/sharedresources/plugins/'.$plugin.'/settings.php');
         }
+    }
+
+    if (local_sharedresources_supports_feature('emulate/community')) {
+        // This will accept any.
+        $settings->add(new admin_setting_heading('plugindisthdr', get_string('plugindist', 'local_sharedresource'), ''));
+
+        $key = 'local_sharedresources/emulatecommunity';
+        $label = get_string('emulatecommunity', 'local_sharedresources');
+        $desc = get_string('emulatecommunity_desc', 'local_sharedresources');
+        $settings->add(new admin_setting_configcheckbox($key, $label, $desc, 0));
+    } else {
+        $label = get_string('plugindist', 'local_sharedresources');
+        $desc = get_string('plugindist_desc', 'local_sharedresources');
+        $settings->add(new admin_setting_heading('plugindisthdr', $label, $desc));
     }
 
     $ADMIN->add('localplugins', $settings);
