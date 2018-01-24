@@ -78,3 +78,47 @@
 .sharedresources-description .resource-keywords {
     margin-top: 15px;
 }
+
+.is-hidden-by-rule {
+    -moz-opacity:0.5;
+    filter: alpha(opacity=50);  /* Opacity for IE8 and lower */
+    opacity:0.5;
+}
+
+/* boxed template */
+.sharedresource-list.boxed {
+    vertical-align: top;
+}
+
+.sharedresource-picture img{
+    margin-left:auto;
+    margin-right:auto;
+    margin-top:10px;
+    margin-bottom: 10px;
+}
+
+.sharedresource-item-container {
+    display:inline-block;
+    max-width:28%;
+    width: 28%;
+    vertical-align: top;
+    margin-right: 20px;
+}
+
+.sharedresource-list.boxed .resource-likes {
+    font-size:80%;
+}
+.sharedresource-list.boxed .resource-likes img {
+    width: 12px;
+}
+
+.sharedresource-info-box {
+    position: absolute;
+    padding: 10px;
+    border: 1px solid #fefefe;
+    border-radius: 5px;
+    background-color: #fff;
+    box-shadow: 5px 10px 10px #888;
+    max-width: 46%;
+    width:35%;
+}

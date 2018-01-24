@@ -138,6 +138,7 @@ function get_local_resources($repo, &$fullresults, $metadatafilters = '', &$offs
     global $CFG, $USER, $DB;
 
     $config = get_config('sharedresource');
+    $systemcontext = context_system::instance();
 
     $plugins = sharedresource_get_plugins();
     $plugin = $plugins[$config->schema];
@@ -212,8 +213,13 @@ function get_local_resources($repo, &$fullresults, $metadatafilters = '', &$offs
                     debug_trace('local sharedresources: applying access control to result '.$id);
                 }
                 if (!$rentry->has_access()) {
-                    unset($fullresults['entries'][$id]);
-                    continue;
+                    if (!has_capability('repository/sharedresources:manage', $systemcontext)) {
+                        unset($fullresults['entries'][$id]);
+                        continue;
+                    } else {
+                        // Mark it as hidden for administrators.
+                        $fullresults['entries'][$id]->hidden = true;
+                    }
                 }
             }
 

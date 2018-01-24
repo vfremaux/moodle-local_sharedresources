@@ -25,8 +25,8 @@ define(['jquery', 'core/log'], function ($, log) {
     var sharedresourcessearch = {
 
         init: function() {
-            $('.selectmultiple-selectall').bind('click', selectall);
-            $('.selectmultiple-unselectall').bind('click', unselectall);
+            $('.selectmultiple-selectall').bind('click', this.selectall);
+            $('.selectmultiple-unselectall').bind('click', this.unselectall);
 
             log.debug('AMD sharedresource search form initialized');
         },
@@ -66,5 +66,5 @@ define(['jquery', 'core/log'], function ($, log) {
         },
     };
 
-    return sharedresourcesearch;
+    return sharedresourcessearch;
 });

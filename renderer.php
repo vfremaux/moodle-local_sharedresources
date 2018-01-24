@@ -163,6 +163,9 @@ class local_sharedresources_renderer extends plugin_renderer_base {
     public function resources_list(&$resources, &$course, $section, $isediting = false, $repo = 'local') {
         global $CFG, $USER, $OUTPUT, $DB;
 
+        $shrconfig = get_config('sharedresource');
+        $config = get_config('local_sharedresources');
+
         $str = '';
 
         $isremote = ($repo != 'local');
@@ -170,8 +173,34 @@ class local_sharedresources_renderer extends plugin_renderer_base {
 
         $courseid = (empty($course->id)) ? '' : $course->id;
 
+        $editstr = get_string('update');
+        $deletestr = get_string('delete');
+        $exportstr = get_string('export', 'sharedresource');
+        $forcedeletestr = get_string('forcedelete','local_sharedresources');
+        $aclsstr = get_string('accesscontrol', 'local_sharedresources');
+
+        $aclspix = '<img src="'.$this->output->pix_url('i/permissions').'" alt="'.$aclsstr.'"/>';
+        $deletepix = '<img src="'.$this->output->pix_url('delete', 'sharedresource').'" alt="'.$deletestr.'" />';
+        $forcedeletepix = '<img src="'.$this->output->pix_url('t/delete').'" alt="'.$forcedeletestr.'" />';
+        $exportpix = '<img src="'.$this->output->pix_url('export', 'sharedresource').'" alt="'.$exportstr.'" />';
+        $defaultresourcepixurl = $this->output->pix_url('defaultdocument', 'sharedresource');
+
+        $bodytplname = 'resourcebody';
+        if (!empty($config->listviewthreshold) && count($resources) < $config->listviewthreshold) {
+            $bodytplname = 'boxresourcebody';
+        }
+
+        if (!empty($CFG->resourcebodytplname)) {
+            $bodytplname = $CFG->resourcebodytplname;
+        };
+
+        $fs = get_file_storage();
+
         if ($resources) {
             $i = 0;
+
+            $str .= $this->output->render_from_template('local_sharedresources/'.$bodytplname.'start', null);
+
             foreach ($resources as $resource) {
 
                 if (!$isremote) {
@@ -186,10 +215,6 @@ class local_sharedresources_renderer extends plugin_renderer_base {
                 // Librarian controls.
                 $commands = '';
                 if ($isediting) {
-                    $editstr = get_string('update');
-                    $deletestr = get_string('delete');
-                    $exportstr = get_string('export', 'sharedresource');
-                    $forcedeletestr = get_string('forcedelete','local_sharedresources');
                     $params = array('course' => 1,
                                     'type' => 'file',
                                     'add' => 'sharedresource',
@@ -198,28 +223,41 @@ class local_sharedresources_renderer extends plugin_renderer_base {
                                     'entryid' => $resource->id);
                     $editurl = new moodle_url('/mod/sharedresource/edit.php', $params);
                     $commands = '<a href="'.$editurl.'" title="'.$editstr.'"><img src="'.$this->output->pix_url('t/edit').'" /></a>';
+
+                    if (mod_sharedresource_supports_feature('entry/accessctl') && $shrconfig->accesscontrol) {
+                        $params = array('course' => $courseid, 'resourceid' => $resource->id, 'return' => 'localindex');
+                        $aclsurl = new moodle_url('/mod/sharedresource/pro/classificationacls.php', $params);
+                        $commands .= '&nbsp;<a href="'.$aclsurl.'" title="'.$aclsstr.'">'.$aclspix.'</a>';
+                    }
+
                     if ($resource->uses == 0) {
                         $params = array('what' => 'delete', 'course' => $courseid, 'id' => $resource->id);
                         $deleteurl = new moodle_url('/local/sharedresources/index.php', $params);
-                        $pix = '<img src="'.$this->output->pix_url('delete', 'sharedresource').'" />';
-                        $commands .= '&nbsp;<a href="'.$deleteurl.'" title="'.$deletestr.'">'.$pix.'</a>';
+                        $commands .= '&nbsp;<a href="'.$deleteurl.'" title="'.$deletestr.'">'.$deletepix.'</a>';
                     } else {
                         $params = array('what' => 'forcedelete', 'course' => $courseid, 'id' => $resource->id);
                         $deleteurl = new moodle_url('/local/sharedresources/index.php', $params);
-                        $pix = '<img src="'.$this->output->pix_url('t/delete').'" />';
-                        $commands .= '&nbsp;<a href="'.$deleteurl.'" title="'.$forcedeletestr.'">'.$pix.'</a>';
+                        $commands .= '&nbsp;<a href="'.$deleteurl.'" title="'.$forcedeletestr.'">'.$forcedeletepix.'</a>';
                     }
                     $params = array('course' => $courseid, 'resourceid' => $resource->id);
                     $pushurl = new moodle_url('/local/sharedresources/pushout.php', $params);
-                    $pix = '<img src="'.$this->output->pix_url('export', 'sharedresource').'" />';
-                    $commands .= '&nbsp;<a href="'.$pushurl.'" title="'.$exportstr.'">'.$pix.'</a>';
+                    $commands .= '&nbsp;<a href="'.$pushurl.'" title="'.$exportstr.'">'.$exportpix.'</a>';
                 }
 
                 $template = new StdClass;
 
                 // Resource heading.
                 $icon = ($isremote) ? 'remoteicon' : 'icon';
+                $template->ishiddenbyrule = (!empty($resource->hidden)) ? "is-hidden-by-rule" : '';
                 $template->pixurl = $this->output->pix_url($icon, 'sharedresource');
+
+                if (!empty($resource->file)) {
+                    $mainfile = $fs->get_file_by_id($resource->file);
+                    $template->largepixurl = $this->output->pix_url(file_file_icon($mainfile, 128));
+                } else {
+                    $template->largepixurl = $defaultresourcepixurl;
+                }
+
                 $template->downloadpixurl = $this->output->pix_url('download', 'local_sharedresources');
 
                 $template->url = $resource->url;
@@ -234,9 +272,9 @@ class local_sharedresources_renderer extends plugin_renderer_base {
                 $template->noticepopupactionlink = $this->output->action_link($url, $readnotice, $popupaction);
 
                 // Content toggler.
-                // $jshandler = 'Javascript:toggle_info_panel(\''.$resource->identifier.'\')';
                 $template->handlepixurl = $this->output->pix_url('rightarrow', 'local_sharedresources');
 
+                $template->uses = $resource->uses;
                 if (empty($resource->uses)) {
                     $template->strnotused = get_string('notused', 'local_sharedresources');
                 } else {
@@ -341,10 +379,12 @@ class local_sharedresources_renderer extends plugin_renderer_base {
                     }
                 }
 
-                $str .= $this->output->render_from_template('local_sharedresources/resourcebody', $template);
+                $str .= $this->output->render_from_template('local_sharedresources/'.$bodytplname, $template);
 
                 $i++;
             }
+
+            $str .= $this->output->render_from_template('local_sharedresources/'.$bodytplname.'end', null);
         } else {
             $str .= $OUTPUT->notification(get_string('noresources', 'local_sharedresources'));
         }

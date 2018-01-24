@@ -26,6 +26,8 @@ require_once($CFG->dirroot.'/local/sharedresources/classes/navigator.class.php')
 require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
 require_once($CFG->dirroot.'/local/sharedresources/lib.php');
 
+$PAGE->requires->js_call_amd('local_sharedresources/boxview', 'init');
+
 $config = get_config('local_sharedresources');
 
 $courseid = optional_param('course', false, PARAM_INT);

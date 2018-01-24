@@ -64,6 +64,7 @@ $action = optional_param('what', '', PARAM_TEXT);
 
 $PAGE->requires->js_call_amd('local_sharedresources/library', 'init', array('repo' => $repo));
 $PAGE->requires->js_call_amd('local_sharedresources/search', 'init');
+$PAGE->requires->js_call_amd('local_sharedresources/boxview', 'init');
 
 // Security.
 

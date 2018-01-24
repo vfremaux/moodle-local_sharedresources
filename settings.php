@@ -95,6 +95,7 @@ if ($hassiteconfig) {
             $settings->add(new admin_setting_configselect($key, $label, $desc, 0, $purposes));
         }
 
+        // Setup default landing page. Browse only can be used when the standard has a taxonomy.
         $defaultpages = array(
             'explore' => get_string('searchengine', 'local_sharedresources')
         );
@@ -110,6 +111,13 @@ if ($hassiteconfig) {
         $desc = get_string('configdefaultlibraryindexpage_desc', 'local_sharedresources');
         $settings->add(new admin_setting_configselect($key, $label, $desc, 'explore', $defaultpages));
     }
+
+    $options = array(0 => get_string('listviewalways', 'local_sharedresources'), 10 => 10, 20 => 20,
+                     30 => 30, 50 => 50, 100 => 100, 10000 => get_string('boxviewalways', 'local_sharedresources'));
+    $key = 'local_sharedresources/listviewthreshold';
+    $label = get_string('configlistviewthreshold', 'local_sharedresources');
+    $desc = get_string('configlistviewthreshold_desc', 'local_sharedresources');
+    $settings->add(new admin_setting_configselect($key, $label, $desc, 30, $options));
 
     $key = 'local_sharedresources/privatecatalog';
     $label = get_string('configprivatecatalog', 'local_sharedresources');
@@ -130,7 +138,7 @@ if ($hassiteconfig) {
 
     if (local_sharedresources_supports_feature('emulate/community')) {
         // This will accept any.
-        $settings->add(new admin_setting_heading('plugindisthdr', get_string('plugindist', 'local_sharedresource'), ''));
+        $settings->add(new admin_setting_heading('plugindisthdr', get_string('plugindist', 'local_sharedresources'), ''));
 
         $key = 'local_sharedresources/emulatecommunity';
         $label = get_string('emulatecommunity', 'local_sharedresources');

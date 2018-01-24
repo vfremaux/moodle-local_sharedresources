@@ -15,6 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 $string['adminrepository'] = 'Administrer la librairie';
+$string['accesscontrol'] = 'Contrôle d\'accès';
 $string['backtocourse'] = 'Revenir au cours';
 $string['backtoindex'] = 'Revenir à l\'index';
 $string['browse'] = 'Explorer par catégories';
@@ -26,6 +27,9 @@ $string['configdefaulttaxonomyonimport'] = 'Objet de la taxonomie par défaut';
 $string['configdefaulttaxonomypurposeonedit'] = 'Objet de la taxonomie par défaut';
 $string['confignotfound'] = 'Fichier de configuration introuvable';
 $string['configprivatecatalog'] = 'Catalogue privé';
+$string['configlistviewthreshold'] = 'Affichage en liste';
+$string['listviewalways'] = 'Toujours en liste';
+$string['boxviewalways'] = 'toujours en boîtes';
 $string['confirm'] = 'Confirmer';
 $string['deducetaxonomyfrompath'] = 'Déduire la taxonomie du chemin';
 $string['configdefaultlibraryindexpage'] = 'Page d\'arrivée de la librairie par défaut';
@@ -36,6 +40,8 @@ $string['errormnetpeer'] = 'Erreur d\'initialisation du client MNET';
 $string['errornotadir'] = 'Le répertoire d\'import n\'existe pas ou n\'est pas accessible';
 $string['errornotwritable'] = 'Le répertoire d\'import n\'est pas accessible en écriture. Modifiez les droits de ce répertoire avant d\'importer.';
 $string['encoding'] = 'Encodage des fichiers de métadonnées';
+$string['emulatecommunity'] = 'Emuler la version communautaire';
+$string['emulatecommunity_desc'] = 'Bascule le code sur la version communautaire. Le résultat est plus compatible avec d\'autres installations, mais certaines fonctionnalités avancées ne seront plus disponibles.';
 $string['exclusionpattern'] = 'Motif d\'exclusion';
 $string['filestoimport'] = 'Fichiers à importer de&nbsp;: {$a}';
 $string['forcedelete'] = 'Forcer la suppression (même si utilisé)';
@@ -50,8 +56,8 @@ $string['massimport'] = 'Importer massivement';
 $string['newresource'] = 'Ajouter une ressource';
 $string['noresources'] = '<p>Aucune ressource locale dans cette librairie</p>';
 $string['notused'] = 'Jamais utilisée dans ce site';
-$string['pluginname'] = 'Librairie de ressources';
 $string['plugindist'] = 'Distribution du plugin';
+$string['pluginname'] = 'Librairie de ressources';
 $string['purposediscriminator'] = 'Objectif spécifique de la taxonomie';
 $string['reinitialized'] = '{$a} fichiers rétablis';
 $string['resetvolume'] = 'Réinitialiser le volume pour l\'import';
@@ -134,3 +140,5 @@ sous certaines conditions, afin de soutenir l\'effort de développement, amélio
 <p>Contactez un distributeur pour obtenir la version "Pro" et son support.</p>
 <p>Notez que les deux composant local_sharedresources et mod_sharedresource doivent fonctionner au même niveau de distribution</p>
 <p><a href="http://www.mylearningfactory.com/index.php/documentation/Distributeurs?lang=fr_utf8">Distributeurs MyLF</a></p>';
+
+$string['configlistviewthreshold_desc'] = 'Nombre de ressources du résultat pour passer en affichage de liste.';

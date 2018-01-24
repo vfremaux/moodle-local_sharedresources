@@ -15,6 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 $string['adminrepository'] = 'Admin Repository';
+$string['accesscontrol'] = 'Access control';
 $string['backtocourse'] = 'Back to course';
 $string['backtoindex'] = 'Back to index';
 $string['browse'] = 'Browse by categories';
@@ -25,6 +26,9 @@ $string['cleaneverything'] = 'Clean all the library. Dangerous!)';
 $string['configdefaulttaxonomypurposeonedit'] = 'Taxonomy purpose for import';
 $string['configdefaulttaxonomyonimport'] = 'Default taxonomy for import';
 $string['configdefaultlibraryindexpage'] = 'Default index page of the library';
+$string['configlistviewthreshold'] = 'List view threshold';
+$string['listviewalways'] = 'Always list';
+$string['boxviewalways'] = 'Always boxes';
 $string['confignotfound'] = 'Config file not found';
 $string['configprivatecatalog'] = 'Private catalog';
 $string['confirm'] = 'Confirm';
@@ -37,6 +41,8 @@ $string['errormnetpeer'] = 'MNET client initialisation error';
 $string['errornotadir'] = 'The import directory does not exist or is not accessible';
 $string['errornotwritable'] = 'the directory to be imported has no write permissions. Please change permissions before retrying.';
 $string['encoding'] = 'Metadata files encoding';
+$string['emulatecommunity'] = 'Emulate the community version.';
+$string['emulatecommunity_desc'] = 'Switches the code to the community version. The result will be more compatible, but some features will not be available anymore.';
 $string['exclusionpattern'] = 'Exclusion pattern';
 $string['filestoimport'] = 'Files to import from {$a}';
 $string['forcedelete'] = 'Force Delete (even if used)';
@@ -128,6 +134,8 @@ $string['plugindist_desc'] = '
 <p>This plugin is the community version and is published for anyone to use as is and check the plugin\'s
 core application. A "pro" version of this plugin exists and is distributed under conditions to feed the life cycle, upgrade, documentation
 and improvement effort.</p>
-<p>Note that both components local_sharedresources and mod_sharedresource should work within the same distribution level.</p>
+<p>Note that both components local_sharedresources and mod_sharedresource must work using the same distribution level.</p>
 <p>Please contact one of our distributors to get "Pro" version support.</p>
 <p><a href="http://www.mylearningfactory.com/index.php/documentation/Distributeurs?lang=en_utf8">MyLF Distributors</a></p>';
+
+$string['configlistviewthreshold_desc'] = 'Number of resources in result over which display switches to list view.';
