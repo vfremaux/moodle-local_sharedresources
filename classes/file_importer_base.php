@@ -513,7 +513,7 @@ class file_importer_base {
 
         $defaultpurpose = $config->defaulttaxonomypurposeonimport;
 
-        $taxonarr = explode(',', $taxons);
+        $taxonarr = explode('::', $taxons);
         $records = array();
 
         $hastaxonomy = false;

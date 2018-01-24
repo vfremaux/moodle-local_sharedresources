@@ -182,7 +182,7 @@ if ($fullresults['maxobjects'] <= $page) {
 }
 echo '</div>';
 
-if ($mtdplugin->getTaxonomyValueElement()) {
+if (is_object($mtdplugin) && $mtdplugin->getTaxonomyValueElement()) {
     // Only browse if there is a taxonomy in the metadata schema.
     echo '<center>';
     echo '<br/>';
