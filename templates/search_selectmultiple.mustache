@@ -1,0 +1,16 @@
+
+
+<!-- search_selectmultiple -->
+<div class="header">
+    <h2>{{widgetname}} {{{selectsearchhelpicon}}}</h2>
+</div>
+
+<div class="content">
+    <a id="selectall-{{id}}" class="selectmultiple-selectall smalltext">{{selectallstr}}</a> / <a class="selectmultiple-unselectall smalltext" id="unselectall-{{id}}">{{unselectallstr}}</a><br/>
+
+    {{#values}}
+        <input type="checkbox" class="selectmultiple-{{id}}" name="{{label}}[]" value="{{optvalue}}" {{checked}} /> {{optlabel}}<br/>
+    {{/values}}
+
+</div>
+<!-- /search_selectmultiple -->

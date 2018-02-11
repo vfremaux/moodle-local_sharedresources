@@ -67,7 +67,7 @@ $PAGE->set_heading(get_string('courselist', 'local_sharedresources'));
 $renderer = $PAGE->get_renderer('local_sharedresources');
 
 $entryrec = $DB->get_record('sharedresource_entry', array('id' => $entryid));
-$courses = resources_get_courses($entryrec);
+$courses = sharedresources_get_courses($entryrec);
 
 echo $OUTPUT->header();
 
