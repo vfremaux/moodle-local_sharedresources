@@ -1,0 +1,22 @@
+
+
+<!-- search_duration -->
+<div class="header">
+    <h2>{{widgetname}} {{durationsearchstr}}</h2>
+</div>
+<div class="content">
+    <select name="{{label}}_symbol">
+        <option value="defaultvalue"> </option>
+        <option value="=" {{{equalselected}}} >=</option>
+        <option value="<>" {{{nonequalselected}}} >!=</option>
+        <option value="<" {{{lessselected}}} >&lt;</option>
+        <option value=">" {{{moreselected}}} >&gt;</option>
+        <option value="<=" {{{lessequalselected}}} >&le;</option>
+        <option value=">=" {{{moreequalselected}}} >&ge;</option>
+    </select>
+    <input type="text" size="2" name="{{label}}_day" value="{{days}}" />&nbsp;{{dstr}}
+    <input type="text" size="2" name="{{label}}_hour" value="{{hours}}" />&nbsp;{{hstr}}
+    <input type="text" size="2" name="{{label}}_min" value="{{mins}}" />&nbsp;{{mstr}}
+    <input type="text" size="2" name="{{label}}_sec" value="{{secs}}" />&nbsp;{{sstr}}
+</div>
+<!-- /search_duration -->
