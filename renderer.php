@@ -560,12 +560,12 @@ class local_sharedresources_renderer extends plugin_renderer_base {
             if (!is_null($cat->parent)) {
                 $params = array('catid' => $cat->parent, 'catpath' => $prevpath, 'course' => $COURSE->id);
                 $template->parentcaturl = new moodle_url('/local/sharedresources/browse.php', $params);
-                $template->upiconurl = $this->output->pix_url('up', 'local_sharedresources');
+                $template->upiconurl = $this->output->image_url('up', 'local_sharedresources');
                 $template->catspan = 9;
             } else {
                 $params = array('catid' => 0, 'catpath' => '', 'course' => $COURSE->id);
                 $template->parentcaturl = new moodle_url('/local/sharedresources/browse.php', $params);
-                $template->upiconurl = $this->output->pix_url('up', 'local_sharedresources');
+                $template->upiconurl = $this->output->image_url('up', 'local_sharedresources');
                 $template->catspan = 9;
             }
         } else {
@@ -615,11 +615,10 @@ class local_sharedresources_renderer extends plugin_renderer_base {
     }
 
     public function searchlink() {
-        global $COURSE;
 
         $template = new StdClass;
         $template->buttonstr = get_string('searchinlibrary', 'local_sharedresources');
-        $template->buttonurl = new moodle_url('/local/sharedresources/explore.php', array('course' => $COURSE->id));
+        $template->buttonurl = new moodle_url('/local/sharedresources/index.php');
         $template->class = 'sharedresources-link-to-search';
 
         return $this->output->render_from_template('local_sharedresources/modebutton', $template);
@@ -631,7 +630,7 @@ class local_sharedresources_renderer extends plugin_renderer_base {
         $template = new StdClass;
 
         $template->buttonstr = get_string('browse', 'local_sharedresources');
-        if ($COURSE->id == SITEID) {
+        if ($COURSE->id > SITEID) {
             $template->buttonurl = new moodle_url('/local/sharedresources/browse.php');
         } else {
             $template->buttonurl = new moodle_url('/local/sharedresources/browse.php', array('course' => $COURSE->id));
@@ -675,7 +674,6 @@ class local_sharedresources_renderer extends plugin_renderer_base {
         $selected = @$SESSION->sharedresources->taxonomy;
         $meurl = new moodle_url('/local/sharedresources/browse.php');
         $template->taxonomychooser = $this->output->single_select($meurl, 'taxonomy', $enabledtaxonomies, $selected);
-        $template->taxonomystr = get_string('choosetaxonomy', 'local_sharedresources');
 
         return $this->output->render_from_template('local_sharedresources/taxonomychooser', $template);
     }
