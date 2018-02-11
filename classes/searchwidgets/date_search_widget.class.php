@@ -43,7 +43,7 @@ class date_widget extends search_widget {
 
         $template = new StdClass;
         $template->lowername = strtolower($this->label);
-        $template->widgetname = get_string(str_replace(' ', '', $lowername), 'sharedmetadata_'.$this->schema);
+        $template->widgetname = get_string(str_replace(' ', '', $template->lowername), 'sharedmetadata_'.$this->schema);
         $template->handler = 'javascript:ds_sh(this);';
 
         return $OUTPUT->render_from_template('local_sharedresources/search_date', $template);

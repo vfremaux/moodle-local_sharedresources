@@ -50,9 +50,9 @@ if ($searchplugins = glob($CFG->dirroot.'/local/sharedresources/classes/searchwi
 
 require_once($CFG->dirroot.'/local/sharedresources/lib.php');
 
-
-$config = get_config('sharedresource');
-$mtdplugin = sharedresource_get_plugin($config->schema);
+$config = get_config('local_sharedresources');
+$shrconfig = get_config('sharedresource');
+$mtdplugin = sharedresource_get_plugin($shrconfig->schema);
 
 $edit = optional_param('edit', -1, PARAM_BOOL);
 $blockaction = optional_param('blockaction', '', PARAM_ALPHA);
@@ -68,15 +68,20 @@ $PAGE->requires->js_call_amd('local_sharedresources/boxview', 'init');
 
 // Security.
 
-if ($courseid) {
-    $context = context_course::instance($courseid);
-    $course = $DB->get_record('course', array('id' => $courseid));
-    require_login($course);
-} else {
-    $context = context_system::instance();
+$context = context_system::instance();
+if (!empty($config->privatecatalog)) {
+    if ($courseid) {
+        $context = context_course::instance($courseid);
+        $course = $DB->get_record('course', array('id' => $courseid));
+        require_login($course);
+        $caps = array('repository/sharedresources:view', 'repository/sharedresources:use', 'repository/sharedresources:manage');
+        if (!has_any_capability($caps, $context)) {
+            print_error('noaccess', 'local_sharedresource');
+        }
+    } else {
+        $context = context_system::instance();
+    }
 }
-
-require_capability('repository/sharedresources:view', $context);
 
 // Prepare the page.
 
@@ -105,11 +110,6 @@ if ($action) {
 $course = $DB->get_record('course', array('id' => $courseid));
 
 $resourcesmoodlestr = get_string('resources', 'sharedresource');
-
-if (empty($config->schema)) {
-    print_error('nometadataplugin', 'sharedresource');
-    die;
-}
 
 $visiblewidgets = array();
 sharedresources_setup_widgets($visiblewidgets, $context);
@@ -153,7 +153,9 @@ if (!empty($topkeywords)) {
 
 echo $OUTPUT->header();
 
-echo $renderer->browse_tabs($repo, $course);
+if (local_sharedresources_supports_feature('repo/remote')) {
+    echo $renderer->browse_tabs($repo, $course);
+}
 
 if (($repo == 'local') || empty($repo)) {
     echo $renderer->tools($course);
@@ -172,7 +174,7 @@ if (!empty($searchfields)) {
     }
 }
 
-if ($repo == 'local') {
+if ($repo == 'local' || !local_sharedresources_supports_feature('repo/remote')) {
     $resources = get_local_resources($repo, $fullresults, $metadatafilters, $offset, $page);
 } else {
     $resources = get_remote_repo_resources($repo, $fullresults, $metadatafilters, $offset, $page);
@@ -181,14 +183,18 @@ if ($repo == 'local') {
 $SESSION -> resourceresult = $resources;
 
 echo '<div id="resources">';
-if ($fullresults['maxobjects'] <= $page) {
-    // Do we have enough resource for one page ?
-    echo $renderer->resources_list($resources, $course, $section, $isediting, $repo);
+if (empty($resources)) {
+    echo $OUTPUT->notification(get_string('noresources', 'local_sharedresources'));
 } else {
-    $nbrpages = ceil($fullresults['maxobjects']/$page);
-    echo $renderer->pager($courseid, $repo, $nbrpages, $page, $offset, $isediting);
-    echo $renderer->resources_list($resources, $course, $section, $isediting, $repo, $page, $offset);
-    echo $renderer->pager($courseid, $repo, $nbrpages, $page, $offset, $isediting);
+    if ($fullresults['maxobjects'] <= $page) {
+        // Do we have enough resource for one page ?
+        echo $renderer->resources_list($resources, $course, $section, $isediting, $repo);
+    } else {
+        $nbrpages = ceil($fullresults['maxobjects']/$page);
+        echo $renderer->pager($courseid, $repo, $nbrpages, $page, $offset, $isediting);
+        echo $renderer->resources_list($resources, $course, $section, $isediting, $repo, $page, $offset);
+        echo $renderer->pager($courseid, $repo, $nbrpages, $page, $offset, $isediting);
+    }
 }
 echo '</div>';
 

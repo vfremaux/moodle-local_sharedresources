@@ -71,12 +71,24 @@
     margin-bottom: 15px;
 }
 
+.sharedresources-taxonomy-chooser * {
+    display:inline;
+}
+
+.sharedresources-pager a {
+    margin-right:10px;
+}
+
 #sharedresources-link-to-search {
     margin-top: 15px;
 }
 
 .sharedresources-description .resource-keywords {
     margin-top: 15px;
+}
+
+a.sharedresource-actionlink {
+    cursor: pointer;
 }
 
 .is-hidden-by-rule {
@@ -121,4 +133,8 @@
     box-shadow: 5px 10px 10px #888;
     max-width: 46%;
     width:35%;
+}
+
+#local_sharedresource_searchblock input[type="text"] {
+    padding:3px;
 }

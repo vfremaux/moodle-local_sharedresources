@@ -30,6 +30,11 @@ require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
 require_once($CFG->dirroot.'/mod/sharedresource/rpclib.php');
 require_once($CFG->dirroot.'/mod/sharedresource/metadatalib.php');
 
+if (local_sharedresources_supports_feature('admin/pro')) {
+    // Get additional general functions for "pro" version.
+    require_once($CFG->dirroot.'/local/sharedresources/pro/lib.php');
+}
+
 /**
  * Implements the generic community/pro packaging switch.
  * Tells wether a feature is supported or not. Gives back the
@@ -45,7 +50,9 @@ function local_sharedresources_supports_feature($feature) {
     if (!isset($supports)) {
         $supports = array(
             'pro' => array(
+                'repo' => array('remote'),
                 'import' => array('mass'),
+                'admin' => array('pro'),
                 'emulate' => 'community',
             ),
             'community' => array(
@@ -292,7 +299,7 @@ function get_remote_repo_resources($repo, &$fullresults, $metadatafilters = '', 
     }
     unset($mnetrequest);
 
-    return $fullresults['entries'];
+    return @$fullresults['entries'];
 }
 
 /**

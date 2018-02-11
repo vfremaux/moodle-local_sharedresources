@@ -27,9 +27,11 @@ $repo = optional_param('repo', $CFG->mnet_localhost_id, PARAM_INT); // Repo is g
 
 require_login();
 
-if (!$repo) $repo = $CFG->mnet_localhost_id;
-
-$repohostroot = $DB->get_field('mnet_host', 'wwwroot', array('id' => $repo));
+if ($repo == 'local' || $repo = $CFG->mnet_localhost_id) {
+    $repohostroot = $CFG->wwwroot;
+} else {
+    $repohostroot = $DB->get_field('mnet_host', 'wwwroot', array('id' => $repo));
+}
 
 if ($repohostroot == $CFG->wwwroot) {
     // Do this locally.

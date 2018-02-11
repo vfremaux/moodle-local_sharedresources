@@ -32,7 +32,7 @@
 
     <div class="sharedresource-heading {{ishiddenbyrule}}">
         <div class="resource-title-container">
-            <div class="box-resource-titles" id="sharedresource-title-{{identifier}}">{{title}}</div>
+            <div class="box-resource-titles" id="sharedresource-title-{{identifier}}">{{title}} </div>
         </div>
 
         <div class="resource-controls">
@@ -43,11 +43,10 @@
         </div>
 
         <div class="resource-likes">
-           {{{likedstr}}}
            <span id="sharedresource-likes-{{identifier}}">
            {{{stars}}}
            </span>
-            <a class="sharedresource-mark-like" id="sharedresource-{{identifier}}">{{{marklikedstr}}}</a>
+            <a class="sharedresource-mark-like" id="sharedresource-{{repoid}}-{{identifier}}">{{{marklikedstr}}}</a>
         </div>
 
         <div class="resource-user-commands">

@@ -22,7 +22,6 @@
  * @author     Valery Fremaux <valery.fremaux@club-internet.fr>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
  * @copyright  (C) 1999 onwards Martin Dougiamas  http://dougiamas.com
- *
  */
 namespace local_sharedresources\browser;
 
@@ -49,7 +48,14 @@ class navigation {
      */
     protected $taxonomy;
 
-    public function __construct(StdClass $taxonomy) {
+    public function __construct($taxonomyorid) {
+        global $DB;
+
+        if (is_object($taxonomyorid)) {
+            $taxonomy = $taxonomyorid;
+        } else {
+            $taxonomy = $DB->get_record('sharedresource_classif', array('id' => $taxonomyorid));
+        }
 
         $this->taxonomy = $taxonomy;
         $this->config = get_config('sharedresource');
@@ -120,6 +126,10 @@ class navigation {
      */
     public function get_category($catid, $catpath) {
         global $DB;
+
+        if (empty($this->taxonomy)) {
+            return null;
+        }
 
         $fields = "{$this->taxonomy->sqlid} as id, {$this->taxonomy->sqllabel} as name, {$this->taxonomy->sqlparent} as parent ";
         $category = $DB->get_record($this->taxonomy->tablename, array($this->taxonomy->sqlid => $catid), $fields);
@@ -316,7 +326,7 @@ class navigation {
      * @param int $catid
      * // TODO : add mutiple taxonomy source arity. At the moment just handling first instance.
      */
-    public function get_entries($catpath) {
+    public function get_entries($catid) {
         global $DB;
 
         $config = get_config('local_sharedresources');
@@ -339,7 +349,7 @@ class navigation {
                 shm.value = ?
         ";
 
-        $resources = $DB->get_records_sql($sql, array($elementnode.':0_0_0_0', $shrconfig->schema, $catpath));
+        $resources = $DB->get_records_sql($sql, array($elementnode.':0_0_0_0', $shrconfig->schema, $catid));
 
         return $resources;
     }
@@ -433,6 +443,23 @@ class navigation {
 
         $accessctl = \mod_sharedresource\access_ctl::instance($this->taxonomy->accessctl);
         return $accessctl->can_use();
+    }
+
+    /**
+     * Get the token info from a token id
+     * return Stdclass with id, name, taxonomyid, parent id
+     */
+    public function get_token_info($tokenid) {
+        global $DB;
+
+        $table = $this->taxonomy->tablename;
+
+        $tokenrecord = $DB->get_record($table, array('id' => $tokenid));
+        if ($tokenrecord) {
+            $tokenrecord->taxonomyid = $this->taxonomy->id;
+        }
+
+        return $tokenrecord;
     }
 
     /**

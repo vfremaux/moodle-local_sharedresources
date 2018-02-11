@@ -63,10 +63,10 @@ class freetext_widget extends search_widget {
 
         $template->textsearchhelpicon = $OUTPUT->help_icon('textsearch', 'sharedresource', false);
         $template->label = $this->label;
-        $template->containsstr = get_string('contains', 'sharedresource');
-        $template->equalto = get_string('equalto', 'sharedresource');
-        $template->startswith = get_string('startswith', 'sharedresource');
-        $template->endswith = get_string('endswith', 'sharedresource');
+        $template->containsstr = get_string('contains', 'local_sharedresources');
+        $template->equaltostr = get_string('equalto', 'local_sharedresources');
+        $template->startswithstr = get_string('startswith', 'local_sharedresources');
+        $template->endswithstr = get_string('endswith', 'local_sharedresources');
 
         return $OUTPUT->render_from_template('local_sharedresources/search_freetext', $template);
     }

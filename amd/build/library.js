@@ -46,12 +46,16 @@ define(['jquery', 'core/config', 'core/log'], function ($, cfg, log) {
         },
 
         ajax_mark_like: function (e) {
-            residentifier = $(this).attr('id').replace('sharedresource-', '');
+            var identifier = $(this).attr('id').replace('sharedresource-', '');
+            var arr = identifier.split('-'); // Has repo-resid form.
+            var repoid = arr[0];
+            var residentifier = arr[1];
+
             url = cfg.wwwroot + '/local/sharedresources/ajax/add_liked_mark.php?';
-            url += 'resid=' + residentifier + '&repo=' + e.data;
+            url += 'resid=' + residentifier + '&repo=' + repoid;
 
             newlike = $.get(url, '', function(data, textStatus) {
-                $('#sharedresource-likes-' + residentifier).html(that.sharedresource_print_stars(data, 15));
+                $('#sharedresource-likes-' + residentifier).html(sharedresourceslibrary.sharedresource_print_stars(data, 15));
             }, 'html');
         },
 

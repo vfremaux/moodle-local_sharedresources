@@ -31,7 +31,6 @@ $PAGE->requires->js_call_amd('local_sharedresources/boxview', 'init');
 $config = get_config('local_sharedresources');
 
 $courseid = optional_param('course', false, PARAM_INT);
-
 $section = optional_param('section', 0, PARAM_INT);
 
 if ($courseid) {
@@ -44,15 +43,21 @@ if ($courseid) {
 }
 
 // hidden key to open the catalog to the unlogged area.
+$context = context_system::instance();
+
 if (!empty($config->privatecatalog)) {
 
     if ($courseid) {
         $context = context_course::instance($courseid);
+        require_login($course);
     } else {
         $context = context_system::instance();
+        require_login();
     }
-    require_login();
-    require_capability('repository/sharedresources:view', $context);
+    $caps = array('repository/sharedresources:view', 'repository/sharedresources:use', 'repository/sharedresources:manage');
+    if (!has_any_capability($caps, $context)) {
+        print_error('noaccess', 'local_sharedresource');
+    }
 }
 
 $catid = optional_param('catid', '', PARAM_INT);
@@ -77,9 +82,20 @@ $filters = null;
 
 // Getting all filters.
 
-$taxonomyselector = $renderer->taxonomy_select();
-$taxonomyobj = $DB->get_record('sharedresource_classif', array('id' => $SESSION->sharedresources->taxonomy));
-$navigator = new \local_sharedresources\browser\navigation($taxonomyobj);
+try {
+    $taxonomyselector = $renderer->taxonomy_select();
+    $taxonomyobj = $DB->get_record('sharedresource_classif', array('id' => $SESSION->sharedresources->taxonomy));
+    $navigator = new \local_sharedresources\browser\navigation($taxonomyobj);
+} catch (Exception $e) {
+    echo $OUTPUT->header();
+    echo $OUTPUT->heading($strheading, 2);
+    echo $OUTPUT->notification(get_string('noclassificationenabled', 'local_sharedresources'));
+
+    echo $renderer->searchlink();
+
+    echo $OUTPUT->footer();
+    die;
+}
 
 // $classificationfilters = $navigator->get_category_filters();
 
@@ -114,13 +130,15 @@ echo $taxonomyselector;
 
 // Calling navigation.
 
+$isediting = has_capability('repository/sharedresources:manage', $context, $USER->id);
+
 if ($catid) {
     $category = $navigator->get_category($catid, $catpath, $filters);
     echo $renderer->category($category, $catpath, $navigator->count_entries_rec($catpath), 'current', true);
 
     // Root of the catalog cannot have resources.
     $category->cats = $navigator->get_children($catid);
-    echo $renderer->resources_list($category->entries, $course, $section);
+    echo $renderer->resources_list($category->entries, $course, $section, $isediting);
 } else {
     $category = new StdClass;
     $catid = 0;
@@ -130,6 +148,8 @@ if ($catid) {
 
 echo $renderer->children($category, $catpath);
 
+echo '<center>';
 echo $renderer->searchlink();
+echo '</center>';
 
 echo $OUTPUT->Footer();

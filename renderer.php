@@ -134,7 +134,7 @@ class local_sharedresources_renderer extends plugin_renderer_base {
     public function pager($courseid, $repo, $nbrpages, $page, $offset = 0, $isediting = false) {
         $str = '';
 
-        $str .= '<center><b>';
+        $str .= '<center><div class="sharedresources-pager">';
         if ($courseid) {
             for ($i = 1; $i <= $nbrpages; $i++) {
                 $pageoffset = ($i - 1) * $page;
@@ -152,7 +152,7 @@ class local_sharedresources_renderer extends plugin_renderer_base {
                 $str .= '<a style="'.$pagestyle.'" name="page'.$i.'" href="'.$libraryurl.'">'.$i.'</a>';
             }
         }
-        $str .= '</center>';
+        $str .= '<div></center>';
 
         return $str;
     }
@@ -264,6 +264,12 @@ class local_sharedresources_renderer extends plugin_renderer_base {
                 $template->title = $resource->title;
                 $template->editioncommands = $commands;
                 $template->identifier = $resource->identifier;
+                if ($resource->provider != 'local') {
+                    $providerhostid = $DB->get_field('mnet', 'id', array('wwwroot' => $resource->provider));
+                } else {
+                    $providerhostid = $CFG->mnet_localhost_id;
+                }
+                $template->repoid = $providerhostid;
 
                 // Print notice access.
                 $readnotice = get_string('readnotice', 'sharedresource');
@@ -437,34 +443,15 @@ class local_sharedresources_renderer extends plugin_renderer_base {
     /**
      * print tabs allowing selection of the current repository provider
      * note that provider is necessarily a mnet host identity.
+     * Only available in "pro" version.
+     *
+     * @see local/sharedresources/pro/lib.php.
+     *
      * @param string $repo
      * @param object $course
      */
     public function browse_tabs($repo, $course) {
-
-        $repos['local'] = get_string('local', 'sharedresource');
-
-        if ($providers = sharedresources_get_providers()) {
-
-            foreach ($providers as $provider) {
-                $repos["$provider->id"] = $provider->name;
-            }
-        }
-
-        $repoids = array_keys($repos);
-        if (!in_array($repo, $repoids)) $repo = $repoids[0];
-
-        foreach ($repoids as $repoid) {
-            if ($course) {
-                $repourl = new moodle_url('/local/sharedresources/index.php', array('course' => $course->id, 'repo' => $repoid));
-                $rows[0][] = new tabobject($repoid, $repourl, $repos[$repoid]);
-            } else {
-                $repourl = new moodle_url('/local/sharedresources/index.php', array('repo' => $repoid));
-                $rows[0][] = new tabobject($repoid, $repourl, $repos[$repoid]);
-            }
-        }
-
-        return print_tabs($rows, $repo, $repos[$repo], null, true);
+        return sharedresources_get_provider_tabs($repo, $course);
     }
 
     /**
@@ -554,6 +541,7 @@ class local_sharedresources_renderer extends plugin_renderer_base {
     }
 
     function category(&$cat, &$catpath, $resourcecount, $current = 'current', $up = false) {
+        global $COURSE;
 
         $template = new StdClass;
 
@@ -570,14 +558,14 @@ class local_sharedresources_renderer extends plugin_renderer_base {
         if ($up) {
             $template->hasup = true;
             if (!is_null($cat->parent)) {
-                $params = array('catid' => $cat->parent, 'catpath' => $prevpath);
+                $params = array('catid' => $cat->parent, 'catpath' => $prevpath, 'course' => $COURSE->id);
                 $template->parentcaturl = new moodle_url('/local/sharedresources/browse.php', $params);
-                $template->upiconurl = $this->output->pix_url('up', 'local_courseindex');
+                $template->upiconurl = $this->output->pix_url('up', 'local_sharedresources');
                 $template->catspan = 9;
             } else {
-                $params = array('catid' => 0, 'catpath' => '');
+                $params = array('catid' => 0, 'catpath' => '', 'course' => $COURSE->id);
                 $template->parentcaturl = new moodle_url('/local/sharedresources/browse.php', $params);
-                $template->upiconurl = $this->output->pix_url('up', 'local_courseindex');
+                $template->upiconurl = $this->output->pix_url('up', 'local_sharedresources');
                 $template->catspan = 9;
             }
         } else {
@@ -585,7 +573,7 @@ class local_sharedresources_renderer extends plugin_renderer_base {
         }
 
         if ($current == 'sub') {
-            $params = array('catid' => $cat->id, 'catpath' => $nextpath);
+            $params = array('catid' => $cat->id, 'catpath' => $nextpath, 'course' => $COURSE->id);
             $template->caturl = new moodle_url('/local/sharedresources/browse.php', $params);
             $template->hassubs = $cat->hassubs;
         }
@@ -627,10 +615,11 @@ class local_sharedresources_renderer extends plugin_renderer_base {
     }
 
     public function searchlink() {
+        global $COURSE;
 
         $template = new StdClass;
         $template->buttonstr = get_string('searchinlibrary', 'local_sharedresources');
-        $template->buttonurl = new moodle_url('/local/sharedresources/index.php');
+        $template->buttonurl = new moodle_url('/local/sharedresources/explore.php', array('course' => $COURSE->id));
         $template->class = 'sharedresources-link-to-search';
 
         return $this->output->render_from_template('local_sharedresources/modebutton', $template);
@@ -642,7 +631,7 @@ class local_sharedresources_renderer extends plugin_renderer_base {
         $template = new StdClass;
 
         $template->buttonstr = get_string('browse', 'local_sharedresources');
-        if ($COURSE->id > SITEID) {
+        if ($COURSE->id == SITEID) {
             $template->buttonurl = new moodle_url('/local/sharedresources/browse.php');
         } else {
             $template->buttonurl = new moodle_url('/local/sharedresources/browse.php', array('course' => $COURSE->id));
@@ -686,6 +675,7 @@ class local_sharedresources_renderer extends plugin_renderer_base {
         $selected = @$SESSION->sharedresources->taxonomy;
         $meurl = new moodle_url('/local/sharedresources/browse.php');
         $template->taxonomychooser = $this->output->single_select($meurl, 'taxonomy', $enabledtaxonomies, $selected);
+        $template->taxonomystr = get_string('choosetaxonomy', 'local_sharedresources');
 
         return $this->output->render_from_template('local_sharedresources/taxonomychooser', $template);
     }
