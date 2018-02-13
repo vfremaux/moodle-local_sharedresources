@@ -119,7 +119,11 @@ class PushOut_Form extends moodleform {
 
         $buttonarray = array();
 
+<<<<<<< HEAD
         $providers = get_providers();
+=======
+        $providers = sharedresources_get_providers();
+>>>>>>> MOODLE_34_STABLE
 
         if (count($providers) > 1) {
             foreach ($providers as $provider) {

@@ -177,6 +177,7 @@
  * having as a default the repository/sharedresources:view capability.
  */
 require('../../config.php');
+<<<<<<< HEAD
 require_once($CFG->libdir.'/blocklib.php');
 require_once($CFG->dirroot.'/course/lib.php');
 require_once($CFG->dirroot.'/mod/sharedresource/rpclib.php');
@@ -341,3 +342,17 @@ if ($courseid > SITEID) {
  
 echo $OUTPUT->footer();
 >>>>>>> MOODLE_33_STABLE
+=======
+
+$config = get_config('local_sharedresource');
+
+$courseid = optional_param('course', SITEID, PARAM_INT);
+
+if (empty($config->defaultlibraryindexpage) || $config->defaultlibraryindexpage == 'explore') {
+    $serviceurl = new moodle_url('/local/sharedresources/explore.php', array('course' => $courseid));
+} else {
+    $serviceurl = new moodle_url('/local/sharedresources/browse.php', array('course' => $courseid));
+}
+redirect($serviceurl);
+
+>>>>>>> MOODLE_34_STABLE

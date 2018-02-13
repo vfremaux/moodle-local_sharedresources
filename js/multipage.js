@@ -1,10 +1,18 @@
 /*
 <<<<<<< HEAD
+<<<<<<< HEAD
 Utilisation de l'objet XmlHttpRequest
 */
 function multi(numpage,page,courseid,isediting,repo,nbrpage){
+=======
+ * Utilisation de l'objet XmlHttpRequest
+ * TODO : Rewrite this in full jQuery mode.
+ */
+// jshint undef:false, unused:false
+function multi(numpage, page, courseid, isediting, repo, nbrpage) {
+>>>>>>> MOODLE_34_STABLE
 
-   var ajaxRequest; 
+   var ajaxRequest;
 
 	try{
 		// Opera 8.0+, Firefox, Safari

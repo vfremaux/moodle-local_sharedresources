@@ -1,11 +1,14 @@
 <?php
 <<<<<<< HEAD
+<<<<<<< HEAD
   require_once('../../../config.php');
   
   
   
 ?>
 =======
+=======
+>>>>>>> MOODLE_34_STABLE
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify

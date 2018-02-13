@@ -35,4 +35,7 @@ include $CFG->dirroot.'/mod/cndpindexing/remoteresults.php';
 defined('MOODLE_INTERNAL') || die();
 
 include($CFG->dirroot.'/mod/cndpindexing/remoteresults.php');
+<<<<<<< HEAD
 >>>>>>> MOODLE_33_STABLE
+=======
+>>>>>>> MOODLE_34_STABLE

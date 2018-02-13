@@ -58,6 +58,7 @@ function lre_parse_xml_results($results) {
     $parser = new SimpleXmlDeserializer();
     $tree = $parser->parse($results);
 <<<<<<< HEAD
+<<<<<<< HEAD
     
     // print_object($tree);
     if (isset($tree['STRICTLRERESULTS'][0]['LOM'])){
@@ -78,6 +79,16 @@ function lre_parse_xml_results($results) {
             if (count($identifiers) == 1) {
                 $hit->remoteid = $identifiers[0]['ENTRY'][0]['value'];
             } else {
+=======
+
+    if (isset($tree['STRICTLRERESULTS'][0]['LOM'])) {
+        foreach ($tree['STRICTLRERESULTS'][0]['LOM'] as $lom) {
+            $hit = new StdClass;
+            $identifiers = $lom['GENERAL'][0]['IDENTIFIER'];
+            if (count($identifiers) == 1) {
+                $hit->remoteid = $identifiers[0]['ENTRY'][0]['value'];
+            } else {
+>>>>>>> MOODLE_34_STABLE
                 foreach ($identifiers as $IDENTIFIER) {
                     if ($IDENTIFIER['CATALOG'][0]['value'] == 'oai') {
 >>>>>>> MOODLE_33_STABLE
@@ -85,6 +96,7 @@ function lre_parse_xml_results($results) {
                     }
                 }
             }
+<<<<<<< HEAD
 <<<<<<< HEAD
             $hit->language = $LOM['GENERAL'][0]['LANGUAGE'][0]['value'];
             $TITLES = $LOM['GENERAL'][0]['TITLE'];
@@ -96,6 +108,8 @@ function lre_parse_xml_results($results) {
                 }
                 if ($TITLE['STRING'][0]['attributes']['LANGUAGE']['value'] == $hit->language){
 =======
+=======
+>>>>>>> MOODLE_34_STABLE
             $hit->language = $lom['GENERAL'][0]['LANGUAGE'][0]['value'];
             $titles = $lom['GENERAL'][0]['TITLE'];
             foreach ($titles as $title) {
@@ -105,11 +119,15 @@ function lre_parse_xml_results($results) {
                     break;
                 }
                 if ($title['STRING'][0]['attributes']['LANGUAGE']['value'] == $hit->language) {
+<<<<<<< HEAD
 >>>>>>> MOODLE_33_STABLE
+=======
+>>>>>>> MOODLE_34_STABLE
                     break;
                 }
             }
             $hit->description = '';
+<<<<<<< HEAD
 <<<<<<< HEAD
             $DESCRIPTIONS = @$LOM['GENERAL'][0]['DESCRIPTION'];
             if (!empty($DESCRIPTIONS)){
@@ -131,10 +149,22 @@ function lre_parse_xml_results($results) {
                     }
                     if ($description['STRING'][0]['attributes']['LANGUAGE']['value'] == $hit->language) {
 >>>>>>> MOODLE_33_STABLE
+=======
+            $descriptions = @$lom['GENERAL'][0]['DESCRIPTION'];
+            if (!empty($descriptions)) {
+                foreach ($descriptions as $description) {
+                    // Scan available strings and choose our language than resource own language than defaults to last known.
+                    $hit->description = $description['STRING'][0]['value'];
+                    if ($description['STRING'][0]['attributes']['LANGUAGE']['value'] == substr(current_language(), 0, 2)) {
+                        break;
+                    }
+                    if ($description['STRING'][0]['attributes']['LANGUAGE']['value'] == $hit->language) {
+>>>>>>> MOODLE_34_STABLE
                         break;
                     }
                 }
             }
+<<<<<<< HEAD
 <<<<<<< HEAD
             $hit->url = $LOM['TECHNICAL'][0]['LOCATION'][0]['value'];
             $keywordset = array();
@@ -147,13 +177,20 @@ function lre_parse_xml_results($results) {
 =======
             $hit->url = $lom['TECHNICAL'][0]['LOCATION'][0]['value'];
             $keywordset = array();
+=======
+            $hit->url = $lom['TECHNICAL'][0]['LOCATION'][0]['value'];
+            $keywordset = array();
+>>>>>>> MOODLE_34_STABLE
             $keywordstrings = @$lom['GENERAL'][0]['KEYWORD'][0]['STRING'];
             if (!empty($keywordstrings)) {
                 foreach ($keywordstrings as $keywordstring) {
                     $keywordLanguage = $keywordstring['attributes']['LANGUAGE'];
                     if ($keywordLanguage == substr(current_language(), 0, 2) || $keywordLanguage == $hit->language) {
                         $keywordset[] = $keywordstring['value'];
+<<<<<<< HEAD
 >>>>>>> MOODLE_33_STABLE
+=======
+>>>>>>> MOODLE_34_STABLE
                     }
                 }
             }
@@ -163,10 +200,14 @@ function lre_parse_xml_results($results) {
             $i++;
         }
 <<<<<<< HEAD
+<<<<<<< HEAD
         
 =======
 
 >>>>>>> MOODLE_33_STABLE
+=======
+
+>>>>>>> MOODLE_34_STABLE
         return $hits;
     } else {
         return array();
@@ -174,6 +215,7 @@ function lre_parse_xml_results($results) {
 }
 
 /**
+<<<<<<< HEAD
 <<<<<<< HEAD
 * prints a single result slot.
 * @param object $hit
@@ -197,6 +239,18 @@ function lre_print_search_result($hit, $courseid, $page) {
     $stringlocationurl = $CFG->dirroot.'/resources/plugins/lre/lang/';
 
 >>>>>>> MOODLE_33_STABLE
+=======
+ * prints a single result slot.
+ * @param object $hit
+ * @param int $courseid
+ * @param int $page the pagecount of this page of results
+ */
+function lre_print_search_result($hit, $courseid, $page) {
+    global $CFG, $SESSION, $DB;
+
+    $stringlocationurl = $CFG->dirroot.'/resources/plugins/lre/lang/';
+
+>>>>>>> MOODLE_34_STABLE
     $seedetailstr = get_string('viewthenotice', 'lre', '', $stringlocationurl);
     $keywordsstr = get_string('keywords', 'lre', '', $stringlocationurl);
     $addtocourse = get_string('addtocourse', 'lre', '', $stringlocationurl);
@@ -207,7 +261,10 @@ function lre_print_search_result($hit, $courseid, $page) {
     echo "<img src=\"{$CFG->wwwroot}/resources/plugins/lre/pix/lremark.png\" /><br/>";
     echo "<a class=\"indexing_hiturl\" href=\"{$hit->url}\" target=\"_blank\">{$hit->url}</a><br/>";
 <<<<<<< HEAD
+<<<<<<< HEAD
     // echo "<a style=\"font-size:0.8em\" href=\"{$hit->urldesc}\" target=\"_blank\">{$seedetailstr}</a><br/>";
+=======
+>>>>>>> MOODLE_34_STABLE
     echo "<span class=\"desc\">".mb_convert_encoding($hit->description, 'utf-8', 'auto').'</span><br/>';
     echo "<div style=\"font-size:0.8em;margin-top:3px\" class=\"keywords\"><b>$keywordsstr</b>: {$hit->keywords}</div><br/>";
     if ($courseid > SITEID && $CFG->taomode != 'main'){
@@ -228,7 +285,10 @@ function lre_print_search_result($hit, $courseid, $page) {
             $entry = $DB->get_record('sharedresource_entry', 'remoteid', $hit->remoteid, 'provider', 'lre');
             if (empty($entry)) {
                 echo '<input type="hidden" name="id" value="'.$courseid.'" />';
+<<<<<<< HEAD
 >>>>>>> MOODLE_33_STABLE
+=======
+>>>>>>> MOODLE_34_STABLE
                 echo "<input type=\"hidden\" name=\"title\" value=\"".htmlentities($hit->title, ENT_QUOTES, 'UTF-8')."\" />";
                 echo "<input type=\"hidden\" name=\"description\" value=\"".htmlentities($hit->description, ENT_QUOTES, 'UTF-8')."\" />";
                 echo "<input type=\"hidden\" name=\"url\" value=\"".htmlentities($hit->url, ENT_QUOTES, 'UTF-8')."\" />";
@@ -243,11 +303,16 @@ function lre_print_search_result($hit, $courseid, $page) {
             }
             echo "</form>";
 <<<<<<< HEAD
+<<<<<<< HEAD
             echo "<div style=\"text-align:right\" class=\"commands\"><a href=\"javascript:document.forms['add{$hit->i}'].submit();\">{$addtocourse}</a></div>";
 =======
             echo "<div style=\"text-align:right\" class=\"commands\">";
             echo "<a href=\"javascript:document.forms['add{$hit->i}'].submit();\">{$addtocourse}</a></div>";
 >>>>>>> MOODLE_33_STABLE
+=======
+            echo "<div style=\"text-align:right\" class=\"commands\">";
+            echo "<a href=\"javascript:document.forms['add{$hit->i}'].submit();\">{$addtocourse}</a></div>";
+>>>>>>> MOODLE_34_STABLE
         }
     }
     echo "</li>";
@@ -256,17 +321,25 @@ function lre_print_search_result($hit, $courseid, $page) {
 <<<<<<< HEAD
 function lre_print_paging($page, $maxpage, $courseid, $fullquery){
     global $CFG;
-    
+
     $links = array();
-    
+
     $maxpageceil = min($maxpage, 20);
+<<<<<<< HEAD
     for($i = 1 ; $i <= $maxpageceil ; $i++){
         if ($page != $i){
             $links[] = "<a href=\"{$CFG->wwwroot}/resources/results.php?repo=lre&amp;id=$courseid&amp;p={$i}&query=".urlencode($fullquery)."\">{$i}</a>";
+=======
+    for ($i = 1; $i <= $maxpageceil; $i++) {
+        if ($page != $i) {
+            $qurl = new moodle_url('/resources/results.php', array('repo' => 'lre', 'id' => $courseid, 'p' => $i, 'query' => urlencode($fullquery)));
+            $links[] = '<a href="'.$qurl.'">'.$i.'</a>';
+>>>>>>> MOODLE_34_STABLE
         } else {
-            $links[] = "<b><u>$i</u></b>";
+            $links[] = '<b><u>'.$i.'</u></b>';
         }
     }
+<<<<<<< HEAD
     if ($maxpage > $maxpageceil) $links[] = '...';
     
 =======
@@ -284,11 +357,16 @@ function lre_print_paging($page, $maxpage, $courseid, $fullquery) {
             $links[] = '<b><u>'.$i.'</u></b>';
         }
     }
+=======
+>>>>>>> MOODLE_34_STABLE
     if ($maxpage > $maxpageceil) {
         $links[] = '...';
     }
 
+<<<<<<< HEAD
 >>>>>>> MOODLE_33_STABLE
+=======
+>>>>>>> MOODLE_34_STABLE
     echo '<center>';
     echo implode(' ', $links);
     echo '</center>';

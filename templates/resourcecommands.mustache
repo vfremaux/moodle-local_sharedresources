@@ -15,7 +15,11 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
+<<<<<<< HEAD
     @template local_sharedresource/resourcebody
+=======
+    @template local_sharedresources/resourcecommands
+>>>>>>> MOODLE_34_STABLE
 
     Used when a resource is setup as popuped but accessed directly
 
@@ -46,7 +50,11 @@
 </form>
 
 {{^isltitool}}
+<<<<<<< HEAD
 <a id="id-shared-{{i}}">{{addtocoursestr}}</a>
+=======
+<a id="id-shared-{{i}}" class="sharedresource-actionlink">{{addtocoursestr}}</a>
+>>>>>>> MOODLE_34_STABLE
 
 {{#islocalizable}}
  - <a id="id-local-{{i}}" class="sharedresource-actionlink">{{localizetocoursestr}}</a>

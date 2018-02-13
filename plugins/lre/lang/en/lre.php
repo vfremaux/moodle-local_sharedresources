@@ -1,6 +1,9 @@
 <?php
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> MOODLE_34_STABLE
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -15,7 +18,10 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+<<<<<<< HEAD
 >>>>>>> MOODLE_33_STABLE
+=======
+>>>>>>> MOODLE_34_STABLE
 
 $string['reponame'] = 'European Schoolnet';
 $string['lresearch'] = 'Search in the European \"Learning Resource Exchange\" Repository';

@@ -47,7 +47,11 @@
  * This file allows acceding to resources in a platform instance independant way.
  * The user will only need to present a local id (internal resource id) or remote id
 <<<<<<< HEAD
+<<<<<<< HEAD
  * 
+=======
+ *
+>>>>>>> MOODLE_34_STABLE
  * The resource access layer is for use with mod/taoresource resource plugin.
  */
     
@@ -130,6 +134,7 @@ if (!file_exists($CFG->dirroot.'/mod/sharedresource/lib.php')) {
     throw new coding_exception('Shared resource plugin is not installed.');
 }
 
+require_once($CFG->dirroot.'/local/sharedresources/lib.php');
 require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
 require_once($CFG->libdir.'/filelib.php');
 
@@ -183,7 +188,7 @@ if ($resource->context > 1) {
     if (!$isloggedin) {
         require_login();
     }
-    if (!sharedresource_has_capability_somewhere('repository/sharedresources:use', true, true, $context, false)) {
+    if (!sharedresources_has_capability_somewhere('repository/sharedresources:use', true, true, $context, false)) {
         send_file_not_found();
     }
 }

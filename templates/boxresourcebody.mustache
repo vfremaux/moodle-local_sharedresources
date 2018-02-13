@@ -1,0 +1,79 @@
+{{!
+    This file is part of The Dashboard Block
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_sharedresources/resourcebody
+
+    Used when a resource is setup as popuped but accessed directly
+
+    Classes required for JS:
+    * local/sharedresource/amd/boxview.js
+
+}}
+<!-- resourcebody -->
+<div class="sharedresource-item-container">
+
+    <div class="sharedresource-picture {{ishiddenbyrule}}">
+        <img class="box-resource-images" id="sharedresource-image-{{identifier}}" src="{{{largepixurl}}}" />
+    </div>
+
+    <div class="sharedresource-heading {{ishiddenbyrule}}">
+        <div class="resource-title-container">
+            <div class="box-resource-titles" id="sharedresource-title-{{identifier}}">{{title}} </div>
+        </div>
+
+        <div class="resource-controls">
+            {{{boxnoticepopupactionlink}}}
+            <a href="{{{url}}}" target="_blank"><img src="{{{boxdownloadpixurl}}}" /></a>
+            <!-- a class="sharedresource-open-desc-handle"><img id="sharedresource-open-desc-{{identifier}}" src="{{{handlepixurl}}}"></a -->
+            {{{editioncommands}}}
+        </div>
+
+        <div class="resource-likes">
+           <span id="sharedresource-likes-{{identifier}}">
+           {{{stars}}}
+           </span>
+            <a class="sharedresource-mark-like" id="sharedresource-{{repoid}}-{{identifier}}">{{{marklikedstr}}}</a>
+        </div>
+
+        <div class="resource-user-commands">
+            {{{rescommands}}}
+        </div>
+    </div>
+
+    <br/>
+
+    <div class="generalbox sharedresource-info-box" id="sharedresource-info-{{identifier}}" style="display:none">
+        {{#description}}
+        <div class="sharedresources-description">
+            <div class="resource-description">{{{description}}}</div>
+
+            <div class="smalltext resource-keywords">{{keywordsstr}}: <span class="normaltext">{{keywords}}</span></div>
+        </div>
+        {{/description}}
+
+        {{^uses}}
+        <div class="resource-usage">{{{notusedstr}}}</div>
+        {{/uses}}
+        {{#uses}}
+        <div class="resource-usage"><a href="{{{courselisturl}}}">{{{usedstr}}}</a></div>
+        {{/uses}}
+
+        <div class="resource-views">{{{viewedstr}}}</div>
+
+    </div>
+</div>
+<!-- /resourcebody -->

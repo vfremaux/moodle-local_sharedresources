@@ -15,7 +15,11 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
+<<<<<<< HEAD
     @template local_sharedresource/category
+=======
+    @template local_sharedresources/resourcecategory
+>>>>>>> MOODLE_34_STABLE
 
     Shows displayes rendering of a a resource category level
 
@@ -28,6 +32,7 @@
 
 {{#hasup}}
     <div class="browser-'.$current.'-category-label span2">
+<<<<<<< HEAD
         <a href="{{parentcaturl}}"><img src="{{upiconurl}}" class="sharedresource-browse-up"></a>
     </div>
 {{/hasup}}
@@ -42,6 +47,18 @@
     </div>
 
     <div id="sharedresource-browser-cat{{catid}}" class="browser-{{current}}-category-count span1"></div>
+=======
+        <a href="{{{parentcaturl}}}"><img src="{{{upiconurl}}}" class="sharedresource-browse-up"></a>
+    </div>
+{{/hasup}}
+
+    <div class="browser-{{current}}-category-info span{{catspan}} col-{{catspan}}">
+        <a href="{{{caturl}}}">{{catname}}</a>
+    </div>
+
+    <div id="sharedresource-browser-cat{{catid}}" class="browser-{{current}}-category-count span1 col-1"></div>
+    <script type="text/javascript">$('#sharedresource-browser-cat{{catid}}').animateNumber({ number: (0 + {{resourcecount}}) });</script>
+>>>>>>> MOODLE_34_STABLE
 
 </div>
 <!-- /resourcecategory -->

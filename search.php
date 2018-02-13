@@ -47,6 +47,7 @@
  * @see resources/results.php
  */
 <<<<<<< HEAD
+<<<<<<< HEAD
 
     /**
     * Includes and requires
@@ -98,6 +99,8 @@
     print_footer($course);
 ?>
 =======
+=======
+>>>>>>> MOODLE_34_STABLE
 require('../../config.php');
 require_once($CFG->dirroot.'/local/sharedresources/lib.php');
 

@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 function search_widget_toggle(id){
 	
@@ -19,6 +20,8 @@ function search_widget_unselectall(id){
 	key = '#search-widget-'+id+' input[type=checkbox]';
 	$(key).attr('checked', false);
 =======
+=======
+>>>>>>> MOODLE_34_STABLE
 /*
  *
  */
