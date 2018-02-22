@@ -109,6 +109,15 @@ a.sharedresource-actionlink {
     margin-bottom: 10px;
 }
 
+.sharedresource-librarian-controls,
+.sharedresource-user-controls  {
+    padding-left: 10px;
+}
+
+.sharedresource-user-controls {
+    text-align:center;
+}
+
 .sharedresource-item-container {
     display:inline-block;
     max-width:28%;
@@ -137,4 +146,9 @@ a.sharedresource-actionlink {
 
 #local_sharedresource_searchblock input[type="text"] {
     padding:3px;
+}
+
+.box-resource-images {
+    max-width: 128px;
+    max-height: 128px;
 }
