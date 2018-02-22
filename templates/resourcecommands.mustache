@@ -15,7 +15,7 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template local_sharedresource/resourcebody
+    @template local_sharedresources/resourcecommands
 
     Used when a resource is setup as popuped but accessed directly
 
@@ -46,7 +46,7 @@
 </form>
 
 {{^isltitool}}
-<a id="id-shared-{{i}}">{{addtocoursestr}}</a>
+<a id="id-shared-{{i}}" class="sharedresource-actionlink">{{addtocoursestr}}</a>
 
 {{#islocalizable}}
  - <a id="id-local-{{i}}" class="sharedresource-actionlink">{{localizetocoursestr}}</a>

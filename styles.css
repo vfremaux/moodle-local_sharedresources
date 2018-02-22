@@ -58,3 +58,97 @@
 .resource-title {
     display: inline-block;
 }
+
+.browser-current-category {
+    margin-bottom: 15px;
+}
+
+.sharedresource-browse-up {
+    height: 36px;
+}
+
+.sharedresources-taxonomy-chooser {
+    margin-bottom: 15px;
+}
+
+.sharedresources-taxonomy-chooser * {
+    display:inline;
+}
+
+.sharedresources-pager a {
+    margin-right:10px;
+}
+
+#sharedresources-link-to-search {
+    margin-top: 15px;
+}
+
+.sharedresources-description .resource-keywords {
+    margin-top: 15px;
+}
+
+a.sharedresource-actionlink {
+    cursor: pointer;
+}
+
+.is-hidden-by-rule {
+    -moz-opacity:0.5;
+    filter: alpha(opacity=50);  /* Opacity for IE8 and lower */
+    opacity:0.5;
+}
+
+/* boxed template */
+.sharedresource-list.boxed {
+    vertical-align: top;
+}
+
+.sharedresource-picture img{
+    margin-left:auto;
+    margin-right:auto;
+    margin-top:10px;
+    margin-bottom: 10px;
+}
+
+.sharedresource-librarian-controls,
+.sharedresource-user-controls  {
+    padding-left: 10px;
+}
+
+.sharedresource-user-controls {
+    text-align:center;
+}
+
+.sharedresource-item-container {
+    display:inline-block;
+    max-width:28%;
+    width: 28%;
+    vertical-align: top;
+    margin-right: 20px;
+}
+
+.sharedresource-list.boxed .resource-likes {
+    font-size:80%;
+}
+.sharedresource-list.boxed .resource-likes img {
+    width: 12px;
+}
+
+.sharedresource-info-box {
+    position: absolute;
+    padding: 10px;
+    border: 1px solid #fefefe;
+    border-radius: 5px;
+    background-color: #fff;
+    box-shadow: 5px 10px 10px #888;
+    max-width: 46%;
+    width:35%;
+}
+
+#local_sharedresource_searchblock input[type="text"] {
+    padding:3px;
+}
+
+.box-resource-images {
+    max-width: 128px;
+    max-height: 128px;
+}

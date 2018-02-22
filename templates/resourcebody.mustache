@@ -15,7 +15,7 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template local_sharedresource/resourcebody
+    @template local_sharedresources/resourcebody
 
     Used when a resource is setup as popuped but accessed directly
 
@@ -26,7 +26,7 @@
 <!-- resourcebody -->
 <div class="resource-item">
 
-<div class="sharedresource-heading">
+<div class="sharedresource-heading {{ishiddenbyrule}}">
     <div class="resource-download">
         <a href="{{url}}" target="_blank"><img src="{{downloadpixurl}}" /></a>
     </div>
@@ -40,34 +40,33 @@
 <br/>
 
 <div class="sharedresource-info">
-    <a class="sharedressource-toggle-handle"><img id="sharedresource-toggle-{{identifier}}" src="{{handlepixurl}}"></a>
+    <a class="sharedresource-toggle-handle"><img id="sharedresource-toggle-{{identifier}}" src="{{handlepixurl}}"></a>
 
     {{^uses}}
-    <div class="resource-usage">{{notusedstr}}</div>
+    <div class="resource-usage">{{{notusedstr}}}</div>
     {{/uses}}
     {{#uses}}
-    <div class="resource-usage"><a href="{{courselisturl}}">{{used}}</a></div>
+    <div class="resource-usage"><a href="{{courselisturl}}">{{{used}}}</a></div>
     {{/uses}}
 
-    <div class="resource-views">{{viewedstr}}</div>
+    <div class="resource-views">{{{viewedstr}}}</div>
 
     <div class="resource-likes">
-       {{likedstr}}
        <span id="sharedresource-likes-{{identifier}}">
        {{{stars}}}
        </span>
-        <a class="sharedresource-mark-like" id="sharedresource-{{identifier}}">{{marklikedstr}}</a>
+        <a class="sharedresource-mark-like" id="sharedresource-{{repoid}}-{{identifier}}">{{{marklikedstr}}}</a>
     </div>
 
 </div>
 
 <div class="generalbox resource-info" id="sharedresource-info-{{identifier}}" style="display:none">
 {{#description}}
-    <div class="sharedresource-description">
+    <div class="sharedresources-description">
         <div class="resource-thumbnail">{{{thumbnail}}}</div>
         <div class="resource-description">{{{description}}}</div>
 
-        <div class="smalltext">{{keywordsstr}}: <b>{{keywords}}</b></div>
+        <div class="smalltext resource-keywords">{{keywordsstr}}: <b>{{keywords}}</b></div>
     </div>
 {{/description}}
 </div>

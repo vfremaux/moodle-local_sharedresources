@@ -24,21 +24,40 @@
 require('../../config.php');
 require_once($CFG->dirroot.'/local/sharedresources/classes/navigator.class.php');
 require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
+require_once($CFG->dirroot.'/local/sharedresources/lib.php');
+
+$PAGE->requires->js_call_amd('local_sharedresources/boxview', 'init');
 
 $config = get_config('local_sharedresources');
 
 $courseid = optional_param('course', false, PARAM_INT);
+$section = optional_param('section', 0, PARAM_INT);
+
+if ($courseid) {
+    if (!$course = $DB->get_record('course', array('id' => $courseid))) {
+        print_error('coursemisconf');
+    }
+} else {
+    // Site level browsing.
+    $course = null;
+}
 
 // hidden key to open the catalog to the unlogged area.
+$context = context_system::instance();
+
 if (!empty($config->privatecatalog)) {
 
     if ($courseid) {
         $context = context_course::instance($courseid);
+        require_login($course);
     } else {
         $context = context_system::instance();
+        require_login();
     }
-    require_login();
-    require_capability('repository/sharedresources:view', $context);
+    $caps = array('repository/sharedresources:view', 'repository/sharedresources:use', 'repository/sharedresources:manage');
+    if (!has_any_capability($caps, $context)) {
+        print_error('noaccess', 'local_sharedresource');
+    }
 }
 
 $catid = optional_param('catid', '', PARAM_INT);
@@ -63,11 +82,25 @@ $filters = null;
 
 // Getting all filters.
 
-$navigator = new \local_sharedresources\browser\navigation();
+try {
+    $taxonomyselector = $renderer->taxonomy_select();
+    $taxonomyobj = $DB->get_record('sharedresource_classif', array('id' => $SESSION->sharedresources->taxonomy));
+    $navigator = new \local_sharedresources\browser\navigation($taxonomyobj);
+} catch (Exception $e) {
+    echo $OUTPUT->header();
+    echo $OUTPUT->heading($strheading, 2);
+    echo $OUTPUT->notification(get_string('noclassificationenabled', 'local_sharedresources'));
+
+    echo $renderer->searchlink();
+
+    echo $OUTPUT->footer();
+    die;
+}
 
 // $classificationfilters = $navigator->get_category_filters();
 
 $i = 0;
+/*
 foreach ($classificationfilters as $afilter) {
     $options = $navigator->get_filter_modalities($filter);
     $filters["f$i"] = new StdClass;
@@ -76,6 +109,8 @@ foreach ($classificationfilters as $afilter) {
     $filters["f$i"]->value = optional_param("f$i", '', PARAM_INT);
     $i++;
 }
+*/
+$filters = null;
 
 echo $OUTPUT->header();
 echo $OUTPUT->heading($strheading, 2);
@@ -83,33 +118,38 @@ echo $OUTPUT->heading($strheading, 2);
 if (is_dir($CFG->dirroot.'/local/staticguitexts')) {
     // If static gui texts are installed, add a static text to be edited by administrator.
     echo '<div class="static">';
-    local_print_static_text('sharedresources_browser_header', $CFG->wwwroot.'/local/sharedresources/browser.php');
+    local_print_static_text('sharedresources_browser_header', $CFG->wwwroot.'/local/sharedresources/browse.php');
     echo '</div>';
 }
 
 // Making filters.
 
-echo $renderer->searchlink();
 // echo $renderer->filters($catid, $catpath);
 
-echo $renderer->taxonomy_select();
+echo $taxonomyselector;
 
 // Calling navigation.
 
+$isediting = has_capability('repository/sharedresources:manage', $context, $USER->id);
+
 if ($catid) {
     $category = $navigator->get_category($catid, $catpath, $filters);
-    echo $renderer->category($category, $catpath, $navigator->count_entries_rec($category), 'current', true);
+    echo $renderer->category($category, $catpath, $navigator->count_entries_rec($catpath), 'current', true);
 
-    // Root of the catalog cannot have resourses.
-    echo $renderer->resourcelist(array_keys($category->entries));
+    // Root of the catalog cannot have resources.
+    $category->cats = $navigator->get_children($catid);
+    echo $renderer->resources_list($category->entries, $course, $section, $isediting);
 } else {
     $category = new StdClass;
     $catid = 0;
-    $category->cats = $navigator->get_children($$catid);
+    $category->cats = $navigator->get_children($catid);
+    $category->hassubs = count($category->cats);
 }
 
 echo $renderer->children($category, $catpath);
 
+echo '<center>';
 echo $renderer->searchlink();
+echo '</center>';
 
 echo $OUTPUT->Footer();
