@@ -29,7 +29,7 @@ class Relocate_Test_Form extends moodleform{
         // Adding title and description
         echo "Testing resource remote relocation to newrepo and some newurl";
 
-        if ($providers = get_providers()) {
+        if ($providers = sharedresources_get_providers()) {
             foreach ($providers as $provider) {
                 echo "$provider->id => $provider->name<br/>";
             }
@@ -37,7 +37,7 @@ class Relocate_Test_Form extends moodleform{
             echo "<p>No providers</p>";
         }
 
-        if ($consumers = get_consumers()) {            
+        if ($consumers = sharedresources_get_consumers()) {            
             foreach ($consumers as $consumer) {
                 $consumeropts[$consumer->id] = $consumer->name;
             }
