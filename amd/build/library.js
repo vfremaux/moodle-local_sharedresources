@@ -22,7 +22,7 @@
 // jshint unused: true, undef:true
 define(['jquery', 'core/config', 'core/log'], function ($, cfg, log) {
 
-    return {
+    var sharedresourceslibrary = {
 
         init: function (args) {
 
@@ -38,17 +38,24 @@ define(['jquery', 'core/config', 'core/log'], function ($, cfg, log) {
                 }
             );
 
-            $('.sharedressource-toggle-handle').on('click', this.toggle_info_panel);
-            $('.sharedresource-mark-like').on('click', '', args, this.ajax_mark_like);
+            $('.sharedresource-toggle-handle').bind('click', sharedresourceslibrary.toggle_info_panel);
+            $('.sharedresource-mark-like').on('click', '', args, sharedresourceslibrary.ajax_mark_like);
+            $('.sharedresource-actionlink').bind('click', sharedresourceslibrary.integrate);
+
+            log.debug('ADM Shared resource Library JS initialized');
         },
 
         ajax_mark_like: function (e) {
-            residentifier = $(this).attr('id').replace('sharedresource-', '');
+            var identifier = $(this).attr('id').replace('sharedresource-', '');
+            var arr = identifier.split('-'); // Has repo-resid form.
+            var repoid = arr[0];
+            var residentifier = arr[1];
+
             url = cfg.wwwroot + '/local/sharedresources/ajax/add_liked_mark.php?';
-            url += 'resid=' + residentifier + '&repo=' + e.data;
+            url += 'resid=' + residentifier + '&repo=' + repoid;
 
             newlike = $.get(url, '', function(data, textStatus) {
-                $('#sharedresource-likes-' + residentifier).html(that.sharedresource_print_stars(data, 15));
+                $('#sharedresource-likes-' + residentifier).html(sharedresourceslibrary.sharedresource_print_stars(data, 15));
             }, 'html');
         },
 
@@ -64,8 +71,11 @@ define(['jquery', 'core/config', 'core/log'], function ($, cfg, log) {
         },
 
         toggle_info_panel: function (e) {
+
             that = $(this);
+
             imgid = that.find('img').attr('id');
+
             residentifier = imgid.replace('sharedresource-toggle-', '');
 
             if ($('#sharedresource-info-' + residentifier).css('display') === 'none') {
@@ -80,5 +90,19 @@ define(['jquery', 'core/config', 'core/log'], function ($, cfg, log) {
                 $('#sharedresource-toggle-' + residentifier).attr('src', iconsrc);
             }
         },
+
+        integrate: function() {
+
+            var that = $(this);
+
+            var matches = that.attr('id').match(/id-(\w+)-(\d+)/);
+            command = matches[1];
+            ix = matches[2];
+            document.forms['add' + ix].mode.value = command;
+            document.forms['add' + ix].submit();
+        }
+
     };
+
+    return sharedresourceslibrary;
 });

@@ -1,0 +1,24 @@
+
+
+<!-- search_date -->
+<div class ="header">
+    {{widgetname}} {{{datesearchhelpicon}}}
+</div>
+<div class="content">
+    <table>
+        <tr>
+            <td>
+                <input size="10" onclick="{{handler}}" name="{{lowername}}_startdate" value="Begin" readonly="readonly"/>
+                <input size="10" onclick="{{handler}}" name="{{lowername}}_enddate" value="End" readonly="readonly"/>
+            </td>
+        </tr>
+    </table>
+
+    <table class="ds_box" cellpadding="0" cellspacing="0" id="ds_conclass" style="display: none;">
+        <tr>
+            <td id="ds_calclass" colspan="3">
+            </td>
+        </tr>
+    </table>
+</div>
+<!-- /search_date -->
