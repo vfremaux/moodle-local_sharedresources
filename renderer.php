@@ -425,7 +425,7 @@ class local_sharedresources_renderer extends plugin_renderer_base {
      */
     public function tools($course) {
 
-        $str = '';
+        $template = new StdClass;
 
         if ($course->id == SITEID) {
             $context = context_system::instance();
@@ -435,30 +435,30 @@ class local_sharedresources_renderer extends plugin_renderer_base {
 
         $toollinks = array();
 
-        $str .= '<center>';
         if ($course->id > SITEID) {
-            $convertstr = get_string('resourceconversion', 'sharedresource');
-            $converturl = new moodle_url('/mod/sharedresource/admin_convertall.php', array('course' => $course->id));
-            $toollinks[] = '<a href="'.$converturl.'">'.$convertstr.'</a>';
-        }
-
-        if (has_capability('repository/sharedresources:manage', $context)) {
-            $newresourcestr = get_string('newresource', 'local_sharedresources');
-            $params = array('course' => $course->id, 'type' => 'file', 'add' => 'sharedresource', 'return' => 1, 'mode' => 'add');
-            $editurl = new moodle_url('/mod/sharedresource/edit.php', $params);
-            $toollinks[] = '<a href="'.$editurl.'">'.$newresourcestr.'</a>';
-
-            if (local_sharedresources_supports_feature('import/mass')) {
-                $massimportstr = get_string('massimport', 'local_sharedresources');
-                $importurl = new moodle_url('/local/sharedresources/pro/admin/admin_mass_import.php', array('course' => $course->id));
-                $toollinks[] = '<a href="'.$importurl.'">'.$massimportstr.'</a>';
+            if (has_capability('repository/sharedresources:create', $context)) {
+                // User has capability to convert his local resources to shared entries.
+                $template->convertstr = get_string('resourceconversion', 'local_sharedresources');
+                $template->converturl = new moodle_url('/mod/sharedresource/admin_convertall.php', array('course' => $course->id));
             }
         }
 
-        $str .= implode("&nbsp;-&nbsp;", $toollinks);
-        $str .= '</center>';
+        if (has_capability('repository/sharedresources:create', $context)) {
+            // Librarian should have the capability everywhere. Enabled teachers in their own course.
+            $template->newresourcestr = get_string('newresource', 'local_sharedresources');
+            $params = array('course' => $course->id, 'type' => 'file', 'add' => 'sharedresource', 'return' => 1, 'mode' => 'add');
+            $template->editurl = new moodle_url('/mod/sharedresource/edit.php', $params);
+        }
 
-        return $str;
+        if (local_sharedresources_supports_feature('import/mass')) {
+            if (has_capability('repository/sharedresources:manage', $context)) {
+                // Only librarians in a "pro" version can mass import.
+                $template->massimportstr = get_string('massimport', 'local_sharedresources');
+                $template->importurl = new moodle_url('/local/sharedresources/pro/admin/admin_mass_import.php', array('course' => $course->id));
+            }
+        }
+
+        return $this->output->render_from_template('local_sharedresources/librariantools', $template);
     }
 
     /**

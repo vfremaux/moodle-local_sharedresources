@@ -31,6 +31,7 @@ $string['browse'] = 'Browse by categories';
 $string['browser'] = 'Taxonomy based browser';
 $string['choosetaxonomy'] = 'Taxonomy:&ensp;';
 $string['cleaneverything'] = 'Clean all the library. Dangerous!)';
+$string['convertresources'] = 'Convert resources';
 $string['clinonexistingcontext'] = 'Error: Non existing context';
 $string['clinonexistingpath'] = 'Error: Path does not exist';
 $string['configdefaultlibraryindexpage'] = 'Default index page of the library';
@@ -64,6 +65,7 @@ $string['importvolume'] = 'Import documents';
 $string['installltitool'] = 'Install the LTI Tool';
 $string['keywords'] = 'Mots clefs';
 $string['library'] = 'Librairy';
+$string['librarian'] = 'Librarian';
 $string['liked'] = 'Liked: ';
 $string['listviewalways'] = 'Always list';
 $string['makelabelsfromguidance'] = 'Make labels from guidance';
@@ -86,6 +88,7 @@ $string['resourcearchive'] = 'Resources archive';
 $string['resourceimport'] = 'Resource Import';
 $string['resources'] = 'Resources';
 $string['resourcesadministration'] = 'Resources administration';
+$string['resourceconversion'] = 'Resource conversion';
 $string['resourcespushout'] = 'Exporting to a provider library';
 $string['rpcsharedresourceerror'] = 'RPC mod/sharedresource/get_list:<br/>{$a}';
 $string['searchengine'] = 'Search engine';
@@ -155,3 +158,6 @@ and improvement effort.</p>
 <p><a href="http://www.mylearningfactory.com/index.php/documentation/Distributeurs?lang=en_utf8">MyLF Distributors</a></p>';
 
 $string['configlistviewthreshold_desc'] = 'Number of resources in result over which display switches to list view.';
+
+$string['librarian_desc'] = 'Librarian can add and manage library entries, change metadata and description. Librarian become
+responsible of all the resources stored in the library, where and whoever they come from.';

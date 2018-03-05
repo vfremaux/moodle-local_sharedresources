@@ -1,0 +1,41 @@
+{{!
+    This file is part of The Sharedresource Module
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_sharedresources/librariantools
+
+    Classes required for JS:
+    * none
+
+}}
+<!-- librariantools -->
+<center>
+<div class="sharedresources-librarian-tools">
+
+{{#converturl}}
+<a class="sharedresource-actionlink" href="{{{converturl}}}">{{convertstr}}</a> - 
+{{/converturl}}
+
+{{#editurl}}
+<a class="sharedresource-actionlink" href="{{{editurl}}}">{{newresourcestr}}</a> - 
+{{/editurl}}
+
+{{#importurl}}
+<a class="sharedresource-actionlink" href="{{{importurl}}}">{{massimportstr}}</a>
+{{/importurl}}
+</div>
+</center>
+<!-- /librariantools -->
