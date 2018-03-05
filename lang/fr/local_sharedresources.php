@@ -14,34 +14,48 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-$string['adminrepository'] = 'Administrer la librairie';
+/**
+ * @package    local_sharedresources
+ * @author     Valery Fremaux <valery.fremaux@club-internet.fr>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
+ * @copyright  (C) 1999 onwards Martin Dougiamas  http://dougiamas.com
+ */
+defined('MOODLE_INTERNAL') || die();
+
 $string['accesscontrol'] = 'Contrôle d\'accès';
+$string['adminrepository'] = 'Administrer la librairie';
 $string['backtocourse'] = 'Revenir au cours';
 $string['backtoindex'] = 'Revenir à l\'index';
+$string['boxviewalways'] = 'toujours en boîtes';
 $string['browse'] = 'Explorer par catégories';
 $string['browser'] = 'Explorateur de taxonomie';
+$string['choosetaxonomy'] = 'Volume documentaire&nbsp;:&ensp;';
 $string['cleaneverything'] = 'Vider la librairie (dangereux!)';
 $string['clinonexistingcontext'] = 'Erreur : Contexte inexistant';
 $string['clinonexistingpath'] = 'Erreur : Chemin inexistant';
+$string['configdefaultlibraryindexpage'] = 'Page d\'arrivée de la librairie par défaut';
 $string['configdefaulttaxonomyonimport'] = 'Objet de la taxonomie par défaut';
 $string['configdefaulttaxonomypurposeonedit'] = 'Objet de la taxonomie par défaut';
+$string['configlistviewthreshold'] = 'Affichage en liste';
 $string['confignotfound'] = 'Fichier de configuration introuvable';
 $string['configprivatecatalog'] = 'Catalogue privé';
-$string['configlistviewthreshold'] = 'Affichage en liste';
-$string['listviewalways'] = 'Toujours en liste';
-$string['boxviewalways'] = 'toujours en boîtes';
+$string['convertresources'] = 'Convertir des ressources';
 $string['confirm'] = 'Confirmer';
+$string['confirmsimulate'] = 'Confirmer la simulation';
+$string['contains'] = 'contient';
 $string['deducetaxonomyfrompath'] = 'Déduire la taxonomie du chemin';
-$string['configdefaultlibraryindexpage'] = 'Page d\'arrivée de la librairie par défaut';
+$string['deployzips'] = 'Déployer les archives ZIP';
 $string['doresetvolume'] = 'Réinitialiser le volume d\'import';
+$string['emulatecommunity'] = 'Emuler la version communautaire';
+$string['emulatecommunity_desc'] = 'Bascule le code sur la version communautaire. Le résultat est plus compatible avec d\'autres installations, mais certaines fonctionnalités avancées ne seront plus disponibles.';
+$string['encoding'] = 'Encodage des fichiers de métadonnées';
+$string['endswith'] = 'finit par';
+$string['equalto'] = 'est égal à';
 $string['errorinvalidresource'] = 'Resource invalide';
 $string['errorinvalidresourceid'] = 'Identifiant de ressource inconnu';
 $string['errormnetpeer'] = 'Erreur d\'initialisation du client MNET';
 $string['errornotadir'] = 'Le répertoire d\'import n\'existe pas ou n\'est pas accessible';
 $string['errornotwritable'] = 'Le répertoire d\'import n\'est pas accessible en écriture. Modifiez les droits de ce répertoire avant d\'importer.';
-$string['encoding'] = 'Encodage des fichiers de métadonnées';
-$string['emulatecommunity'] = 'Emuler la version communautaire';
-$string['emulatecommunity_desc'] = 'Bascule le code sur la version communautaire. Le résultat est plus compatible avec d\'autres installations, mais certaines fonctionnalités avancées ne seront plus disponibles.';
 $string['exclusionpattern'] = 'Motif d\'exclusion';
 $string['filestoimport'] = 'Fichiers à importer de&nbsp;: {$a}';
 $string['forcedelete'] = 'Forcer la suppression (même si utilisé)';
@@ -50,42 +64,45 @@ $string['importvolume'] = 'Importer des documents';
 $string['installltitool'] = 'Installer comme outil externe';
 $string['keywords'] = 'Mots-clefs&nbsp;: ';
 $string['library'] = 'Librairie';
+$string['librarian'] = 'Documentaliste';
 $string['liked'] = 'Appréciée&nbsp;: ';
+$string['listviewalways'] = 'Toujours en liste';
+$string['makelabelsfromguidance'] = 'Créer les étiquettes de guidances';
 $string['markliked'] = 'J\'aime&nbsp;!';
 $string['massimport'] = 'Importer massivement';
 $string['newresource'] = 'Ajouter une ressource';
-$string['noresources'] = '<p>Aucune ressource locale dans cette librairie</p>';
-$string['noentries'] = '<p>Aucune ressource dans cette librairie</p>';
-$string['notused'] = 'Jamais utilisée dans ce site';
 $string['noclassificationenabled'] = 'Aucune taxonomie de ressources n\'a été activée sur ce site. L\'administrateur des ressources devrait définir ou importer des taxonomies, ou désactiver l\'usage du navigateur de taxonomies.';
+$string['noentries'] = '<p>Aucune ressource dans cette librairie</p>';
+$string['noaccess'] = 'vous n\'avez pas les permissions requises pour utiliser ce service.';
+$string['noresources'] = '<p>Aucune ressource locale dans cette librairie</p>';
+$string['notused'] = 'Jamais utilisée dans ce site';
 $string['plugindist'] = 'Distribution du plugin';
 $string['pluginname'] = 'Librairie de ressources';
 $string['purposediscriminator'] = 'Objectif spécifique de la taxonomie';
 $string['reinitialized'] = '{$a} fichiers rétablis';
+$string['relocalize'] = 'Relocaliser';
 $string['resetvolume'] = 'Réinitialiser le volume pour l\'import';
 $string['resourceimport'] = 'Importation de ressources';
 $string['resources'] = 'Ressources';
 $string['resourcesadministration'] = 'Administration des ressources';
+$string['resourceconversion'] = 'Convertir des ressources';
 $string['resourcespushout'] = 'Exporter vers un fournisseur de ressources';
 $string['rpcsharedresourceerror'] = 'Erreur RPC mod/sharedresource/get_list:<br/>{$a}';
+$string['searchengine'] = 'Moteur de recherche';
+$string['searchinlibrary'] = 'Chercher dans la librairie';
 $string['sharedresources_library'] = 'Librairie partagée';
 $string['sharedresourcesindex'] = 'Librairie de ressources';
-$string['searchinlibrary'] = 'Chercher dans la librairie';
-$string['searchengine'] = 'Moteur de recherche';
+$string['simulate'] = 'Simuler';
+$string['startswith'] = 'commence par';
 $string['taxonomy'] = 'Taxonomie';
 $string['textsearch'] = 'Recherche texte';
 $string['topkeywords'] = 'Mots-clefs principaux';
 $string['updateresourcespageoff'] = 'Mode normal';
 $string['updateresourcespageon'] = 'Mode édition';
 $string['used'] = 'Utilisée&nbsp;: {$a}';
-$string['uselocalpath'] = 'Utiliser un chemin local';
 $string['useimportpath'] = 'Téléverser une archive';
+$string['uselocalpath'] = 'Utiliser un chemin local';
 $string['viewed'] = 'Vue&nbsp;: {$a}';
-$string['simulate'] = 'Simuler';
-$string['relocalize'] = 'Relocaliser';
-$string['deployzips'] = 'Déployer les archives ZIP';
-$string['confirmsimulate'] = 'Confirmer la simulation';
-$string['makelabelsfromguidance'] = 'Créer les étiquettes de guidances';
 
 $string['configdefaulttaxonomyonimport_desc'] = 'La taxonomie à alimenter lors des imports.';
 
@@ -144,3 +161,7 @@ sous certaines conditions, afin de soutenir l\'effort de développement, amélio
 <p><a href="http://www.mylearningfactory.com/index.php/documentation/Distributeurs?lang=fr_utf8">Distributeurs MyLF</a></p>';
 
 $string['configlistviewthreshold_desc'] = 'Nombre de ressources du résultat pour passer en affichage de liste.';
+
+$string['librarian_desc'] = 'Les documentalistes peuvent gérer la librairie de ressource, modifier les description, supprimer
+et ajouter les ressources. Ils deviennent de facto les repsonsables de toutes les ressources mutualisées dans la librairie,
+quelle que soit leur origine.';

@@ -32,11 +32,11 @@
     </div>
 {{/hasup}}
 
-    <div class="browser-{{current}}-category-info span{{catspan}}">
+    <div class="browser-{{current}}-category-info span{{catspan}} col-{{catspan}}">
         <a href="{{{caturl}}}">{{catname}}</a>
     </div>
 
-    <div id="sharedresource-browser-cat{{catid}}" class="browser-{{current}}-category-count span1"></div>
+    <div id="sharedresource-browser-cat{{catid}}" class="browser-{{current}}-category-count span1 col-1"></div>
     <script type="text/javascript">$('#sharedresource-browser-cat{{catid}}').animateNumber({ number: (0 + {{resourcecount}}) });</script>
 
 </div>

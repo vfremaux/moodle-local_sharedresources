@@ -86,7 +86,8 @@ if ($resource->context > 1) {
     if (!$isloggedin) {
         require_login();
     }
-    if (!sharedresources_has_capability_somewhere('repository/sharedresources:use', true, true, $context, false)) {
+    // Do we have the use capability in this context or some upper ?
+    if (!sharedresources_has_capability_in_upper_contexts('repository/sharedresources:use', $context, true)) {
         send_file_not_found();
     }
 }

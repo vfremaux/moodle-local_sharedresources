@@ -42,9 +42,9 @@ $config = get_config('local_sharedresource');
 $courseid = optional_param('course', SITEID, PARAM_INT);
 
 if (empty($config->defaultlibraryindexpage) || $config->defaultlibraryindexpage == 'explore') {
-    $serviceurl = new moodle_url('/local/sharedresources/explore.php', array('id' => $courseid));
+    $serviceurl = new moodle_url('/local/sharedresources/explore.php', array('course' => $courseid));
 } else {
-    $serviceurl = new moodle_url('/local/sharedresources/browse.php', array('id' => $courseid));
+    $serviceurl = new moodle_url('/local/sharedresources/browse.php', array('course' => $courseid));
 }
 redirect($serviceurl);
 

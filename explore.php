@@ -50,8 +50,9 @@ if ($searchplugins = glob($CFG->dirroot.'/local/sharedresources/classes/searchwi
 
 require_once($CFG->dirroot.'/local/sharedresources/lib.php');
 
-$config = get_config('sharedresource');
-$mtdplugin = sharedresource_get_plugin($config->schema);
+$config = get_config('local_sharedresources');
+$shrconfig = get_config('sharedresource');
+$mtdplugin = sharedresource_get_plugin($shrconfig->schema);
 
 $edit = optional_param('edit', -1, PARAM_BOOL);
 $blockaction = optional_param('blockaction', '', PARAM_ALPHA);
@@ -67,15 +68,20 @@ $PAGE->requires->js_call_amd('local_sharedresources/boxview', 'init');
 
 // Security.
 
-if ($courseid) {
-    $context = context_course::instance($courseid);
-    $course = $DB->get_record('course', array('id' => $courseid));
-    require_login($course);
-} else {
-    $context = context_system::instance();
+$context = context_system::instance();
+if (!empty($config->privatecatalog)) {
+    if ($courseid) {
+        $context = context_course::instance($courseid);
+        $course = $DB->get_record('course', array('id' => $courseid));
+        require_login($course);
+        $caps = array('repository/sharedresources:view', 'repository/sharedresources:use', 'repository/sharedresources:manage');
+        if (!has_any_capability($caps, $context)) {
+            print_error('noaccess', 'local_sharedresource');
+        }
+    } else {
+        $context = context_system::instance();
+    }
 }
-
-require_capability('repository/sharedresources:view', $context);
 
 // Prepare the page.
 
@@ -104,11 +110,6 @@ if ($action) {
 $course = $DB->get_record('course', array('id' => $courseid));
 
 $resourcesmoodlestr = get_string('resources', 'sharedresource');
-
-if (empty($config->schema)) {
-    print_error('nometadataplugin', 'sharedresource');
-    die;
-}
 
 $visiblewidgets = array();
 sharedresources_setup_widgets($visiblewidgets, $context);
