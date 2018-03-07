@@ -39,6 +39,8 @@ $string['configdefaulttaxonomypurposeonedit'] = 'Objet de la taxonomie par défa
 $string['configlistviewthreshold'] = 'Affichage en liste';
 $string['confignotfound'] = 'Fichier de configuration introuvable';
 $string['configprivatecatalog'] = 'Catalogue privé';
+$string['configsearchblocksposition'] = 'Position des blocs de recherche';
+$string['convertresources'] = 'Convertir des ressources';
 $string['confirm'] = 'Confirmer';
 $string['confirmsimulate'] = 'Confirmer la simulation';
 $string['contains'] = 'contient';
@@ -61,9 +63,11 @@ $string['forcedelete'] = 'Forcer la suppression (même si utilisé)';
 $string['importpath'] = 'Chemin à importer';
 $string['importvolume'] = 'Importer des documents';
 $string['installltitool'] = 'Installer comme outil externe';
-$string['keywords'] = 'Mots-clefs&nbsp;: ';
+$string['ishiddenbyrule'] = 'Cette ressource est mutualisée dans un contexte restreint. Vous n\'avez pas les droits suffisants pour la télécharger.';
+$string['keywords'] = 'Mots-clefs&nbsp;:&ensp;';
 $string['library'] = 'Librairie';
-$string['liked'] = 'Appréciée&nbsp;: ';
+$string['librarian'] = 'Documentaliste';
+$string['liked'] = 'Appréciée&nbsp;:&ensp;';
 $string['listviewalways'] = 'Toujours en liste';
 $string['makelabelsfromguidance'] = 'Créer les étiquettes de guidances';
 $string['markliked'] = 'J\'aime&nbsp;!';
@@ -83,6 +87,7 @@ $string['resetvolume'] = 'Réinitialiser le volume pour l\'import';
 $string['resourceimport'] = 'Importation de ressources';
 $string['resources'] = 'Ressources';
 $string['resourcesadministration'] = 'Administration des ressources';
+$string['resourceconversion'] = 'Convertir des ressources';
 $string['resourcespushout'] = 'Exporter vers un fournisseur de ressources';
 $string['rpcsharedresourceerror'] = 'Erreur RPC mod/sharedresource/get_list:<br/>{$a}';
 $string['searchengine'] = 'Moteur de recherche';
@@ -93,6 +98,8 @@ $string['simulate'] = 'Simuler';
 $string['startswith'] = 'commence par';
 $string['taxonomy'] = 'Taxonomie';
 $string['textsearch'] = 'Recherche texte';
+$string['toleft'] = 'A gauche';
+$string['toright'] = 'A droite';
 $string['topkeywords'] = 'Mots-clefs principaux';
 $string['updateresourcespageoff'] = 'Mode normal';
 $string['updateresourcespageon'] = 'Mode édition';
@@ -158,3 +165,9 @@ sous certaines conditions, afin de soutenir l\'effort de développement, amélio
 <p><a href="http://www.mylearningfactory.com/index.php/documentation/Distributeurs?lang=fr_utf8">Distributeurs MyLF</a></p>';
 
 $string['configlistviewthreshold_desc'] = 'Nombre de ressources du résultat pour passer en affichage de liste.';
+
+$string['librarian_desc'] = 'Les documentalistes peuvent gérer la librairie de ressource, modifier les description, supprimer
+et ajouter les ressources. Ils deviennent de facto les repsonsables de toutes les ressources mutualisées dans la librairie,
+quelle que soit leur origine.';
+
+$string['configsearchblocksposition_desc'] = '';
