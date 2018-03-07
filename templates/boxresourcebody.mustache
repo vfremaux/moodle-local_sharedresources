@@ -26,28 +26,36 @@
 <!-- resourcebody -->
 <div class="sharedresource-item-container">
 
+    {{#haseditioncommands}}
+    <div class="sharedresource-librarian-controls">
+        {{{editioncommands}}}<br/>
+    </div>
+    {{/haseditioncommands}}
+
     <div class="sharedresource-picture {{ishiddenbyrule}}">
         <img class="box-resource-images" id="sharedresource-image-{{identifier}}" src="{{{largepixurl}}}" />
     </div>
 
     <div class="sharedresource-heading {{ishiddenbyrule}}">
         <div class="resource-title-container">
-            <div class="box-resource-titles" id="sharedresource-title-{{identifier}}">{{title}}</div>
+            <div class="box-resource-titles" id="sharedresource-title-{{identifier}}">{{title}} </div>
         </div>
 
-        <div class="resource-controls">
+        <div class="sharedresource-user-controls">
+            {{#url}}
+            <a href="{{{url}}}" target="_blank" title="{{downloadstr}}"><img src="{{{boxdownloadpixurl}}}" /></a>
+            {{/url}}
+            {{^url}}
+            <img src="{{{boxdownloadpixurl}}}" class="is-hidden-by-rule" alt="{{ishiddenbyrulestr}}" />
+            {{/url}}
             {{{boxnoticepopupactionlink}}}
-            <a href="{{{url}}}" target="_blank"><img src="{{{boxdownloadpixurl}}}" /></a>
-            <!-- a class="sharedresource-open-desc-handle"><img id="sharedresource-open-desc-{{identifier}}" src="{{{handlepixurl}}}"></a -->
-            {{{editioncommands}}}
         </div>
 
         <div class="resource-likes">
-           {{{likedstr}}}
            <span id="sharedresource-likes-{{identifier}}">
            {{{stars}}}
            </span>
-            <a class="sharedresource-mark-like" id="sharedresource-{{identifier}}">{{{marklikedstr}}}</a>
+            <a class="sharedresource-mark-like" id="sharedresource-{{repoid}}-{{identifier}}">{{{marklikedstr}}}</a>
         </div>
 
         <div class="resource-user-commands">

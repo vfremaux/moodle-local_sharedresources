@@ -15,14 +15,27 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template local_sharedresources/taxonomychooser
+    @template local_sharedresources/librariantools
 
     Classes required for JS:
     * none
 
 }}
-<!-- taxonomychooser -->
-<div class="sharedresources-taxonomy-chooser">
-{{{taxonomystr}}} {{{taxonomychooser}}}
+<!-- librariantools -->
+<center>
+<div class="sharedresources-librarian-tools">
+
+{{#converturl}}
+<a class="sharedresource-actionlink" href="{{{converturl}}}">{{convertstr}}</a> - 
+{{/converturl}}
+
+{{#editurl}}
+<a class="sharedresource-actionlink" href="{{{editurl}}}">{{newresourcestr}}</a> - 
+{{/editurl}}
+
+{{#importurl}}
+<a class="sharedresource-actionlink" href="{{{importurl}}}">{{massimportstr}}</a>
+{{/importurl}}
 </div>
-<!-- /taxonomychooser -->
+</center>
+<!-- /librariantools -->

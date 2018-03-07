@@ -14,81 +14,102 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-$string['adminrepository'] = 'Admin Repository';
+/**
+ * @package    local_sharedresources
+ * @author     Valery Fremaux <valery.fremaux@club-internet.fr>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
+ * @copyright  (C) 1999 onwards Martin Dougiamas  http://dougiamas.com
+ */
+defined('MOODLE_INTERNAL') || die();
+
 $string['accesscontrol'] = 'Access control';
+$string['adminrepository'] = 'Admin Repository';
 $string['backtocourse'] = 'Back to course';
 $string['backtoindex'] = 'Back to index';
+$string['boxviewalways'] = 'Always boxes';
 $string['browse'] = 'Browse by categories';
 $string['browser'] = 'Taxonomy based browser';
+$string['choosetaxonomy'] = 'Taxonomy:&ensp;';
+$string['cleaneverything'] = 'Clean all the library. Dangerous!)';
+$string['convertresources'] = 'Convert resources';
 $string['clinonexistingcontext'] = 'Error: Non existing context';
 $string['clinonexistingpath'] = 'Error: Path does not exist';
-$string['cleaneverything'] = 'Clean all the library. Dangerous!)';
-$string['configdefaulttaxonomypurposeonedit'] = 'Taxonomy purpose for import';
-$string['configdefaulttaxonomyonimport'] = 'Default taxonomy for import';
 $string['configdefaultlibraryindexpage'] = 'Default index page of the library';
+$string['configdefaulttaxonomyonimport'] = 'Default taxonomy for import';
+$string['configdefaulttaxonomypurposeonedit'] = 'Taxonomy purpose for import';
 $string['configlistviewthreshold'] = 'List view threshold';
-$string['listviewalways'] = 'Always list';
-$string['boxviewalways'] = 'Always boxes';
 $string['confignotfound'] = 'Config file not found';
 $string['configprivatecatalog'] = 'Private catalog';
+$string['configsearchblocksposition'] = 'Location of the search blocks';
 $string['confirm'] = 'Confirm';
+$string['confirmsimulate'] = 'Confirm simulation';
+$string['contains'] = 'contains';
 $string['courselist'] = 'Course list';
 $string['deducetaxonomyfrompath'] = 'Guess taxonomy from path';
+$string['deployzips'] = 'Deploy zips';
 $string['doresetvolume'] = 'Reset';
+$string['emulatecommunity'] = 'Emulate the community version.';
+$string['emulatecommunity_desc'] = 'Switches the code to the community version. The result will be more compatible, but some features will not be available anymore.';
+$string['encoding'] = 'Metadata files encoding';
+$string['endswith'] = 'ends with';
+$string['equalto'] = 'equals to';
 $string['errorinvalidresource'] = 'Invalid resource';
 $string['errorinvalidresourceid'] = 'Invalid resource ID';
 $string['errormnetpeer'] = 'MNET client initialisation error';
 $string['errornotadir'] = 'The import directory does not exist or is not accessible';
 $string['errornotwritable'] = 'the directory to be imported has no write permissions. Please change permissions before retrying.';
-$string['encoding'] = 'Metadata files encoding';
-$string['emulatecommunity'] = 'Emulate the community version.';
-$string['emulatecommunity_desc'] = 'Switches the code to the community version. The result will be more compatible, but some features will not be available anymore.';
 $string['exclusionpattern'] = 'Exclusion pattern';
 $string['filestoimport'] = 'Files to import from {$a}';
 $string['forcedelete'] = 'Force Delete (even if used)';
 $string['importpath'] = 'Import path';
 $string['importvolume'] = 'Import documents';
 $string['installltitool'] = 'Install the LTI Tool';
+$string['ishiddenbyrule'] = 'This resource is shared in a restricted context. You have no sufficiant capabilities to download it.';
 $string['keywords'] = 'Mots clefs';
 $string['library'] = 'Librairy';
+$string['librarian'] = 'Librarian';
 $string['liked'] = 'Liked: ';
+$string['listviewalways'] = 'Always list';
+$string['makelabelsfromguidance'] = 'Make labels from guidance';
 $string['markliked'] = 'I like it!';
 $string['massimport'] = 'Mass import';
 $string['newresource'] = 'Add a new resource';
-$string['noresources'] = 'This repository has no local resources';
-$string['noentries'] = 'This repository has no resources';
-$string['notused'] = 'Never used in this site';
+$string['noaccess'] = 'You have not the required capabilities to access this service';
 $string['noclassificationenabled'] = 'There is no classification enabled in this site. Administrator should configure the library with classifications, or disable this browser.';
-$string['pluginname'] = 'Shared Resources Center';
+$string['noentries'] = 'This repository has no resources';
+$string['noresources'] = 'This repository has no local resources';
+$string['notused'] = 'Never used in this site';
 $string['plugindist'] = 'Plugin distribution';
+$string['pluginname'] = 'Shared Resources Center';
 $string['publish_sharedresource'] = 'Publish Sharedresource';
 $string['purposediscriminator'] = 'Purpose discriminator';
 $string['reinitialized'] = '{$a} files unmarked';
+$string['relocalize'] = 'Relocalize';
 $string['resetvolume'] = 'Reset volume';
+$string['resourcearchive'] = 'Resources archive';
 $string['resourceimport'] = 'Resource Import';
 $string['resources'] = 'Resources';
 $string['resourcesadministration'] = 'Resources administration';
+$string['resourceconversion'] = 'Resource conversion';
 $string['resourcespushout'] = 'Exporting to a provider library';
 $string['rpcsharedresourceerror'] = 'RPC mod/sharedresource/get_list:<br/>{$a}';
-$string['searchinlibrary'] = 'Search in library';
 $string['searchengine'] = 'Search engine';
+$string['searchinlibrary'] = 'Search in library';
 $string['sharedresources_library'] = 'Shared resources library';
 $string['sharedresourcesindex'] = 'Shared resources index';
+$string['simulate'] = 'Simulate';
+$string['startswith'] = 'starts with';
 $string['taxonomy'] = 'Taxonomy';
 $string['textsearch'] = 'Full text search';
+$string['toleft'] = 'Left';
+$string['toright'] = 'Right';
 $string['topkeywords'] = 'Top keywords';
 $string['updateresourcespageoff'] = 'Quit edit mode';
 $string['updateresourcespageon'] = 'Edit this page';
 $string['used'] = 'Used: {$a}';
-$string['uselocalpath'] = 'Use an internal system path';
 $string['useimportpath'] = 'Use an uploaded file';
+$string['uselocalpath'] = 'Use an internal system path';
 $string['viewed'] = 'Viewed: {$a}';
-$string['resourcearchive'] = 'Resources archive';
-$string['simulate'] = 'Simulate';
-$string['relocalize'] = 'Relocalize';
-$string['deployzips'] = 'Deploy zips';
-$string['confirmsimulate'] = 'Confirm simulation';
-$string['makelabelsfromguidance'] = 'Make labels from guidance';
 
 $string['configdefaulttaxonomypurposeonedit_desc'] = 'The taxonomy purpose tells why the taxonomy is used for.
 some metadata schema allows multiple taxonomies to be used at once for distinct purposes.';
@@ -141,3 +162,8 @@ and improvement effort.</p>
 <p><a href="http://www.mylearningfactory.com/index.php/documentation/Distributeurs?lang=en_utf8">MyLF Distributors</a></p>';
 
 $string['configlistviewthreshold_desc'] = 'Number of resources in result over which display switches to list view.';
+
+$string['librarian_desc'] = 'Librarian can add and manage library entries, change metadata and description. Librarian become
+responsible of all the resources stored in the library, where and whoever they come from.';
+
+$string['configsearchblocksposition_desc'] = '';

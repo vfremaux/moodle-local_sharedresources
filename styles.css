@@ -71,12 +71,24 @@
     margin-bottom: 15px;
 }
 
+.sharedresources-taxonomy-chooser * {
+    display:inline;
+}
+
+.sharedresources-pager a {
+    margin-right:10px;
+}
+
 #sharedresources-link-to-search {
     margin-top: 15px;
 }
 
 .sharedresources-description .resource-keywords {
     margin-top: 15px;
+}
+
+a.sharedresource-actionlink {
+    cursor: pointer;
 }
 
 .is-hidden-by-rule {
@@ -95,6 +107,15 @@
     margin-right:auto;
     margin-top:10px;
     margin-bottom: 10px;
+}
+
+.sharedresource-librarian-controls,
+.sharedresource-user-controls  {
+    padding-left: 10px;
+}
+
+.sharedresource-user-controls {
+    text-align:center;
 }
 
 .sharedresource-item-container {
@@ -121,4 +142,25 @@
     box-shadow: 5px 10px 10px #888;
     max-width: 46%;
     width:35%;
+}
+
+#local_sharedresource_searchblock input[type="text"] {
+    padding:3px;
+}
+
+#local_sharedresource_searchblock .inner-block .header {
+    height:1.8em !important;
+}
+
+.box-resource-images {
+    max-width: 128px;
+    max-height: 128px;
+}
+
+.sharedresources-librarian-tools {
+    margin: 10px 0;
+}
+
+.sharedresources-pager {
+    margin: 10px 0;
 }

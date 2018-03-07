@@ -22,13 +22,12 @@
  * @author     Valery Fremaux <valery.fremaux@club-internet.fr>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
  * @copyright  (C) 1999 onwards Martin Dougiamas  http://dougiamas.com
- *
  */
 namespace local_sharedresources\browser;
 
 require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
 if (mod_sharedresource_supports_feature('taxonomy/accessctl')) {
-    require_once($CFG->dirroot.'/mod/sharedresource/pro/classes/sharedresource_access_control.class.php');
+    include_once($CFG->dirroot.'/mod/sharedresource/pro/classes/sharedresource_access_control.class.php');
 }
 
 use \StdClass;
@@ -127,6 +126,10 @@ class navigation {
      */
     public function get_category($catid, $catpath) {
         global $DB;
+
+        if (empty($this->taxonomy)) {
+            return null;
+        }
 
         $fields = "{$this->taxonomy->sqlid} as id, {$this->taxonomy->sqllabel} as name, {$this->taxonomy->sqlparent} as parent ";
         $category = $DB->get_record($this->taxonomy->tablename, array($this->taxonomy->sqlid => $catid), $fields);

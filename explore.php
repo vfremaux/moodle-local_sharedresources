@@ -50,8 +50,9 @@ if ($searchplugins = glob($CFG->dirroot.'/local/sharedresources/classes/searchwi
 
 require_once($CFG->dirroot.'/local/sharedresources/lib.php');
 
-$config = get_config('sharedresource');
-$mtdplugin = sharedresource_get_plugin($config->schema);
+$config = get_config('local_sharedresources');
+$shrconfig = get_config('sharedresource');
+$mtdplugin = sharedresource_get_plugin($shrconfig->schema);
 
 $edit = optional_param('edit', -1, PARAM_BOOL);
 $blockaction = optional_param('blockaction', '', PARAM_ALPHA);
@@ -67,15 +68,22 @@ $PAGE->requires->js_call_amd('local_sharedresources/boxview', 'init');
 
 // Security.
 
-if ($courseid) {
-    $context = context_course::instance($courseid);
-    $course = $DB->get_record('course', array('id' => $courseid));
-    require_login($course);
-} else {
-    $context = context_system::instance();
+$context = context_system::instance();
+if (!empty($config->privatecatalog)) {
+    if ($courseid) {
+        $context = context_course::instance($courseid);
+        $course = $DB->get_record('course', array('id' => $courseid));
+        require_login($course);
+        $caps = array('repository/sharedresources:use','repository/sharedresources:create', 'repository/sharedresources:manage');
+        if (!sharedresources_has_capability_somewhere('repository/sharedresources:view', false, false, false, CONTEXT_COURSECAT.','.CONTEXT_COURSE)) {
+            if (!has_any_capability($caps, $context)) {
+                print_error('noaccess', 'local_sharedresource');
+            }
+        }
+    } else {
+        $context = context_system::instance();
+    }
 }
-
-require_capability('repository/sharedresources:view', $context);
 
 // Prepare the page.
 
@@ -105,11 +113,6 @@ $course = $DB->get_record('course', array('id' => $courseid));
 
 $resourcesmoodlestr = get_string('resources', 'sharedresource');
 
-if (empty($config->schema)) {
-    print_error('nometadataplugin', 'sharedresource');
-    die;
-}
-
 $visiblewidgets = array();
 sharedresources_setup_widgets($visiblewidgets, $context);
 $searchfields = array();
@@ -118,9 +121,13 @@ if (sharedresources_process_search_widgets($visiblewidgets, $searchfields)) {
     $offset = 0;
 }
 
-$regions = $PAGE->blocks->get_regions();
+if (empty($config->searchblocksposition)) {
+    set_config('searchblocksposition', 'side-pre', 'local_sharedresources');
+    $config->searchblocksposition = 'side-pre';
+}
 
 if (file_exists($CFG->dirroot.'/blocks/search')) {
+    $configsaved = $config;
     $block = block_instance('search');
     $bc = new block_contents();
     $bc->attributes['id'] = 'local_sharedresource_globalsearch_block';
@@ -128,7 +135,8 @@ if (file_exists($CFG->dirroot.'/blocks/search')) {
     $bc->attributes['aria-labelledby'] = 'local_sharedresouces_search_title';
     $bc->title = html_writer::span(get_string('textsearch', 'local_sharedresources'), '', array('id' => 'local_sharedresources_globalsearch_title'));
     $bc->content = $block->get_content()->text;
-    $PAGE->blocks->add_fake_block($bc, reset($regions));
+    $config = $configsaved; // Bring back the local_sharedresource config that has been tweaked by the search block loading.
+    $PAGE->blocks->add_fake_block($bc, $config->searchblocksposition);
 }
 
 $bc = new block_contents();
@@ -137,7 +145,7 @@ $bc->attributes['role'] = 'search';
 $bc->attributes['aria-labelledby'] = 'local_sharedresouces_search_title';
 $bc->title = html_writer::span(get_string('searchinlibrary', 'sharedresource'), '', array('id' => 'local_sharedresources_search_title'));
 $bc->content = $renderer->search_widgets_tableless($courseid, $repo, $offset, $context, $visiblewidgets, $searchfields);
-$PAGE->blocks->add_fake_block($bc, reset($regions));
+$PAGE->blocks->add_fake_block($bc, $config->searchblocksposition);
 
 $topkeywords = $renderer->top_keywords($courseid);
 if (!empty($topkeywords)) {
@@ -147,7 +155,7 @@ if (!empty($topkeywords)) {
     $bc->attributes['aria-labelledby'] = 'local_sharedresouces_search_title';
     $bc->title = html_writer::span(get_string('topkeywords', 'local_sharedresources'), '', array('id' => 'local_sharedresources_topkeywords_title'));
     $bc->content = $topkeywords;
-    $PAGE->blocks->add_fake_block($bc, reset($regions));
+    $PAGE->blocks->add_fake_block($bc, $config->searchblocksposition);
 }
 
 echo $OUTPUT->header();
