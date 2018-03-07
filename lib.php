@@ -2053,3 +2053,31 @@ function sharedresources_has_capability_somewhere($capability, $excludesystem = 
 >>>>>>> MOODLE_33_STABLE
 }
 
+/**
+ * This is a relocalized function in order to get local_my more compact.
+ * checks if a user has a some named capability effective somewhere in a course.
+ * @param string $capability;
+ * @param bool $excludesystem
+ * @param bool $excludesite
+ * @param bool $doanything
+ * @param string $contextlevels restrict to some contextlevel may speedup the query.
+ */
+function sharedresources_has_capability_in_upper_contexts($capability, $context, $doanything = false) {
+    global $USER, $DB;
+
+    $systemcontext = context_system::instance();
+    if ($doanything && has_capability('moodle/site:config', $systemcontext)) {
+        return true;
+    }
+
+    $contextstocheck = explode('/', $context->path);
+    foreach ($contextstocheck as $ctxid) {
+        $ctx = context::get_by_id($ctxid);
+        if (has_capability($capability, $ctx, $USER)) {
+            return true;
+        }
+    }
+
+    return false;
+}
+

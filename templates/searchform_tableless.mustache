@@ -25,7 +25,7 @@
 }}
 <!-- searchform_tableless -->
 {{^haswidgets}}
-<div class="block">
+<div class="inner-block">
     <div class="content">
         <center>{{nowidgetsstr}}</center><br/>
     </div>
@@ -43,7 +43,7 @@
 <input type="hidden" name="repo" value="{{repo}}">
 <input type="hidden" name="offset" value="{{offset}}">
 
-<div class="block">
+<div class="inner-block">
     <div id="sharedresource-search-button content">
         <center>
         <input type="submit" name="go" value="{{searchstr}}" />
@@ -52,12 +52,12 @@
 </div>
 
 {{#widgets}}
-<div class="block" id="widget-{{key}}" >
+<div class="inner-block" id="widget-{{key}}" >
     {{{widget}}}
 </div>
 {{/widgets}}
 
-<div class="block" id="sharedresource-search-button">
+<div class="inner-block" id="sharedresource-search-button">
     <div class="content">
         <center>
         <input type="submit" name="go" value="{{searchstr}}" />

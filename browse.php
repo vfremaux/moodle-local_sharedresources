@@ -46,7 +46,8 @@ if ($courseid) {
     }
 } else {
     // Site level browsing.
-    $course = null;
+    $course = new StdClass;
+    $course->id = SITEID;
 }
 
 // hidden key to open the catalog to the unlogged area.
@@ -139,7 +140,8 @@ $filters = null;
 >>>>>>> MOODLE_34_STABLE
 
 echo $OUTPUT->header();
-echo $OUTPUT->heading($strheading, 2);
+
+echo $renderer->tools($course);
 
 if (is_dir($CFG->dirroot.'/local/staticguitexts')) {
     // If static gui texts are installed, add a static text to be edited by administrator.

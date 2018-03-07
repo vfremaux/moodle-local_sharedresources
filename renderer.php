@@ -67,7 +67,7 @@ class local_sharedresources_renderer extends plugin_renderer_base {
 
         for ($i = 0; $i < $maxstars; $i++) {
             $icon = ($i < $stars) ? 'star' : 'star_shadow';
-            $str .= '<img src="'.$OUTPUT->pix_url($icon, 'local_sharedresources').'" />';
+            $str .= '<img src="'.$OUTPUT->image_url($icon, 'local_sharedresources').'" />';
         }
 
         return $str;
@@ -174,7 +174,7 @@ class local_sharedresources_renderer extends plugin_renderer_base {
      * print list of the selected resources
      */
     public function resources_list(&$resources, &$course, $section, $isediting = false, $repo = 'local') {
-        global $CFG, $USER, $OUTPUT, $DB;
+        global $CFG, $USER, $OUTPUT, $DB, $FULLME;
 
         $shrconfig = get_config('sharedresource');
         $config = get_config('local_sharedresources');
@@ -192,11 +192,11 @@ class local_sharedresources_renderer extends plugin_renderer_base {
         $forcedeletestr = get_string('forcedelete','local_sharedresources');
         $aclsstr = get_string('accesscontrol', 'local_sharedresources');
 
-        $aclspix = '<img src="'.$this->output->pix_url('i/permissions').'" alt="'.$aclsstr.'"/>';
-        $deletepix = '<img src="'.$this->output->pix_url('delete', 'sharedresource').'" alt="'.$deletestr.'" />';
-        $forcedeletepix = '<img src="'.$this->output->pix_url('t/delete').'" alt="'.$forcedeletestr.'" />';
-        $exportpix = '<img src="'.$this->output->pix_url('export', 'sharedresource').'" alt="'.$exportstr.'" />';
-        $defaultresourcepixurl = $this->output->pix_url('defaultdocument', 'sharedresource');
+        $aclspix = $this->output->pix_icon('i/permissions', $aclsstr);
+        $deletepix = $this->output->pix_icon('delete', $deletestr, 'sharedresource');
+        $forcedeletepix = $this->output->pix_icon('t/delete', $forcedeletestr);
+        $exportpix = $this->output->pix_icon('export', $exportstr, 'sharedresource');
+        $defaultresourcepixurl = $this->output->image_url('defaultdocument', 'sharedresource');
 
         $bodytplname = 'resourcebody';
         if (!empty($config->listviewthreshold) && count($resources) < $config->listviewthreshold) {
@@ -242,6 +242,7 @@ class local_sharedresources_renderer extends plugin_renderer_base {
                                     'mode' => 'update',
                                     'entryid' => $resource->id);
                     $editurl = new moodle_url('/mod/sharedresource/edit.php', $params);
+<<<<<<< HEAD
                     $commands = '<a href="'.$editurl.'" title="'.$editstr.'"><img src="'.$this->output->pix_url('t/edit').'" /></a>';
 <<<<<<< HEAD
                     if ($resource->uses == 0) {
@@ -260,6 +261,9 @@ class local_sharedresources_renderer extends plugin_renderer_base {
                     $pix = '<img src="'.$this->output->pix_url('export', 'sharedresource').'" />';
                     $commands .= '&nbsp;<a href="'.$pushurl.'" title="'.$exportstr.'">'.$pix.'</a>';
 =======
+=======
+                    $commands = '<a href="'.$editurl.'" title="'.$editstr.'">'.$this->output->pix_icon('t/edit', get_string('edit')).'</a>';
+>>>>>>> MOODLE_34_STABLE
 
                     if (mod_sharedresource_supports_feature('entry/accessctl') && $shrconfig->accesscontrol) {
                         $params = array('course' => $courseid, 'resourceid' => $resource->id, 'return' => 'localindex');
@@ -269,11 +273,11 @@ class local_sharedresources_renderer extends plugin_renderer_base {
 
                     if ($resource->uses == 0) {
                         $params = array('what' => 'delete', 'course' => $courseid, 'id' => $resource->id);
-                        $deleteurl = new moodle_url('/local/sharedresources/index.php', $params);
+                        $deleteurl = new moodle_url($FULLME, $params);
                         $commands .= '&nbsp;<a href="'.$deleteurl.'" title="'.$deletestr.'">'.$deletepix.'</a>';
                     } else {
                         $params = array('what' => 'forcedelete', 'course' => $courseid, 'id' => $resource->id);
-                        $deleteurl = new moodle_url('/local/sharedresources/index.php', $params);
+                        $deleteurl = new moodle_url($FULLME, $params);
                         $commands .= '&nbsp;<a href="'.$deleteurl.'" title="'.$forcedeletestr.'">'.$forcedeletepix.'</a>';
                     }
                     $params = array('course' => $courseid, 'resourceid' => $resource->id);
@@ -290,21 +294,42 @@ class local_sharedresources_renderer extends plugin_renderer_base {
                 $template->pixurl = $this->output->pix_url($icon, 'sharedresource');
 =======
                 $template->ishiddenbyrule = (!empty($resource->hidden)) ? "is-hidden-by-rule" : '';
-                $template->pixurl = $this->output->pix_url($icon, 'sharedresource');
+                $template->pixurl = $this->output->image_url($icon, 'sharedresource');
 
-                if (!empty($resource->file)) {
-                    $mainfile = $fs->get_file_by_id($resource->file);
-                    $template->largepixurl = $this->output->pix_url(file_file_icon($mainfile, 128));
+                $context = context_system::instance();
+                $contextid = $context->id;
+                $component = 'mod_sharedresource';
+                $area = 'thumbnail';
+                $itemid = $resource->id;
+
+                $customresourcethumbs = $fs->get_area_files($contextid, $component, $area, $itemid, '', false);
+                if (!empty($customresourcethumbs)) {
+                    $customthumbfile = array_pop($customresourcethumbs);
+                    $template->largepixurl = moodle_url::make_pluginfile_url($contextid, $component, $area, $itemid,
+                                                     $customthumbfile->get_filepath(), $customthumbfile->get_filename(), false);
                 } else {
-                    $template->largepixurl = $defaultresourcepixurl;
+                    if (!empty($resource->file)) {
+                        $mainfile = $fs->get_file_by_id($resource->file);
+                        $template->largepixurl = $this->output->image_url(file_file_icon($mainfile, 128));
+                    } else {
+                        $template->largepixurl = $webresourcepixurl;
+                    }
                 }
 
+<<<<<<< HEAD
 >>>>>>> MOODLE_34_STABLE
                 $template->downloadpixurl = $this->output->pix_url('download', 'local_sharedresources');
+=======
+                $template->downloadpixurl = $this->output->image_url('download', 'local_sharedresources');
+                $template->boxdownloadpixurl = $this->output->image_url('boxdownload', 'local_sharedresources');
+                $template->xmlpixurl = $this->output->image_url('notice', 'local_sharedresources');
+                $template->boxxmlpixurl = $this->output->image_url('boxnotice', 'local_sharedresources');
+>>>>>>> MOODLE_34_STABLE
 
                 $template->url = $resource->url;
                 $template->title = $resource->title;
                 $template->editioncommands = $commands;
+                $template->haseditioncommands = !empty($commands);
                 $template->identifier = $resource->identifier;
 <<<<<<< HEAD
 =======
@@ -320,9 +345,13 @@ class local_sharedresources_renderer extends plugin_renderer_base {
                 $readnotice = get_string('readnotice', 'sharedresource');
                 $url = "{$reswwwroot}/mod/sharedresource/metadatanotice.php?identifier={$resource->identifier}";
                 $popupaction = new popup_action('click', $url, 'popup', array('width' => 800, 'height' => 600));
-                $template->noticepopupactionlink = $this->output->action_link($url, $readnotice, $popupaction);
+                $pixicon = new pix_icon('notice', $readnotice, 'local_sharedresources');
+                $template->noticepopupactionlink = $this->output->action_link($url, '', $popupaction, array('title' => $readnotice), $pixicon);
+                $pixicon = new pix_icon('boxnotice', $readnotice, 'local_sharedresources');
+                $template->boxnoticepopupactionlink = $this->output->action_link($url, '', $popupaction, array('title' => $readnotice), $pixicon);
 
                 // Content toggler.
+<<<<<<< HEAD
 <<<<<<< HEAD
                 // $jshandler = 'Javascript:toggle_info_panel(\''.$resource->identifier.'\')';
                 $template->handlepixurl = $this->output->pix_url('rightarrow', 'local_sharedresources');
@@ -333,6 +362,9 @@ class local_sharedresources_renderer extends plugin_renderer_base {
                     $params = array('courseid' => $course->id, 'entryid' => $resource->id);
 =======
                 $template->handlepixurl = $this->output->pix_url('rightarrow', 'local_sharedresources');
+=======
+                $template->handlepixurl = $this->output->image_url('rightarrow', 'local_sharedresources');
+>>>>>>> MOODLE_34_STABLE
 
                 $template->uses = $resource->uses;
                 if (empty($resource->uses)) {
@@ -481,7 +513,7 @@ class local_sharedresources_renderer extends plugin_renderer_base {
      */
     public function tools($course) {
 
-        $str = '';
+        $template = new StdClass;
 
         if ($course->id == SITEID) {
             $context = context_system::instance();
@@ -491,19 +523,22 @@ class local_sharedresources_renderer extends plugin_renderer_base {
 
         $toollinks = array();
 
-        $str .= '<center>';
         if ($course->id > SITEID) {
-            $convertstr = get_string('resourceconversion', 'sharedresource');
-            $converturl = new moodle_url('/mod/sharedresource/admin_convertall.php', array('course' => $course->id));
-            $toollinks[] = '<a href="'.$converturl.'">'.$convertstr.'</a>';
+            if (has_capability('repository/sharedresources:create', $context)) {
+                // User has capability to convert his local resources to shared entries.
+                $template->convertstr = get_string('resourceconversion', 'local_sharedresources');
+                $template->converturl = new moodle_url('/mod/sharedresource/admin_convertall.php', array('course' => $course->id));
+            }
         }
 
-        if (has_capability('repository/sharedresources:manage', $context)) {
-            $newresourcestr = get_string('newresource', 'local_sharedresources');
+        if (has_capability('repository/sharedresources:create', $context)) {
+            // Librarian should have the capability everywhere. Enabled teachers in their own course.
+            $template->newresourcestr = get_string('newresource', 'local_sharedresources');
             $params = array('course' => $course->id, 'type' => 'file', 'add' => 'sharedresource', 'return' => 1, 'mode' => 'add');
-            $editurl = new moodle_url('/mod/sharedresource/edit.php', $params);
-            $toollinks[] = '<a href="'.$editurl.'">'.$newresourcestr.'</a>';
+            $template->editurl = new moodle_url('/mod/sharedresource/edit.php', $params);
+        }
 
+<<<<<<< HEAD
 <<<<<<< HEAD
             $massimportstr = get_string('massimport', 'local_sharedresources');
             $importurl = new moodle_url('/local/sharedresources/admin/admin_mass_import.php', array('course' => $course->id));
@@ -513,14 +548,18 @@ class local_sharedresources_renderer extends plugin_renderer_base {
                 $massimportstr = get_string('massimport', 'local_sharedresources');
                 $importurl = new moodle_url('/local/sharedresources/pro/admin/admin_mass_import.php', array('course' => $course->id));
                 $toollinks[] = '<a href="'.$importurl.'">'.$massimportstr.'</a>';
+=======
+        if (local_sharedresources_supports_feature('import/mass')) {
+            if (has_capability('repository/sharedresources:manage', $context)) {
+                // Only librarians in a "pro" version can mass import.
+                $template->massimportstr = get_string('massimport', 'local_sharedresources');
+                $template->importurl = new moodle_url('/local/sharedresources/pro/admin/admin_mass_import.php', array('course' => $course->id));
+>>>>>>> MOODLE_34_STABLE
             }
 >>>>>>> MOODLE_34_STABLE
         }
 
-        $str .= implode("&nbsp;-&nbsp;", $toollinks);
-        $str .= '</center>';
-
-        return $str;
+        return $this->output->render_from_template('local_sharedresources/librariantools', $template);
     }
 
     /**
@@ -781,6 +820,7 @@ class local_sharedresources_renderer extends plugin_renderer_base {
     }
 
     public function searchlink() {
+        global $COURSE;
 
 <<<<<<< HEAD
         $str = '';
@@ -808,7 +848,7 @@ class local_sharedresources_renderer extends plugin_renderer_base {
 =======
         $template = new StdClass;
         $template->buttonstr = get_string('searchinlibrary', 'local_sharedresources');
-        $template->buttonurl = new moodle_url('/local/sharedresources/index.php');
+        $template->buttonurl = new moodle_url('/local/sharedresources/explore.php', array('course' => $COURSE->id));
         $template->class = 'sharedresources-link-to-search';
 
         return $this->output->render_from_template('local_sharedresources/modebutton', $template);
@@ -820,7 +860,7 @@ class local_sharedresources_renderer extends plugin_renderer_base {
         $template = new StdClass;
 
         $template->buttonstr = get_string('browse', 'local_sharedresources');
-        if ($COURSE->id > SITEID) {
+        if ($COURSE->id == SITEID) {
             $template->buttonurl = new moodle_url('/local/sharedresources/browse.php');
         } else {
             $template->buttonurl = new moodle_url('/local/sharedresources/browse.php', array('course' => $COURSE->id));
@@ -871,6 +911,7 @@ class local_sharedresources_renderer extends plugin_renderer_base {
         $selected = @$SESSION->sharedresources->taxonomy;
         $meurl = new moodle_url('/local/sharedresources/browse.php');
         $template->taxonomychooser = $this->output->single_select($meurl, 'taxonomy', $enabledtaxonomies, $selected);
+        $template->taxonomystr = get_string('choosetaxonomy', 'local_sharedresources');
 
         return $this->output->render_from_template('local_sharedresources/taxonomychooser', $template);
     }
