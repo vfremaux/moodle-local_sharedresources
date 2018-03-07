@@ -197,7 +197,7 @@ class local_sharedresources_renderer extends plugin_renderer_base {
 
         $fs = get_file_storage();
 
-        if ($resources) {
+        if (!empty($resources)) {
             $i = 0;
 
             $str .= $this->output->render_from_template('local_sharedresources/'.$bodytplname.'start', null);
@@ -298,6 +298,8 @@ class local_sharedresources_renderer extends plugin_renderer_base {
                 $pixicon = new pix_icon('boxnotice', $readnotice, 'local_sharedresources');
                 $template->boxnoticepopupactionlink = $this->output->action_link($url, '', $popupaction, array('title' => $readnotice), $pixicon);
 
+                $template->ishiddenbyrulestr = get_string('ishiddenbyrule', 'local_sharedresources');
+
                 // Content toggler.
                 $template->handlepixurl = $this->output->pix_url('rightarrow', 'local_sharedresources');
 
@@ -364,7 +366,15 @@ class local_sharedresources_renderer extends plugin_renderer_base {
                         $cmdtemplate->quotedtitle = htmlentities($resource->title, ENT_QUOTES, 'UTF-8');
                         $cmdtemplate->repo = $repo;
                         $cmdtemplate->file = $resource->file;
-                        $cmdtemplate->url = $resource->url;
+                        if ($resource->context > 1) {
+                            $viewcap = 'repository/sharedresources:view';
+                            if (sharedresources_has_capability_in_upper_contexts($viewcap, $resource->context, true, true)) {
+                                $cmdtemplate->url = $resource->url;
+                            } else {
+                                // Show the resource but do not allow download.
+                                $cmdtemplate->url = false;
+                            }
+                        }
 
                         if (!$cmdtemplate->isltitool && !$ismoodleactivity) {
                             /*
@@ -425,7 +435,7 @@ class local_sharedresources_renderer extends plugin_renderer_base {
      */
     public function tools($course) {
 
-        $str = '';
+        $template = new StdClass;
 
         if ($course->id == SITEID) {
             $context = context_system::instance();
@@ -435,30 +445,30 @@ class local_sharedresources_renderer extends plugin_renderer_base {
 
         $toollinks = array();
 
-        $str .= '<center>';
         if ($course->id > SITEID) {
-            $convertstr = get_string('resourceconversion', 'sharedresource');
-            $converturl = new moodle_url('/mod/sharedresource/admin_convertall.php', array('course' => $course->id));
-            $toollinks[] = '<a href="'.$converturl.'">'.$convertstr.'</a>';
-        }
-
-        if (has_capability('repository/sharedresources:manage', $context)) {
-            $newresourcestr = get_string('newresource', 'local_sharedresources');
-            $params = array('course' => $course->id, 'type' => 'file', 'add' => 'sharedresource', 'return' => 1, 'mode' => 'add');
-            $editurl = new moodle_url('/mod/sharedresource/edit.php', $params);
-            $toollinks[] = '<a href="'.$editurl.'">'.$newresourcestr.'</a>';
-
-            if (local_sharedresources_supports_feature('import/mass')) {
-                $massimportstr = get_string('massimport', 'local_sharedresources');
-                $importurl = new moodle_url('/local/sharedresources/pro/admin/admin_mass_import.php', array('course' => $course->id));
-                $toollinks[] = '<a href="'.$importurl.'">'.$massimportstr.'</a>';
+            if (has_capability('repository/sharedresources:create', $context)) {
+                // User has capability to convert his local resources to shared entries.
+                $template->convertstr = get_string('resourceconversion', 'local_sharedresources');
+                $template->converturl = new moodle_url('/mod/sharedresource/admin_convertall.php', array('course' => $course->id));
             }
         }
 
-        $str .= implode("&nbsp;-&nbsp;", $toollinks);
-        $str .= '</center>';
+        if (has_capability('repository/sharedresources:create', $context)) {
+            // Librarian should have the capability everywhere. Enabled teachers in their own course.
+            $template->newresourcestr = get_string('newresource', 'local_sharedresources');
+            $params = array('course' => $course->id, 'type' => 'file', 'add' => 'sharedresource', 'return' => 1, 'mode' => 'add');
+            $template->editurl = new moodle_url('/mod/sharedresource/edit.php', $params);
+        }
 
-        return $str;
+        if (local_sharedresources_supports_feature('import/mass')) {
+            if (has_capability('repository/sharedresources:manage', $context)) {
+                // Only librarians in a "pro" version can mass import.
+                $template->massimportstr = get_string('massimport', 'local_sharedresources');
+                $template->importurl = new moodle_url('/local/sharedresources/pro/admin/admin_mass_import.php', array('course' => $course->id));
+            }
+        }
+
+        return $this->output->render_from_template('local_sharedresources/librariantools', $template);
     }
 
     /**
@@ -675,6 +685,17 @@ class local_sharedresources_renderer extends plugin_renderer_base {
         $SESSION->sharedresources->taxonomy = optional_param('taxonomy', @$SESSION->sharedresources->taxonomy, PARAM_INT);
 
         $enabledtaxonomies = \local_sharedresources\browser\navigation::get_taxonomies_menu(true);
+
+        $systemcontext = context_system::instance();
+        if (!has_capability('repository/sharedresources:manage', $systemcontext)) {
+            // Discard taxonomies that are disabled by rules.
+            foreach (array_keys($enabledtaxonomies) as $txid) {
+                $taxo = new \local_sharedresources\browser\navigation($txid);
+                if (!$taxo->can_use()) {
+                    unset($enabledtaxonomies[$txid]);
+                }
+            }
+        }
 
         if (empty($enabledtaxonomies)) {
             print_error('notaxonomiesenabled', 'local_sharedresources');

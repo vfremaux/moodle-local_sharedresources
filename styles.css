@@ -148,7 +148,19 @@ a.sharedresource-actionlink {
     padding:3px;
 }
 
+#local_sharedresource_searchblock .inner-block .header {
+    height:1.8em !important;
+}
+
 .box-resource-images {
     max-width: 128px;
     max-height: 128px;
+}
+
+.sharedresources-librarian-tools {
+    margin: 10px 0;
+}
+
+.sharedresources-pager {
+    margin: 10px 0;
 }

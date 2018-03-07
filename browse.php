@@ -39,7 +39,8 @@ if ($courseid) {
     }
 } else {
     // Site level browsing.
-    $course = null;
+    $course = new StdClass;
+    $course->id = SITEID;
 }
 
 // hidden key to open the catalog to the unlogged area.
@@ -54,9 +55,11 @@ if (!empty($config->privatecatalog)) {
         $context = context_system::instance();
         require_login();
     }
-    $caps = array('repository/sharedresources:view', 'repository/sharedresources:use', 'repository/sharedresources:manage');
-    if (!has_any_capability($caps, $context)) {
-        print_error('noaccess', 'local_sharedresource');
+    $caps = array('repository/sharedresources:use','repository/sharedresources:create', 'repository/sharedresources:manage');
+    if (!sharedresources_has_capability_somewhere('repository/sharedresources:view', false, false, false, CONTEXT_COURSECAT.','.CONTEXT_COURSE)) {
+        if (!has_any_capability($caps, $context)) {
+            print_error('noaccess', 'local_sharedresource');
+        }
     }
 }
 
@@ -113,7 +116,8 @@ foreach ($classificationfilters as $afilter) {
 $filters = null;
 
 echo $OUTPUT->header();
-echo $OUTPUT->heading($strheading, 2);
+
+echo $renderer->tools($course);
 
 if (is_dir($CFG->dirroot.'/local/staticguitexts')) {
     // If static gui texts are installed, add a static text to be edited by administrator.
