@@ -196,7 +196,7 @@ class local_sharedresources_renderer extends plugin_renderer_base {
 
         $fs = get_file_storage();
 
-        if ($resources) {
+        if (!empty($resources)) {
             $i = 0;
 
             $str .= $this->output->render_from_template('local_sharedresources/'.$bodytplname.'start', null);
@@ -297,6 +297,8 @@ class local_sharedresources_renderer extends plugin_renderer_base {
                 $pixicon = new pix_icon('boxnotice', $readnotice, 'local_sharedresources');
                 $template->boxnoticepopupactionlink = $this->output->action_link($url, '', $popupaction, array('title' => $readnotice), $pixicon);
 
+                $template->ishiddenbyrulestr = get_string('ishiddenbyrule', 'local_sharedresources');
+
                 // Content toggler.
                 $template->handlepixurl = $this->output->image_url('rightarrow', 'local_sharedresources');
 
@@ -363,7 +365,15 @@ class local_sharedresources_renderer extends plugin_renderer_base {
                         $cmdtemplate->quotedtitle = htmlentities($resource->title, ENT_QUOTES, 'UTF-8');
                         $cmdtemplate->repo = $repo;
                         $cmdtemplate->file = $resource->file;
-                        $cmdtemplate->url = $resource->url;
+                        if ($resource->context > 1) {
+                            $viewcap = 'repository/sharedresources:view';
+                            if (sharedresources_has_capability_in_upper_contexts($viewcap, $resource->context, true, true)) {
+                                $cmdtemplate->url = $resource->url;
+                            } else {
+                                // Show the resource but do not allow download.
+                                $cmdtemplate->url = false;
+                            }
+                        }
 
                         if (!$cmdtemplate->isltitool && !$ismoodleactivity) {
                             /*
@@ -674,6 +684,17 @@ class local_sharedresources_renderer extends plugin_renderer_base {
         $SESSION->sharedresources->taxonomy = optional_param('taxonomy', @$SESSION->sharedresources->taxonomy, PARAM_INT);
 
         $enabledtaxonomies = \local_sharedresources\browser\navigation::get_taxonomies_menu(true);
+
+        $systemcontext = context_system::instance();
+        if (!has_capability('repository/sharedresources:manage', $systemcontext)) {
+            // Discard taxonomies that are disabled by rules.
+            foreach (array_keys($enabledtaxonomies) as $txid) {
+                $taxo = new \local_sharedresources\browser\navigation($txid);
+                if (!$taxo->can_use()) {
+                    unset($enabledtaxonomies[$txid]);
+                }
+            }
+        }
 
         if (empty($enabledtaxonomies)) {
             print_error('notaxonomiesenabled', 'local_sharedresources');

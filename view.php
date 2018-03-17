@@ -86,8 +86,8 @@ if ($resource->context > 1) {
     if (!$isloggedin) {
         require_login();
     }
-    // Do we have the use capability in this context or some upper ?
-    if (!sharedresources_has_capability_in_upper_contexts('repository/sharedresources:use', $context, true)) {
+    // Do we have the view capability in this context or some upper ?
+    if (!sharedresources_has_capability_in_upper_contexts('repository/sharedresources:view', $context, true, true)) {
         send_file_not_found();
     }
 }
@@ -100,5 +100,5 @@ if (empty($resource->file) && !empty($resource->url)) {
     // First form.
     $fs = get_file_storage();
     $stored_file = $fs->get_file_by_id($resource->file);
-    send_stored_file($stored_file, 60*60, 0, $forcedownload);
+    send_stored_file($stored_file, 60 * 60, 0, $forcedownload);
 }

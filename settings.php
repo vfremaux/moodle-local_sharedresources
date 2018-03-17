@@ -23,6 +23,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/local/sharedresources/lib.php');
+require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
 require_once($CFG->dirroot.'/mod/sharedresource/metadatalib.php');
 require_once($CFG->dirroot.'/local/sharedresources/classes/navigator.class.php');
 
@@ -43,23 +44,49 @@ $shcaps = array(
     'repository/sharedresouces:manage',
 );
 
-$usecap = sharedresources_has_capability_somewhere('repository/sharedresources:use', false, false, false, CONTEXT_COURSECAT.','.CONTEXT_COURSE);
-$viewcap = sharedresources_has_capability_somewhere('repository/sharedresources:view', false, false, false, CONTEXT_COURSECAT.','.CONTEXT_COURSE);
-$managecap = sharedresources_has_capability_somewhere('repository/sharedresources:manage', false, false, false, CONTEXT_COURSECAT.','.CONTEXT_COURSE);
+$usecap = sharedresources_has_capability_somewhere('repository/sharedresources:use', false, false, true, CONTEXT_COURSECAT.','.CONTEXT_COURSE);
+$viewcap = sharedresources_has_capability_somewhere('repository/sharedresources:view', false, false, true, CONTEXT_COURSECAT.','.CONTEXT_COURSE);
+$managecap = sharedresources_has_capability_somewhere('repository/sharedresources:manage', false, false, true, CONTEXT_COURSECAT.','.CONTEXT_COURSE);
+
+if ($namespace = get_config('sharedresource', 'schema')) {
+    $hasmetadata = true;
+    $plugin = sharedresource_get_plugin($namespace);
+
+    if (!is_null($plugin->getClassification())) {
+        $hasclassification = true;
+    }
+}
 
 if ($hasconfig || $usecap || $viewcap || $managecap) {
     // Needs this condition or there is error on login page.
 
     if ($DB->get_field('modules', 'visible', array('name' => 'sharedresource'))) {
 
-        $ADMIN->add('root', new admin_category('resources', get_string('resources', 'local_sharedresources')));
+        if (!$ADMIN->locate('resources')) {
+            $ADMIN->add('root', new admin_category('resources', get_string('resources', 'local_sharedresources')));
+        }
 
         $label = get_string('pluginname', 'local_sharedresources');
         $pageurl = new moodle_url('/local/sharedresources/index.php');
         $settingspage = new admin_externalpage('resourcelibrary', $label, $pageurl, 'repository/sharedresources:view');
         $ADMIN->add('resources', $settingspage);
+
+        if ($hasmetadata) {
+            $label = get_string('metadata', 'sharedresource');
+            $pageurl = new moodle_url('/mod/sharedresource/metadataconfigure.php');
+            $settingspage = new admin_externalpage('mainresourcemetadata', $label, $pageurl, 'repository/sharedresources:manage');
+            $ADMIN->add('resources', $settingspage);
+        }
+
+        if ($hasclassification) {
+            $label = get_string('classifications', 'sharedresource');
+            $pageurl = new moodle_url('/mod/sharedresource/classifications.php');
+            $settingspage = new admin_externalpage('mainclassification', $label, $pageurl, 'repository/sharedresources:manage');
+            $ADMIN->add('resources', $settingspage);
+        }
     }
 }
+
 if ($hassiteconfig) {
     $settings = new admin_settingpage('local_sharedresources', get_string('pluginname', 'sharedresource'));
 
@@ -118,6 +145,22 @@ if ($hassiteconfig) {
     $label = get_string('configlistviewthreshold', 'local_sharedresources');
     $desc = get_string('configlistviewthreshold_desc', 'local_sharedresources');
     $settings->add(new admin_setting_configselect($key, $label, $desc, 30, $options));
+
+    /*
+    $options = array('left' => get_string('toleft', 'local_sharedresources')),
+                     'right' => get_string('toright', 'local_sharedresources'));
+    */
+    $themeconfig = theme_config::load($CFG->theme);
+    $layoutregions = $themeconfig->layouts['course']['regions'];
+    $options = array();
+    foreach ($layoutregions as $region) {
+        $options[$region] = get_string('region-'.$region, 'theme_'.$CFG->theme);
+    }
+
+    $key = 'local_sharedresources/searchblocksposition';
+    $label = get_string('configsearchblocksposition', 'local_sharedresources');
+    $desc = get_string('configsearchblocksposition_desc', 'local_sharedresources');
+    $settings->add(new admin_setting_configselect($key, $label, $desc, 'left', $options));
 
     $key = 'local_sharedresources/privatecatalog';
     $label = get_string('configprivatecatalog', 'local_sharedresources');

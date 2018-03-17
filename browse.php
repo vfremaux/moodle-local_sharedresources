@@ -55,9 +55,11 @@ if (!empty($config->privatecatalog)) {
         $context = context_system::instance();
         require_login();
     }
-    $caps = array('repository/sharedresources:view', 'repository/sharedresources:use', 'repository/sharedresources:manage');
-    if (!has_any_capability($caps, $context)) {
-        print_error('noaccess', 'local_sharedresource');
+    $caps = array('repository/sharedresources:use','repository/sharedresources:create', 'repository/sharedresources:manage');
+    if (!sharedresources_has_capability_somewhere('repository/sharedresources:view', false, false, false, CONTEXT_COURSECAT.','.CONTEXT_COURSE)) {
+        if (!has_any_capability($caps, $context)) {
+            print_error('noaccess', 'local_sharedresource');
+        }
     }
 }
 

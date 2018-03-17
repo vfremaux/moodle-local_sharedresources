@@ -1049,6 +1049,12 @@ function sharedresources_has_capability_somewhere($capability, $excludesystem = 
                                            $doanything = false, $contextlevels = '') {
     global $USER, $DB;
 
+    // Faster check.
+    $systemcontext = context_system::instance();
+    if (!$excludesystem && has_capability($capability, $systemcontext, $USER->id, $doanything)) {
+        return true;
+    }
+
     $contextclause = '';
 
     if ($contextlevels) {
@@ -1060,9 +1066,11 @@ function sharedresources_has_capability_somewhere($capability, $excludesystem = 
     $params['capability'] = $capability;
     $params['userid'] = $USER->id;
 
+    $sitecoursecontext = context_course::instance(SITEID);
+
     $sitecontextexclclause = '';
     if ($excludesite) {
-        $sitecontextexclclause = " ctx.id != 1  AND ";
+        $sitecontextexclclause = " ctx.id != {$sitecoursecontext->id}  AND ";
     }
 
     // This is a a quick rough query that may not handle all role override possibility.
@@ -1089,11 +1097,6 @@ function sharedresources_has_capability_somewhere($capability, $excludesystem = 
         return true;
     }
 
-    $systemcontext = context_system::instance();
-    if (!$excludesystem && has_capability($capability, $systemcontext, $USER->id, $doanything)) {
-        return true;
-    }
-
     return false;
 }
 
@@ -1106,19 +1109,43 @@ function sharedresources_has_capability_somewhere($capability, $excludesystem = 
  * @param bool $doanything
  * @param string $contextlevels restrict to some contextlevel may speedup the query.
  */
-function sharedresources_has_capability_in_upper_contexts($capability, $context, $doanything = false) {
+function sharedresources_has_capability_in_upper_contexts($capability, $context, $checkcourses = true, $doanything = false) {
     global $USER, $DB;
 
     $systemcontext = context_system::instance();
     if ($doanything && has_capability('moodle/site:config', $systemcontext)) {
+        // Administrators can always see.
         return true;
     }
 
+    if (has_capability('repository/sharedresources:manage', $systemcontext)) {
+        // Librarians can always see.
+        return true;
+    }
+
+    if (is_numeric($context)) {
+        $context = context::instance_by_id($context);
+    }
+
     $contextstocheck = explode('/', $context->path);
-    foreach ($contextstocheck as $ctxid) {
-        $ctx = context::get_by_id($ctxid);
-        if (has_capability($capability, $ctx, $USER)) {
-            return true;
+    $contextstocheck = array_reverse($contextstocheck);
+    array_pop($contextstocheck);
+    if (!empty($contextstocheck)) {
+        foreach ($contextstocheck as $ctxid) {
+            $ctx = context::instance_by_id($ctxid);
+            if (has_capability($capability, $ctx, $USER)) {
+                return true;
+            }
+        }
+    }
+
+    $courses = $DB->get_records_menu('course', array('category' => $context->instanceid), 'id,shortname');
+    if (!empty($courses)) {
+        foreach (array_keys($courses) as $cid) {
+            $ctx = context_course::instance($cid);
+            if (has_capability($capability, $ctx)) {
+                return true;
+            }
         }
     }
 

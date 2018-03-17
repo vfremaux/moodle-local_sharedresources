@@ -42,7 +42,12 @@
         </div>
 
         <div class="sharedresource-user-controls">
+            {{#url}}
             <a href="{{{url}}}" target="_blank" title="{{downloadstr}}"><img src="{{{boxdownloadpixurl}}}" /></a>
+            {{/url}}
+            {{^url}}
+            <img src="{{{boxdownloadpixurl}}}" class="is-hidden-by-rule" alt="{{ishiddenbyrulestr}}" />
+            {{/url}}
             {{{boxnoticepopupactionlink}}}
         </div>
 
