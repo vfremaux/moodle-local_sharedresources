@@ -36,7 +36,7 @@ namespace local_sharedresources\browser;
 
 require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
 if (mod_sharedresource_supports_feature('taxonomy/accessctl')) {
-    require_once($CFG->dirroot.'/mod/sharedresource/pro/classes/sharedresource_access_control.class.php');
+    include_once($CFG->dirroot.'/mod/sharedresource/pro/classes/sharedresource_access_control.class.php');
 }
 
 use \StdClass;

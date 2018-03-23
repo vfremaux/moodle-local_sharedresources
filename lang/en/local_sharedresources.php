@@ -84,6 +84,7 @@ $string['configdefaulttaxonomypurposeonedit'] = 'Taxonomy purpose for import';
 $string['configlistviewthreshold'] = 'List view threshold';
 $string['confignotfound'] = 'Config file not found';
 $string['configprivatecatalog'] = 'Private catalog';
+$string['configsearchblocksposition'] = 'Location of the search blocks';
 $string['confirm'] = 'Confirm';
 $string['confirmsimulate'] = 'Confirm simulation';
 $string['contains'] = 'contains';
@@ -122,6 +123,7 @@ $string['forcedelete'] = 'Force Delete (even if used)';
 $string['importpath'] = 'Import path';
 $string['importvolume'] = 'Import documents';
 $string['installltitool'] = 'Install the LTI Tool';
+$string['ishiddenbyrule'] = 'This resource is shared in a restricted context. You have no sufficiant capabilities to download it.';
 $string['keywords'] = 'Mots clefs';
 $string['library'] = 'Librairy';
 $string['librarian'] = 'Librarian';
@@ -184,6 +186,11 @@ $string['simulate'] = 'Simulate';
 $string['startswith'] = 'starts with';
 $string['taxonomy'] = 'Taxonomy';
 $string['textsearch'] = 'Full text search';
+<<<<<<< HEAD
+>>>>>>> MOODLE_34_STABLE
+=======
+$string['toleft'] = 'Left';
+$string['toright'] = 'Right';
 >>>>>>> MOODLE_34_STABLE
 $string['topkeywords'] = 'Top keywords';
 $string['updateresourcespageoff'] = 'Quit edit mode';
@@ -277,4 +284,9 @@ $string['configlistviewthreshold_desc'] = 'Number of resources in result over wh
 
 $string['librarian_desc'] = 'Librarian can add and manage library entries, change metadata and description. Librarian become
 responsible of all the resources stored in the library, where and whoever they come from.';
+<<<<<<< HEAD
+>>>>>>> MOODLE_34_STABLE
+=======
+
+$string['configsearchblocksposition_desc'] = '';
 >>>>>>> MOODLE_34_STABLE

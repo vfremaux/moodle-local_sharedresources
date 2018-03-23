@@ -81,6 +81,7 @@ $string['configdefaulttaxonomypurposeonedit'] = 'Objet de la taxonomie par défa
 $string['configlistviewthreshold'] = 'Affichage en liste';
 $string['confignotfound'] = 'Fichier de configuration introuvable';
 $string['configprivatecatalog'] = 'Catalogue privé';
+$string['configsearchblocksposition'] = 'Position des blocs de recherche';
 $string['convertresources'] = 'Convertir des ressources';
 $string['confirm'] = 'Confirmer';
 $string['confirmsimulate'] = 'Confirmer la simulation';
@@ -120,6 +121,7 @@ $string['forcedelete'] = 'Forcer la suppression (même si utilisé)';
 $string['importpath'] = 'Chemin à importer';
 $string['importvolume'] = 'Importer des documents';
 $string['installltitool'] = 'Installer comme outil externe';
+<<<<<<< HEAD
 $string['keywords'] = 'Mots-clefs : ';
 $string['library'] = 'Librairie';
 $string['liked'] = 'Appréciée : ';
@@ -127,9 +129,13 @@ $string['liked'] = 'Appréciée : ';
 $string['markliked'] = 'J\'aime ça !';
 =======
 $string['keywords'] = 'Mots-clefs&nbsp;: ';
+=======
+$string['ishiddenbyrule'] = 'Cette ressource est mutualisée dans un contexte restreint. Vous n\'avez pas les droits suffisants pour la télécharger.';
+$string['keywords'] = 'Mots-clefs&nbsp;:&ensp;';
+>>>>>>> MOODLE_34_STABLE
 $string['library'] = 'Librairie';
 $string['librarian'] = 'Documentaliste';
-$string['liked'] = 'Appréciée&nbsp;: ';
+$string['liked'] = 'Appréciée&nbsp;:&ensp;';
 $string['listviewalways'] = 'Toujours en liste';
 $string['makelabelsfromguidance'] = 'Créer les étiquettes de guidances';
 $string['markliked'] = 'J\'aime&nbsp;!';
@@ -181,6 +187,11 @@ $string['simulate'] = 'Simuler';
 $string['startswith'] = 'commence par';
 $string['taxonomy'] = 'Taxonomie';
 $string['textsearch'] = 'Recherche texte';
+<<<<<<< HEAD
+>>>>>>> MOODLE_34_STABLE
+=======
+$string['toleft'] = 'A gauche';
+$string['toright'] = 'A droite';
 >>>>>>> MOODLE_34_STABLE
 $string['topkeywords'] = 'Mots-clefs principaux';
 $string['updateresourcespageoff'] = 'Mode normal';
@@ -290,4 +301,9 @@ $string['configlistviewthreshold_desc'] = 'Nombre de ressources du résultat pou
 $string['librarian_desc'] = 'Les documentalistes peuvent gérer la librairie de ressource, modifier les description, supprimer
 et ajouter les ressources. Ils deviennent de facto les repsonsables de toutes les ressources mutualisées dans la librairie,
 quelle que soit leur origine.';
+<<<<<<< HEAD
+>>>>>>> MOODLE_34_STABLE
+=======
+
+$string['configsearchblocksposition_desc'] = '';
 >>>>>>> MOODLE_34_STABLE
