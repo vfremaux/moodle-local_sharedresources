@@ -27,6 +27,7 @@ define(['jquery', 'core/log'], function ($, log) {
         init: function() {
             $('.selectmultiple-selectall').bind('click', this.selectall);
             $('.selectmultiple-unselectall').bind('click', this.unselectall);
+            $('#sharedresources-search-reset-btn').bind('click', this.hardreset);
 
             log.debug('AMD sharedresource search form initialized');
         },
@@ -64,6 +65,15 @@ define(['jquery', 'core/log'], function ($, log) {
             var id = that.attr('id').replace('unselectall-', '');
             $('.selectmultiple-' + id).attr('checked', true);
         },
+
+        hardreset: function () {
+
+            var that = $(this);
+
+            that.closest('form').find(':input').not(':button, :submit, :reset, :hidden, :checkbox, :radio').val('');
+            that.closest('form').find(':checkbox, :radio').prop('checked', false);
+            that.closest('form').submit();
+        }
     };
 
     return sharedresourcessearch;

@@ -24,8 +24,6 @@
 
 }}
 <!-- resourcecommands -->
-<div class="generalbox sharedresources-commands">
-
 {{#isremote}}
     <form name="add{{i}}" action="{{formurl}}" style="display:inline">
 {{/isremote}}
@@ -46,7 +44,7 @@
 </form>
 
 {{^isltitool}}
-<a id="id-shared-{{i}}" class="sharedresource-actionlink">{{addtocoursestr}}</a>
+- <a id="id-shared-{{i}}" class="sharedresource-actionlink">{{addtocoursestr}}</a>
 
 {{#islocalizable}}
  - <a id="id-local-{{i}}" class="sharedresource-actionlink">{{localizetocoursestr}}</a>
@@ -65,5 +63,4 @@
  - <a id="id-mplayerdeploy-{{i}}" class="sharedresource-actionlink">{{deployinmplayerstr}}</a>
 {{/isvideo}}
 
-</div>
 <!-- /resourcecommands -->

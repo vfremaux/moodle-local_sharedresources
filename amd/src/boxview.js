@@ -20,7 +20,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 // jshint unused: true, undef:true
-define(['jquery', 'core/log'], function ($, log) {
+define(['jquery', 'core/config', 'core/log'], function ($, cfg, log) {
 
     var libraryboxview = {
 
@@ -33,14 +33,18 @@ define(['jquery', 'core/log'], function ($, log) {
             log.debug('ADM Shared resource Library JS initialized');
         },
 
-        opendesc: function (e) {
+        opendesc: function () {
             var that = $(this);
 
-            // Remove either prefixes.
+            // Remove either prefixs.
             var identifier = that.attr('id').replace('sharedresource-image-', '');
             identifier = identifier.replace('sharedresource-title-', '');
             $('.sharedresource-info-box').css('display', 'none'); // Ensure all is closed.
-            $('#sharedresource-info-' + identifier).css({'top':e.pageY,'left':e.pageX}).fadeIn('fast');
+            var imageleft = that.css('left');
+            // var imagebottom = that.css('top') + that.css('height');
+            var popupleft = imageleft - 20;
+            // var popupbottom = imagebottom + 20;
+            $('#sharedresource-info-' + identifier).css({'top':imageleft,'left':popupleft}).fadeIn('fast');
             $('#sharedresource-info-' + identifier).css('display', 'inline-block');
         },
 

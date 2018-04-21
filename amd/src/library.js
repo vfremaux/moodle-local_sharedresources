@@ -26,19 +26,21 @@ define(['jquery', 'core/config', 'core/log'], function ($, cfg, log) {
 
         init: function (args) {
 
+            var that = $(this);
+
             // Resourceitem hover effect.
             $('.resourceitem').hover(
                 function() {
-                    $(this).css('background-color','#fcfcfc');
+                    that.css('background-color','#fcfcfc');
                 },
                 function() {
-                    $(this).css('background-color','#f8f8f8');
+                    that.css('background-color','#f8f8f8');
                 }
             );
 
-            $('.sharedresource-toggle-handle').bind('click', sharedresourceslibrary.toggle_info_panel);
-            $('.sharedresource-mark-like').on('click', '', args, sharedresourceslibrary.ajax_mark_like);
-            $('.sharedresource-actionlink').bind('click', sharedresourceslibrary.integrate);
+            $('.sharedresource-toggle-handle').bind('click', this.toggle_info_panel);
+            $('.sharedresource-mark-like').on('click', '', args, this.ajax_mark_like);
+            $('.sharedresource-actionlink').bind('click', this.integrate);
 
             log.debug('ADM Shared resource Library JS initialized');
         },
@@ -74,17 +76,19 @@ define(['jquery', 'core/config', 'core/log'], function ($, cfg, log) {
 
             var that = $(this);
 
-            var imgid = that.find('img').attr('id');
+            var imgid = that.attr('id');
 
             var residentifier = imgid.replace('sharedresource-toggle-', '');
 
             if ($('#sharedresource-info-' + residentifier).css('display') === 'none') {
                 $('#sharedresource-info-' + residentifier).css('display', 'block');
+                $('#sharedresource-social-' + residentifier).css('display', 'block');
                 var iconsrc = $('#sharedresource-toggle-' + residentifier).attr('src');
                 iconsrc = iconsrc.replace('right', 'top');
                 $('#sharedresource-toggle-' + residentifier).attr('src', iconsrc);
             } else {
                 $('#sharedresource-info-' + residentifier).css('display', 'none');
+                $('#sharedresource-social-' + residentifier).css('display', 'none');
                 var iconsrc = $('#sharedresource-toggle-' + residentifier).attr('src');
                 iconsrc = iconsrc.replace('top', 'right');
                 $('#sharedresource-toggle-' + residentifier).attr('src', iconsrc);

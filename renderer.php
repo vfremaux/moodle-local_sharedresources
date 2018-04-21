@@ -94,6 +94,7 @@ class local_sharedresources_renderer extends plugin_renderer_base {
         $template->repo = $repo;
         $template->offset = $offset;
         $template->searchstr = get_string('search');
+        $template->resetstr = get_string('reset', 'local_sharedresources');
 
         $template->widgets = array();
         $n = 0;
@@ -132,6 +133,8 @@ class local_sharedresources_renderer extends plugin_renderer_base {
      * @param int $nbrpages
      */
     public function pager($courseid, $repo, $nbrpages, $page, $offset = 0, $isediting = false) {
+        global $FULLME;
+
         $str = '';
 
         $str .= '<center><div class="sharedresources-pager">';
@@ -140,7 +143,7 @@ class local_sharedresources_renderer extends plugin_renderer_base {
                 $pageoffset = ($i - 1) * $page;
                 $pagestyle = ($pageoffset == $offset) ? 'color:black;font-size:14pt' : 'color:grey;font-size:12pt' ;
                 $params = array('course' => $courseid, 'repo' => $repo, 'offset' => $pageoffset, 'isediting' => $isediting);
-                $libraryurl = new moodle_url('/local/sharedresources/index.php', $params);
+                $libraryurl = new moodle_url($FULLME, $params);
                 $str .= '<a style="'.$pagestyle.'" name="page'.$i.'" href="'.$libraryurl.'">'.$i.'</a>';
             }
         } else {
@@ -186,10 +189,9 @@ class local_sharedresources_renderer extends plugin_renderer_base {
         $defaultresourcepixurl = $this->output->image_url('defaultdocument', 'sharedresource');
 
         $bodytplname = 'resourcebody';
-        if (!empty($config->listviewthreshold) && count($resources) < $config->listviewthreshold) {
+        if (!empty($config->listviewthreshold) && (count($resources) < $config->listviewthreshold)) {
             $bodytplname = 'boxresourcebody';
         }
-
         if (!empty($CFG->resourcebodytplname)) {
             $bodytplname = $CFG->resourcebodytplname;
         };
@@ -245,6 +247,12 @@ class local_sharedresources_renderer extends plugin_renderer_base {
                 }
 
                 $template = new StdClass;
+
+                if ('pro' == local_sharedresources_supports_feature('emulate/community')) {
+                    if (!empty($config->hidesocial)) {
+                        $template->hidesocial = true;
+                    }
+                }
 
                 // Resource heading.
                 $icon = ($isremote) ? 'remoteicon' : 'icon';
@@ -570,7 +578,7 @@ class local_sharedresources_renderer extends plugin_renderer_base {
         return $str;
     }
 
-    function category(&$cat, &$catpath, $resourcecount, $current = 'current', $up = false) {
+    public function category(&$cat, &$catpath, $resourcecount, $current = 'current', $up = false) {
         global $COURSE;
 
         $template = new StdClass;
@@ -587,6 +595,7 @@ class local_sharedresources_renderer extends plugin_renderer_base {
 
         if ($up) {
             $template->hasup = true;
+            $template->upstr = get_string('up', 'local_sharedresources');
             if (!is_null($cat->parent)) {
                 $params = array('catid' => $cat->parent, 'catpath' => $prevpath, 'course' => $COURSE->id);
                 $template->parentcaturl = new moodle_url('/local/sharedresources/browse.php', $params);
@@ -625,9 +634,6 @@ class local_sharedresources_renderer extends plugin_renderer_base {
         $str = '';
 
         if (!empty($cat->cats)) {
-
-            $str .= $OUTPUT->heading(get_string('subcategories'));
-
             foreach ($cat->cats as $child) {
                 $str .= $this->child($child, $catpath);
             }
@@ -708,7 +714,7 @@ class local_sharedresources_renderer extends plugin_renderer_base {
             }
             $SESSION->sharedresources->taxonomy = array_shift($taxonomyids);
             if (count($enabledtaxonomies) < 2) {
-                return '';
+                return $this->output->heading($enabledtaxonomies[$SESSION->sharedresources->taxonomy]);
             }
         }
 
@@ -745,5 +751,48 @@ class local_sharedresources_renderer extends plugin_renderer_base {
         $template->nativeutf8 = @$data->nativeutf8;
 
         return $this->output->render_from_template('local_sharedresources/confirm_import_form', $template);
+    }
+
+    /**
+     * @params $catpath idencoded path from root to category
+     */
+    public function add_path($catpath, $navigator) {
+        global $SESSION, $DB, $PAGE;
+
+        $courseid = optional_param('course', SITEID, PARAM_INT);
+
+        if (!isset($SESSION->sharedresources)) {
+            $SESSION->sharedresources = new StdClass;
+        }
+
+        if ($SESSION->sharedresources->taxonomy = optional_param('taxonomy', @$SESSION->sharedresources->taxonomy, PARAM_INT)) {
+            $taxoname = $DB->get_field('sharedresource_classif', 'name', array('id' => $SESSION->sharedresources->taxonomy));
+            $params = array('course' => $courseid, 'catpath' => '', 'catid' => 0);
+            $url = null;
+            if (!empty($catpath)) {
+                $url = new moodle_url('/local/sharedresources/browse.php', $params);
+            }
+            $PAGE->navbar->add($taxoname, $url);
+            chop($catpath);
+
+            if (!empty($catpath)) {
+                $pathids = explode('/', $catpath);
+                $path = '';
+                while ($catid = array_shift($pathids)) {
+                    $category = $navigator->get_category($catid);
+                    if (count($pathids) >= 1) {
+                        $path .= $catid.'/';
+                        $params = array('course' => $courseid, 'catpath' => $path, 'catid' => $catid);
+                        $url = null;
+                        if (!empty($pathids)) {
+                            $url = new moodle_url('/local/sharedresources/browse.php', $params);
+                        }
+                        $PAGE->navbar->add($category->name, $url);
+                    } else {
+                        $PAGE->navbar->add($category->name);
+                    }
+                }
+            }
+        }
     }
 }

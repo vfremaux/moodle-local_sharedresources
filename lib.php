@@ -191,8 +191,9 @@ function get_local_resources($repo, &$fullresults, $metadatafilters = '', &$offs
             {sharedresource_entry} se
         $clause
         ORDER BY
-           title
+           score DESC, title
     ";
+
     $sqlcount = "
         SELECT
             COUNT(*)

@@ -25,13 +25,25 @@ require('../../config.php');
 require_once($CFG->dirroot.'/local/sharedresources/classes/navigator.class.php');
 require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
 require_once($CFG->dirroot.'/local/sharedresources/lib.php');
+require_once($CFG->dirroot.'/local/sharedresources/classes/search_widget.class.php');
+
+// DO not rely on moodle classloader.
+if ($searchplugins = glob($CFG->dirroot.'/local/sharedresources/classes/searchwidgets/*')) {
+    foreach ($searchplugins as $sp) {
+        include_once($sp);
+    }
+}
 
 $PAGE->requires->js_call_amd('local_sharedresources/boxview', 'init');
+$PAGE->requires->js_call_amd('local_sharedresources/library', 'init');
 
 $config = get_config('local_sharedresources');
 
 $courseid = optional_param('course', false, PARAM_INT);
 $section = optional_param('section', 0, PARAM_INT);
+$action = optional_param('what', '', PARAM_TEXT);
+$catid = optional_param('catid', '', PARAM_INT);
+$catpath = optional_param('catpath', '', PARAM_RAW);
 
 if ($courseid) {
     if (!$course = $DB->get_record('course', array('id' => $courseid))) {
@@ -63,8 +75,9 @@ if (!empty($config->privatecatalog)) {
     }
 }
 
-$catid = optional_param('catid', '', PARAM_INT);
-$catpath = optional_param('catpath', '', PARAM_RAW);
+if ($action) {
+    include($CFG->dirroot.'/local/sharedresources/library.controller.php');
+}
 
 $strheading = get_string('sharedresourcesindex', 'local_sharedresources');
 
@@ -72,12 +85,12 @@ $url = new moodle_url('/local/sharedresources/browse.php');
 $PAGE->set_url($url);
 $PAGE->set_context(context_system::instance());
 $PAGE->navbar->add($strheading);
-$PAGE->navbar->add(get_string('browse', 'local_sharedresources'));
+// $PAGE->navbar->add(get_string('browse', 'local_sharedresources'));
 $PAGE->requires->jquery();
 $PAGE->requires->jquery_plugin('animatenumber', 'local_sharedresources');
-
 $PAGE->set_heading($strheading);
 $PAGE->set_title($strheading);
+$PAGE->set_pagelayout('course');
 
 $renderer = $PAGE->get_renderer('local_sharedresources');
 
@@ -100,6 +113,29 @@ try {
     die;
 }
 
+/* Search in sharedresources */
+
+if (empty($config->searchblocksposition)) {
+    set_config('searchblocksposition', 'side-pre', 'local_sharedresources');
+    $config->searchblocksposition = 'side-pre';
+}
+
+$visiblewidgets = array();
+sharedresources_setup_widgets($visiblewidgets, $context);
+$searchfields = array();
+$offset = 0;
+$repo = 'local';
+
+$bc = new block_contents();
+$bc->attributes['id'] = 'local_sharedresource_searchblock';
+$bc->attributes['role'] = 'search';
+$bc->attributes['aria-labelledby'] = 'local_sharedresouces_search_title';
+$bc->title = html_writer::span(get_string('searchinlibrary', 'local_sharedresources'), '', array('id' => 'local_sharedresources_search_title'));
+$bc->content = $renderer->search_widgets_tableless($courseid, $repo, $offset, $context, $visiblewidgets, $searchfields);
+$PAGE->blocks->add_fake_block($bc, $config->searchblocksposition);
+
+/* Fltering */
+
 // $classificationfilters = $navigator->get_category_filters();
 
 $i = 0;
@@ -114,6 +150,8 @@ foreach ($classificationfilters as $afilter) {
 }
 */
 $filters = null;
+
+$renderer->add_path($catpath, $navigator);
 
 echo $OUTPUT->header();
 
@@ -148,6 +186,10 @@ if ($catid) {
     $catid = 0;
     $category->cats = $navigator->get_children($catid);
     $category->hassubs = count($category->cats);
+}
+
+if (!empty($category->entries) && !empty($category->cats)) {
+    echo $OUTPUT->heading(get_string('subcategories', 'local_sharedresources'));
 }
 
 echo $renderer->children($category, $catpath);

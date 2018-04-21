@@ -62,6 +62,13 @@ class navigation {
         $this->plugin = sharedresource_get_plugin($this->config->schema);
     }
 
+    public function __get($field) {
+        if (!isset($this->taxonomy->$field)) {
+            throw new \coding_exception("Bad taxonomy attribute $field");
+        }
+        return $this->taxonomy->$field;
+    }
+
     public static function instance_by_id($id) {
         global $DB;
 
@@ -122,9 +129,11 @@ class navigation {
 
     /**
      * get a category given the local category id in the taxonomy
-     *
+     * @param $catid numeric id of the category
+     * @param $catpath slash separated (and terminated) id list of the cat path from root.
+     * @param $filters (for future use)
      */
-    public function get_category($catid, $catpath) {
+    public function get_category($catid, $catpath = null, $filters = array()) {
         global $DB;
 
         if (empty($this->taxonomy)) {
@@ -136,7 +145,9 @@ class navigation {
 
         $category->hassubs = $DB->count_records($this->taxonomy->tablename, array($this->taxonomy->sqlparent => $category->id));
 
-        $category->entries = $this->get_entries($catpath);
+        if (!is_null($catpath)) {
+            $category->entries = $this->get_entries($catpath);
+        }
 
         return $category;
     }
@@ -485,7 +496,7 @@ class navigation {
         // Delete all resource metadata binding related to this token id.
         $this->plugin->unbind_taxon($token->classificationid, $token->id);
 
-        // finally delete the token.
+        // Finally delete the token.
         $DB->delete_records($this->taxonomy->tablename, array('id' => $tokenid));
     }
 }
