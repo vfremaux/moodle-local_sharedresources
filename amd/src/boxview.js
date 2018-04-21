@@ -20,13 +20,11 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 // jshint unused: true, undef:true
-define(['jquery', 'core/config', 'core/log'], function ($, cfg, log) {
+define(['jquery', 'core/log'], function ($, log) {
 
     var libraryboxview = {
 
-        init: function (args) {
-
-            that = this;
+        init: function () {
 
             // Resourceitem hover effect.
             $('.box-resource-images').hover(this.opendesc, this.closedesc);
@@ -38,7 +36,7 @@ define(['jquery', 'core/config', 'core/log'], function ($, cfg, log) {
         opendesc: function (e) {
             var that = $(this);
 
-            // Remove either prefixs.
+            // Remove either prefixes.
             var identifier = that.attr('id').replace('sharedresource-image-', '');
             identifier = identifier.replace('sharedresource-title-', '');
             $('.sharedresource-info-box').css('display', 'none'); // Ensure all is closed.
@@ -46,7 +44,7 @@ define(['jquery', 'core/config', 'core/log'], function ($, cfg, log) {
             $('#sharedresource-info-' + identifier).css('display', 'inline-block');
         },
 
-        closedesc: function (e) {
+        closedesc: function () {
             var that = $(this);
 
             // Remove either prefixs.

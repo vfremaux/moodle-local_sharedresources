@@ -26,8 +26,6 @@ define(['jquery', 'core/config', 'core/log'], function ($, cfg, log) {
 
         init: function (args) {
 
-            that = this;
-
             // Resourceitem hover effect.
             $('.resourceitem').hover(
                 function() {
@@ -45,47 +43,49 @@ define(['jquery', 'core/config', 'core/log'], function ($, cfg, log) {
             log.debug('ADM Shared resource Library JS initialized');
         },
 
-        ajax_mark_like: function (e) {
+        ajax_mark_like: function () {
+
             var identifier = $(this).attr('id').replace('sharedresource-', '');
             var arr = identifier.split('-'); // Has repo-resid form.
             var repoid = arr[0];
             var residentifier = arr[1];
 
-            url = cfg.wwwroot + '/local/sharedresources/ajax/add_liked_mark.php?';
+            var url = cfg.wwwroot + '/local/sharedresources/ajax/add_liked_mark.php?';
             url += 'resid=' + residentifier + '&repo=' + repoid;
 
-            newlike = $.get(url, '', function(data, textStatus) {
+            $.get(url, '', function(data) {
                 $('#sharedresource-likes-' + residentifier).html(sharedresourceslibrary.sharedresource_print_stars(data, 15));
             }, 'html');
         },
 
         sharedresource_print_stars: function (stars, maxstars) {
-            str = '';
 
-            for (i = 0; i < maxstars; i++) {
-                icon = (i < stars) ? 'star' : 'star_shadow';
-                pixicon = cfg.wwwroot + '/local/sharedresources/pix/' + icon + '.png';
+            var str = '';
+
+            for (var i = 0; i < maxstars; i++) {
+                var icon = (i < stars) ? 'star' : 'star_shadow';
+                var pixicon = cfg.wwwroot + '/local/sharedresources/pix/' + icon + '.png';
                 str += '<img src="'+ pixicon + '" />';
             }
             return str;
         },
 
-        toggle_info_panel: function (e) {
+        toggle_info_panel: function () {
 
-            that = $(this);
+            var that = $(this);
 
-            imgid = that.find('img').attr('id');
+            var imgid = that.find('img').attr('id');
 
-            residentifier = imgid.replace('sharedresource-toggle-', '');
+            var residentifier = imgid.replace('sharedresource-toggle-', '');
 
             if ($('#sharedresource-info-' + residentifier).css('display') === 'none') {
                 $('#sharedresource-info-' + residentifier).css('display', 'block');
-                iconsrc = $('#sharedresource-toggle-' + residentifier).attr('src');
+                var iconsrc = $('#sharedresource-toggle-' + residentifier).attr('src');
                 iconsrc = iconsrc.replace('right', 'top');
                 $('#sharedresource-toggle-' + residentifier).attr('src', iconsrc);
             } else {
                 $('#sharedresource-info-' + residentifier).css('display', 'none');
-                iconsrc = $('#sharedresource-toggle-' + residentifier).attr('src');
+                var iconsrc = $('#sharedresource-toggle-' + residentifier).attr('src');
                 iconsrc = iconsrc.replace('top', 'right');
                 $('#sharedresource-toggle-' + residentifier).attr('src', iconsrc);
             }
@@ -96,8 +96,8 @@ define(['jquery', 'core/config', 'core/log'], function ($, cfg, log) {
             var that = $(this);
 
             var matches = that.attr('id').match(/id-(\w+)-(\d+)/);
-            command = matches[1];
-            ix = matches[2];
+            var command = matches[1];
+            var ix = matches[2];
             document.forms['add' + ix].mode.value = command;
             document.forms['add' + ix].submit();
         }

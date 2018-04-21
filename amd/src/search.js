@@ -33,9 +33,9 @@ define(['jquery', 'core/log'], function ($, log) {
 
         toggle: function() {
 
-            that = $(this);
+            var that = $(this);
 
-            key = '#search-widget-' + that.attr('id');
+            var key = '#search-widget-' + that.attr('id');
             if ($(key).css('display') == 'none') {
                 $(key).css('display', '');
             } else {
