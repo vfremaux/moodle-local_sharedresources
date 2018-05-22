@@ -14,22 +14,14 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * Version details.
- *
- * @package     local_sharedresources
- * @category    local
- * @author      Valery Fremaux <valery.fremaux@gmail.com>
- * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL
- */
+namespace local_sharedresources\privacy;
+
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version  = 2018011800;   // The (date) version of this plugin.
-$plugin->requires = 2018042700;   // Requires this Moodle version.
-$plugin->component = 'local_sharedresources';
-$plugin->release = '3.5.0 (Build 2018011800)';
-$plugin->maturity = MATURITY_BETA;
+/**
+ * Sharedresource library has no GRDP concern as shared resources are stored at site
+ * level and are managed on behalf of the librarian administrator.
+ */
 
-// Non moodle attributes.
-$plugin->codeincrement = '3.5.0002';
-$plugin->privacy = 'dualrelease';
+class provider implements \core_privacy\local\metadata\null_provider {
+}
