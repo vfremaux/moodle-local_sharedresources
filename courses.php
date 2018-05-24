@@ -67,11 +67,7 @@ $PAGE->set_heading(get_string('courselist', 'local_sharedresources'));
 $renderer = $PAGE->get_renderer('local_sharedresources');
 
 $entryrec = $DB->get_record('sharedresource_entry', array('id' => $entryid));
-<<<<<<< HEAD
-$courses = resources_get_courses($entryrec);
-=======
 $courses = sharedresources_get_courses($entryrec);
->>>>>>> MOODLE_34_STABLE
 
 echo $OUTPUT->header();
 

@@ -15,22 +15,13 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
-<<<<<<< HEAD
-=======
  * A navigator provides data exploration services for a browser. An instance represents
  * one available taxonomy tree.
  * 
->>>>>>> MOODLE_34_STABLE
  * @package    local_sharedresources
  * @author     Valery Fremaux <valery.fremaux@club-internet.fr>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
  * @copyright  (C) 1999 onwards Martin Dougiamas  http://dougiamas.com
-<<<<<<< HEAD
- *
- */
-namespace local_sharedresources\browser;
-
-=======
  */
 namespace local_sharedresources\browser;
 
@@ -42,29 +33,10 @@ if (mod_sharedresource_supports_feature('taxonomy/accessctl')) {
 use \StdClass;
 use \coding_exception;
 
->>>>>>> MOODLE_34_STABLE
 defined('MOODLE_INTERNAL') or die();
 
 class navigation {
 
-<<<<<<< HEAD
-    protected $config;
-
-    protected $plugin;
-
-    function __construct() {
-        $this->config = get_config('sharedresource');
-
-        $this->plugin = sharedresource_get_plugin($this->config->schema);
-
-    }
-
-    function get_category_filters() {
-        return array();
-    }
-
-    function get_filter_modalities($filter) {
-=======
     // Sharedresouce configuration.
     protected $config;
 
@@ -90,6 +62,13 @@ class navigation {
         $this->plugin = sharedresource_get_plugin($this->config->schema);
     }
 
+    public function __get($field) {
+        if (!isset($this->taxonomy->$field)) {
+            throw new \coding_exception("Bad taxonomy attribute $field");
+        }
+        return $this->taxonomy->$field;
+    }
+
     public static function instance_by_id($id) {
         global $DB;
 
@@ -112,19 +91,11 @@ class navigation {
     }
 
     public function get_filter_modalities($filter) {
->>>>>>> MOODLE_34_STABLE
         return array();
     }
 
     /**
      * Get the available taxonomies.
-<<<<<<< HEAD
-     * Taxonomies are dynamically detected from distinct instances of the 
-     *
-     */
-    function get_taxonomies() {
-        
-=======
      * Taxonomies are dynamically detected from distinct instances of the sharedresource_classif descriptor.
      * @param boolean $enabled
      * @return array of classif records.
@@ -154,37 +125,15 @@ class navigation {
         }
 
         return $DB->get_records_menu('sharedresource_classif', $params, 'name', 'id,name');
->>>>>>> MOODLE_34_STABLE
     }
 
     /**
      * get a category given the local category id in the taxonomy
-     *
+     * @param $catid numeric id of the category
+     * @param $catpath slash separated (and terminated) id list of the cat path from root.
+     * @param $filters (for future use)
      */
-<<<<<<< HEAD
-    function get_category($catid) {
-        global $DB;
-
-        return $DB->get_record('sharedresource_taxonomy', array('id' => $catid));
-    }
-
-    /**
-     * Counts the total number of entries recusrsively in the subtree.
-     * @param int $catid
-     */
-    function count_entries_rec($catid) {
-        global $DB;
-
-        $config = get_config('local_sharedresources');
-        $shrconfig = get_config('sharedresource');
-
-        $plugins = sharedresource_get_plugins();
-        $plugin = $plugins[$shrconfig->schema];
-        $element = $plugin->getTaxonomyValueElement();
-
-        $count = $DB->count_records('sharedresource_metadata', array('element' => $element->node.':0_0_0_0', 'namespace' => $element->source));
-=======
-    public function get_category($catid, $catpath) {
+    public function get_category($catid, $catpath = null, $filters = array()) {
         global $DB;
 
         if (empty($this->taxonomy)) {
@@ -196,7 +145,9 @@ class navigation {
 
         $category->hassubs = $DB->count_records($this->taxonomy->tablename, array($this->taxonomy->sqlparent => $category->id));
 
-        $category->entries = $this->get_entries($catpath);
+        if (!is_null($catpath)) {
+            $category->entries = $this->get_entries($catpath);
+        }
 
         return $category;
     }
@@ -369,16 +320,10 @@ class navigation {
 
         $params = array('element' => $elementnode.':0_0_0_0', 'namespace' => $shrconfig->schema, 'value' => $catpath);
         $count = $DB->count_records('sharedresource_metadata', $params);
->>>>>>> MOODLE_34_STABLE
 
         $children = $this->get_children($catid);
         if ($children) {
             foreach ($children as $ch) {
-<<<<<<< HEAD
-                $count += $this->count_entries_rec($ch);
-            }
-        }
-=======
                 $chpath = $catpath.$ch->id.'/';
                 $count += $this->count_entries_rec($chpath);
             }
@@ -418,40 +363,25 @@ class navigation {
         $resources = $DB->get_records_sql($sql, array($elementnode.':0_0_0_0', $shrconfig->schema, $catid));
 
         return $resources;
->>>>>>> MOODLE_34_STABLE
     }
 
     /**
      * Get children of a category
-<<<<<<< HEAD
-     */
-    function get_children(&$categoryorid) {
-        global $DB;
-=======
      * @param mixed $categoryorid the parent category or category id.
      * @return array of categories.
      */
     public function get_children(&$categoryorid) {
         global $DB;
         static $childrensets = array();
->>>>>>> MOODLE_34_STABLE
 
         $config = get_config('sharedresource');
 
         if (is_object($categoryorid)) {
-<<<<<<< HEAD
-            $catid = $category->id;
-=======
             $catid = $categoryorid->id;
->>>>>>> MOODLE_34_STABLE
         } else {
             $catid = $categoryorid;
         }
 
-<<<<<<< HEAD
-        $children = $DB->get_records('sharedresource_taxonomy', array('parent' => $catid), 'sortorder');
-        return $children;
-=======
         if (array_key_exists($catid, $childrensets)) {
             return $childrensets[$catid];
         }
@@ -566,8 +496,7 @@ class navigation {
         // Delete all resource metadata binding related to this token id.
         $this->plugin->unbind_taxon($token->classificationid, $token->id);
 
-        // finally delete the token.
+        // Finally delete the token.
         $DB->delete_records($this->taxonomy->tablename, array('id' => $tokenid));
->>>>>>> MOODLE_34_STABLE
     }
 }

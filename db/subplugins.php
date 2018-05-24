@@ -1,8 +1,4 @@
 <?php
-<<<<<<< HEAD
-
-$subplugins = array('sharedresourceprovider'  => 'local/sharedresources/plugins');
-=======
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -27,4 +23,3 @@ $subplugins = array('sharedresourceprovider'  => 'local/sharedresources/plugins'
 defined('MOODLE_INTERNAL') || die();
 
 $subplugins = array('sharedresourceprovider' => 'local/sharedresources/plugins');
->>>>>>> MOODLE_33_STABLE

@@ -1,7 +1,4 @@
 <?php
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -16,7 +13,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
->>>>>>> MOODLE_34_STABLE
 
 /**
  * @package    local_sharedresources
@@ -36,50 +32,14 @@ $string['browser'] = 'Explorateur de taxonomie';
 $string['choosetaxonomy'] = 'Volume documentaire&nbsp;:&ensp;';
 $string['cleaneverything'] = 'Vider la librairie (dangereux!)';
 $string['clinonexistingcontext'] = 'Erreur : Contexte inexistant';
-<<<<<<< HEAD
-$string['configdefaulttaxonomypurposeonimport'] = 'L\'objet de la taxonomie définit pour quoi cette taxonomie est utilisée. Certains schémas de métadonnées autorisent la classification des ressources selon plusieurs taxonomies avec des objectifs différents.';
-$string['confirm'] = 'Confirmer';
-$string['deducetaxonomyfrompath'] = 'Déduire la taxonomie du chemin';
-$string['deducetaxonomyfrompath_help'] = 'Si coché, le chemin relatif de la ressoure importée servira de base à l\'alimentation de la taxonomie.';
-$string['defaulttaxonomypurposeonimport'] = 'Objet de la taxonomie par défaut';
-=======
-// This file is part of Moodle - http://moodle.org/
-//
-// Moodle is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// Moodle is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
-
-$string['adminrepository'] = 'Administrer la librairie';
-$string['backtocourse'] = 'Revenir au cours';
-$string['backtoindex'] = 'Revenir à l\'index';
-$string['browse'] = 'Explorer par catégories';
-$string['browser'] = 'Explorateur de taxonomie';
-$string['clinonexistingcontext'] = 'Erreur : Contexte inexistant';
-$string['clinonexistingpath'] = 'Erreur : Chemin inexistant';
-$string['configdefaulttaxonomypurposeonimport'] = 'Objet de la taxonomie par défaut';
-$string['confignotfound'] = 'Fichier de configuration introuvable';
-$string['configprivatecatalog'] = 'Catalogue privé';
-$string['confirm'] = 'Confirmer';
-$string['deducetaxonomyfrompath'] = 'Déduire la taxonomie du chemin';
-$string['configdefaultlibraryindexpage'] = 'Page d\'arrivée de la librairie par défaut';
->>>>>>> MOODLE_33_STABLE
-$string['doresetvolume'] = 'Réinitialiser';
-=======
 $string['clinonexistingpath'] = 'Erreur : Chemin inexistant';
 $string['configdefaultlibraryindexpage'] = 'Page d\'arrivée de la librairie par défaut';
 $string['configdefaulttaxonomyonimport'] = 'Objet de la taxonomie par défaut';
 $string['configdefaulttaxonomypurposeonedit'] = 'Objet de la taxonomie par défaut';
+$string['confighidesocial'] = 'Cacher les indicateurs sociaux&nbsp;';
 $string['configlistviewthreshold'] = 'Affichage en liste';
 $string['confignotfound'] = 'Fichier de configuration introuvable';
+$string['configprohdr'] = 'Fonctionnalités "pro" additionnelles';
 $string['configprivatecatalog'] = 'Catalogue privé';
 $string['configsearchblocksposition'] = 'Position des blocs de recherche';
 $string['convertresources'] = 'Convertir des ressources';
@@ -94,90 +54,49 @@ $string['emulatecommunity_desc'] = 'Bascule le code sur la version communautaire
 $string['encoding'] = 'Encodage des fichiers de métadonnées';
 $string['endswith'] = 'finit par';
 $string['equalto'] = 'est égal à';
->>>>>>> MOODLE_34_STABLE
 $string['errorinvalidresource'] = 'Resource invalide';
 $string['errorinvalidresourceid'] = 'Identifiant de ressource inconnu';
 $string['errormnetpeer'] = 'Erreur d\'initialisation du client MNET';
 $string['errornotadir'] = 'Le répertoire d\'import n\'existe pas ou n\'est pas accessible';
 $string['errornotwritable'] = 'Le répertoire d\'import n\'est pas accessible en écriture. Modifiez les droits de ce répertoire avant d\'importer.';
 $string['exclusionpattern'] = 'Motif d\'exclusion';
-<<<<<<< HEAD
-<<<<<<< HEAD
-$string['exclusionpattern_help'] = 'Les noms de fichier correpondant à ce motif seront ignorés. Le motif admet des jokers simples (ex. "*.jpg" ignorera les fichiers JPEG)';
-$string['filestoimport'] = 'Fichiers à importer de : {$a}';
-=======
 $string['filestoimport'] = 'Fichiers à importer de&nbsp;: {$a}';
->>>>>>> MOODLE_34_STABLE
 $string['forcedelete'] = 'Forcer la suppression (même si utilisé)';
 $string['importpath'] = 'Chemin à importer';
 $string['importvolume'] = 'Importer des documents';
 $string['installltitool'] = 'Installer comme outil externe';
-<<<<<<< HEAD
-$string['keywords'] = 'Mots-clefs : ';
-$string['liked'] = 'Appréciée : {$a}';
-=======
-$string['filestoimport'] = 'Fichiers à importer de : {$a}';
-$string['forcedelete'] = 'Forcer la suppression (même si utilisé)';
-$string['importpath'] = 'Chemin à importer';
-$string['importvolume'] = 'Importer des documents';
-$string['installltitool'] = 'Installer comme outil externe';
-<<<<<<< HEAD
-$string['keywords'] = 'Mots-clefs : ';
-$string['library'] = 'Librairie';
-$string['liked'] = 'Appréciée : ';
->>>>>>> MOODLE_33_STABLE
-$string['markliked'] = 'J\'aime ça !';
-=======
-$string['keywords'] = 'Mots-clefs&nbsp;: ';
-=======
 $string['ishiddenbyrule'] = 'Cette ressource est mutualisée dans un contexte restreint. Vous n\'avez pas les droits suffisants pour la télécharger.';
 $string['keywords'] = 'Mots-clefs&nbsp;:&ensp;';
->>>>>>> MOODLE_34_STABLE
 $string['library'] = 'Librairie';
 $string['librarian'] = 'Documentaliste';
+$string['licenseprovider'] = 'Fournisseur version Pro';
+$string['licenseprovider_desc'] = 'Entrez la clef de votre distributeur.';
+$string['licensekey'] = 'Clef de license pro';
+$string['licensekey_desc'] = 'Entrez ici la clef de produit que vous avez reçu de votre distributeur.';
 $string['liked'] = 'Appréciée&nbsp;:&ensp;';
 $string['listviewalways'] = 'Toujours en liste';
 $string['makelabelsfromguidance'] = 'Créer les étiquettes de guidances';
 $string['markliked'] = 'J\'aime&nbsp;!';
->>>>>>> MOODLE_34_STABLE
 $string['massimport'] = 'Importer massivement';
 $string['newresource'] = 'Ajouter une ressource';
 $string['noclassificationenabled'] = 'Aucune taxonomie de ressources n\'a été activée sur ce site. L\'administrateur des ressources devrait définir ou importer des taxonomies, ou désactiver l\'usage du navigateur de taxonomies.';
 $string['noentries'] = '<p>Aucune ressource dans cette librairie</p>';
 $string['noaccess'] = 'vous n\'avez pas les permissions requises pour utiliser ce service.';
 $string['noresources'] = '<p>Aucune ressource locale dans cette librairie</p>';
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-$string['notused'] = 'Jamais utilisée dans ce site';
->>>>>>> MOODLE_33_STABLE
-$string['pluginname'] = 'Librairie de ressources';
-=======
+$string['noresourceshere'] = '</p>Aucune ressource à ce niveau de classement</p>';
 $string['notused'] = 'Jamais utilisée dans ce site';
 $string['plugindist'] = 'Distribution du plugin';
 $string['pluginname'] = 'Librairie de ressources';
 $string['purposediscriminator'] = 'Objectif spécifique de la taxonomie';
->>>>>>> MOODLE_34_STABLE
 $string['reinitialized'] = '{$a} fichiers rétablis';
 $string['relocalize'] = 'Relocaliser';
+$string['reset'] = 'Réinitialiser';
 $string['resetvolume'] = 'Réinitialiser le volume pour l\'import';
 $string['resourceimport'] = 'Importation de ressources';
 $string['resources'] = 'Ressources';
 $string['resourcesadministration'] = 'Administration des ressources';
 $string['resourceconversion'] = 'Convertir des ressources';
 $string['resourcespushout'] = 'Exporter vers un fournisseur de ressources';
-<<<<<<< HEAD
-<<<<<<< HEAD
-$string['sharedresources_library'] = 'Librairie partagée';
-=======
-$string['rpcsharedresourceerror'] = 'Erreur RPC mod/sharedresource/get_list:<br/>{$a}';
-$string['sharedresources_library'] = 'Librairie partagée';
-$string['sharedresourcesindex'] = 'Librairie de ressources';
-$string['searchinlibrary'] = 'Chercher dans la librairie';
-$string['searchengine'] = 'Moteur de recherche';
-$string['textsearch'] = 'Recherche texte';
->>>>>>> MOODLE_33_STABLE
-=======
 $string['rpcsharedresourceerror'] = 'Erreur RPC mod/sharedresource/get_list:<br/>{$a}';
 $string['searchengine'] = 'Moteur de recherche';
 $string['searchinlibrary'] = 'Chercher dans la librairie';
@@ -185,16 +104,14 @@ $string['sharedresources_library'] = 'Librairie partagée';
 $string['sharedresourcesindex'] = 'Librairie de ressources';
 $string['simulate'] = 'Simuler';
 $string['startswith'] = 'commence par';
+$string['subcategories'] = 'Sous-categories';
 $string['taxonomy'] = 'Taxonomie';
 $string['textsearch'] = 'Recherche texte';
-<<<<<<< HEAD
->>>>>>> MOODLE_34_STABLE
-=======
 $string['toleft'] = 'A gauche';
 $string['toright'] = 'A droite';
->>>>>>> MOODLE_34_STABLE
 $string['topkeywords'] = 'Mots-clefs principaux';
 $string['updateresourcespageoff'] = 'Mode normal';
+$string['up'] = 'Remonter d\'un niveau';
 $string['updateresourcespageon'] = 'Mode édition';
 $string['used'] = 'Utilisée&nbsp;: {$a}';
 $string['useimportpath'] = 'Téléverser une archive';
@@ -211,33 +128,6 @@ $string['configprivatecatalog_desc'] = 'Si coché, toute la librairie mutualisé
 et les ressources ne peuvent être accédées de l\'extérieur. Les index ne sont alors pas moissonables à travers le
 service OAI';
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-$string['resetvolume_help'] = 'Les fichiers traités sont marqués par le préfixe "__" pour permettre une reprise partielle du traitement en cas de limite mémoire ou physique. 
-=======
-$string['resetvolume_help'] = 'Les fichiers traités sont marqués par le préfixe "__" pour permettre une
-reprise partielle du traitement en cas de limite mémoire ou physique.
->>>>>>> MOODLE_34_STABLE
-Vous pouvez complétement réinitialiser le volume de fichiers à importer avec cette option.';
-
-$string['importpath_help'] = '
-Le chemin peut indiquer n\'importe quel répertoire dans le système de fichier local du serveur.
-Les fichiers devront avoir été préalablement téléchargés par un administrateur.
-L\'ensemble des répertoires sera parcouru et tous les fichiers qui s\'y trouvent seront indexés. Si un fichier "metadata.csv"
-est présent, alors les métadonnées de base seront alimentées à partir de ce fichier, pour chaque entrée correspondant à un
-fichier physique. Ce fichier ne sera évidemment pas indexé.
-';
-
-<<<<<<< HEAD
-=======
-$string['configdefaulttaxonomypurposeonimport_desc'] = 'L\'objet de la taxonomie définit pour quoi
-cette taxonomie est utilisée. Certains schémas de métadonnées autorisent la classification des ressources
-selon plusieurs taxonomies avec des objectifs différents.';
-
-$string['configprivatecatalog_desc'] = 'Si coché, toute la librairie mutualisée est totalement privée
-et les ressources ne peuvent être accédées de l\'extérieur. Les index ne sont alors pas moissonables à travers le
-service OAI';
-
 $string['resetvolume_help'] = 'Les fichiers traités sont marqués par le préfixe "__" pour permettre une
 reprise partielle du traitement en cas de limite mémoire ou physique.
 Vous pouvez complétement réinitialiser le volume de fichiers à importer avec cette option.';
@@ -250,19 +140,10 @@ est présent, alors les métadonnées de base seront alimentées à partir de ce
 fichier physique. Ce fichier ne sera évidemment pas indexé.
 ';
 
-=======
->>>>>>> MOODLE_34_STABLE
 $string['exclusionpattern_help'] = 'Les noms de fichier correpondant à ce motif seront ignorés. Le motif admet des jokers simples
 (ex. "*.jpg" ignorera les fichiers JPEG)';
 
 $string['deducetaxonomyfrompath_help'] = 'Si coché, le chemin relatif de la ressoure importée servira de base à l\'alimentation
-<<<<<<< HEAD
-de la taxonomie. L^\'organisation hiérarchique de la taxonomie produite sera le reflet de l\'organisation physique du
-répertoire d\'import.';
-
-$string['configdefaultlibraryindexpage_desc'] = 'Le choix des pages par défaut de la librairie peut dépendre de la norme de métadonnée activée.';
->>>>>>> MOODLE_33_STABLE
-=======
 de la taxonomie. L\'organisation hiérarchique de la taxonomie produite sera le reflet de l\'organisation physique du
 répertoire d\'import.';
 
@@ -294,16 +175,9 @@ sous certaines conditions, afin de soutenir l\'effort de développement, amélio
 <p><a href="http://www.mylearningfactory.com/index.php/documentation/Distributeurs?lang=fr_utf8">Distributeurs MyLF</a></p>';
 
 $string['configlistviewthreshold_desc'] = 'Nombre de ressources du résultat pour passer en affichage de liste.';
-<<<<<<< HEAD
->>>>>>> MOODLE_34_STABLE
-=======
 
 $string['librarian_desc'] = 'Les documentalistes peuvent gérer la librairie de ressource, modifier les description, supprimer
 et ajouter les ressources. Ils deviennent de facto les repsonsables de toutes les ressources mutualisées dans la librairie,
 quelle que soit leur origine.';
-<<<<<<< HEAD
->>>>>>> MOODLE_34_STABLE
-=======
 
 $string['configsearchblocksposition_desc'] = '';
->>>>>>> MOODLE_34_STABLE

@@ -1,15 +1,4 @@
 <?php
-<<<<<<< HEAD
-
-/**
-* include wrapper for /mod/cndpindexing
-*
-*/
-
-include $CFG->dirroot.'/mod/cndpindexing/remotesearch.php';
-
-?>
-=======
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -35,7 +24,3 @@ include $CFG->dirroot.'/mod/cndpindexing/remotesearch.php';
 defined('MOODLE_INTERNAL') || die();
 
 include($CFG->dirroot.'/mod/cndpindexing/remotesearch.php');
-<<<<<<< HEAD
->>>>>>> MOODLE_33_STABLE
-=======
->>>>>>> MOODLE_34_STABLE

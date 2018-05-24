@@ -1,21 +1,4 @@
 <?php
-<<<<<<< HEAD
-/**
-	 *
-	 * @author  Frédéric GUILLOU
-	 * @version 0.0.1
-	 * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resource
-	 * @package sharedresource
-	 *
-	 */
-
-		// This php script is called using ajax
-		// It display a page of resources
-		//-----------------------------------------------------------
-
-require_once("../config.php");
-require_once('lib.php');
-=======
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -42,7 +25,6 @@ require_once('lib.php');
  */
 require('../../../config.php');
 require_once($CFG->dirroot.'/local/sharedresources/lib.php');
->>>>>>> MOODLE_33_STABLE
 
 $page = required_param('page', PARAM_INT);
 $numpage = required_param('numpage', PARAM_INT);
@@ -50,17 +32,10 @@ $isediting = required_param('isediting', PARAM_TEXT);
 $courseid = required_param('courseid', PARAM_INT);
 $repo = required_param('repo', PARAM_TEXT);
 
-<<<<<<< HEAD
-if ($courseid){
-	$course = get_record('course', 'id', $courseid);
-} else {
-	$course = null;
-=======
 if ($courseid) {
     $course = $DB->get_record('course', array('id' => $courseid));
 } else {
     $course = null;
->>>>>>> MOODLE_33_STABLE
 }
 
 $resources = $SESSION->resourceresult;
@@ -69,19 +44,6 @@ $i = 1;
 $beginprint = (($numpage - 1) * $page) + 1;
 $endprint = $beginprint + $page;
 
-<<<<<<< HEAD
-foreach($resources as $id => $value){
-	if($i >= $beginprint && $i < $endprint){
-		if(count($tempresources) < $page){
-			$tempresources[$id] = $value;
-		}
-	}
-	$i++;
-}
-resources_browse_print_list($tempresources, $course, $isediting, $repo);
-
-?>
-=======
 foreach ($resources as $id => $value) {
     if ($i >= $beginprint && $i < $endprint) {
         if (count($tempresources) < $page) {
@@ -91,4 +53,3 @@ foreach ($resources as $id => $value) {
     $i++;
 }
 resources_browse_print_list($tempresources, $course, $isediting, $repo);
->>>>>>> MOODLE_33_STABLE

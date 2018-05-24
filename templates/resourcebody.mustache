@@ -15,11 +15,7 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-<<<<<<< HEAD
-    @template local_sharedresource/resourcebody
-=======
     @template local_sharedresources/resourcebody
->>>>>>> MOODLE_34_STABLE
 
     Used when a resource is setup as popuped but accessed directly
 
@@ -28,86 +24,61 @@
 
 }}
 <!-- resourcebody -->
-<div class="resource-item">
+<table class="sharedresource-item">
 
-<<<<<<< HEAD
-<div class="sharedresource-heading">
-=======
-<div class="sharedresource-heading {{ishiddenbyrule}}">
->>>>>>> MOODLE_34_STABLE
-    <div class="resource-download">
-        <a href="{{url}}" target="_blank"><img src="{{downloadpixurl}}" /></a>
-    </div>
+    <tr class="sharedresource-line {{ishiddenbyrule}}">
+        <td class="resource-cell resource-title" width="70%">
+            <img id="sharedresource-toggle-{{identifier}}" class="sharedresource-toggle-handle" src="{{handlepixurl}}">
 
-    <div class="resource-title">
-        <h3 class="title"><img src="{{pixurl}}" class="iconlarge" /> {{title}} {{{editioncommands}}}</h3>
-    </div>
-</div>
+            <img src="{{pixurl}}" class="iconlarge" /> <a href="{{url}}" target="_blank">{{title}}</a>
+        </td>
 
-{{{noticepopupactionlink}}}
-<br/>
+        <td class="resource-cell resource-download" width="10%">
+            <!-- a href="{{url}}" target="_blank"><img src="{{downloadpixurl}}" class="iconlarge" /> </a -->
+        </td>
 
-<div class="sharedresource-info">
-<<<<<<< HEAD
-    <a class="sharedressource-toggle-handle"><img id="sharedresource-toggle-{{identifier}}" src="{{handlepixurl}}"></a>
+        <td class="resource-cell resource-commands" width="20%">
+            {{{editioncommands}}}
+        </td>
+    </tr>
 
-    {{^uses}}
-    <div class="resource-usage">{{notusedstr}}</div>
-    {{/uses}}
-    {{#uses}}
-    <div class="resource-usage"><a href="{{courselisturl}}">{{used}}</a></div>
-    {{/uses}}
+    <tr class="sharedresource-user-control {{ishiddenbyrule}}">
+        <td colspan="3"><div class="resource-user-controls">{{{noticepopupactionlink}}} {{{rescommands}}}</div></td>
+    </tr>
 
-    <div class="resource-views">{{viewedstr}}</div>
+    <tr class="sharedresource-info {{ishiddenbyrule}}">
+        <td colspan="3">
+            {{^hidesocial}}
+            <div class="generalbox resource-social" id="sharedresource-social-{{identifier}}" style="display:none">
+                {{^uses}}
+                <div class="resource-usage">{{{notusedstr}}}</div>
+                {{/uses}}
+                {{#uses}}
+                <div class="resource-usage"><a href="{{courselisturl}}">{{{used}}}</a></div>
+                {{/uses}}
 
-    <div class="resource-likes">
-       {{likedstr}}
-       <span id="sharedresource-likes-{{identifier}}">
-       {{{stars}}}
-       </span>
-        <a class="sharedresource-mark-like" id="sharedresource-{{identifier}}">{{marklikedstr}}</a>
-=======
-    <a class="sharedresource-toggle-handle"><img id="sharedresource-toggle-{{identifier}}" src="{{handlepixurl}}"></a>
+                <div class="resource-views">{{{viewedstr}}}</div>
 
-    {{^uses}}
-    <div class="resource-usage">{{{notusedstr}}}</div>
-    {{/uses}}
-    {{#uses}}
-    <div class="resource-usage"><a href="{{courselisturl}}">{{{used}}}</a></div>
-    {{/uses}}
+                <div class="resource-likes">
+                   <span id="sharedresource-likes-{{identifier}}">
+                   {{{stars}}}
+                   </span>
+                    <a class="sharedresource-mark-like" id="sharedresource-{{repoid}}-{{identifier}}">{{{marklikedstr}}}</a>
+                </div>
+            </div>
+            {{/hidesocial}}
 
-    <div class="resource-views">{{{viewedstr}}}</div>
+            <div class="generalbox resource-info" id="sharedresource-info-{{identifier}}" style="display:none">
+            {{#description}}
+                <div class="sharedresources-description">
+                    <div class="resource-thumbnail">{{{thumbnail}}}</div>
+                    <div class="resource-description">{{{description}}}</div>
 
-    <div class="resource-likes">
-       <span id="sharedresource-likes-{{identifier}}">
-       {{{stars}}}
-       </span>
-        <a class="sharedresource-mark-like" id="sharedresource-{{repoid}}-{{identifier}}">{{{marklikedstr}}}</a>
->>>>>>> MOODLE_34_STABLE
-    </div>
-
-</div>
-
-<div class="generalbox resource-info" id="sharedresource-info-{{identifier}}" style="display:none">
-{{#description}}
-<<<<<<< HEAD
-    <div class="sharedresource-description">
-        <div class="resource-thumbnail">{{{thumbnail}}}</div>
-        <div class="resource-description">{{{description}}}</div>
-
-        <div class="smalltext">{{keywordsstr}}: <b>{{keywords}}</b></div>
-=======
-    <div class="sharedresources-description">
-        <div class="resource-thumbnail">{{{thumbnail}}}</div>
-        <div class="resource-description">{{{description}}}</div>
-
-        <div class="smalltext resource-keywords">{{keywordsstr}}: <b>{{keywords}}</b></div>
->>>>>>> MOODLE_34_STABLE
-    </div>
-{{/description}}
-</div>
-
-{{{rescommands}}}
-
-</div>
+                    <div class="smalltext resource-keywords">{{keywordsstr}}: <b>{{keywords}}</b></div>
+                </div>
+            {{/description}}
+            </div>
+        </td>
+    </tr>
+</table>
 <!-- /resourcebody -->

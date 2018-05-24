@@ -8,63 +8,6 @@
 // all records
 // the useless condition id_column = id_column is just there to ease
 // further extensions to the query, please leave it as it is.
-<<<<<<< HEAD
-function selectAllQuery ($id = ''){
-	global $CFG;
-
-	if ($id == '') {
-		$identityClause = 'id = id';
-	} else {
-		$identityClause  = " identifier = '$id' ";
-	}
-	
-	$validityClause = ' AND isvalid = 1';
-	$validityClause = '';
-
-	$sql = "
-	    SELECT 
-	        *,
-	        title as shortname,
-	        timemodified as datestamp,
-	        identifier as oaiid,
-	        'sharedresources' as `set`
-	    FROM 
-	        {sharedresource_entry}
-	    WHERE 
-	        $identityClause
-	        $validityClause
-	";
-
-	return $sql;
-}
-
-// this function will return identifier and datestamp for all records
-function idQuery ($id = ''){
-	global $CFG;
-	global $OAI;
-
-	if ($id == '') {
-		$identityClause = 'id = id';
-	} else {
-		$identityClause = " identifier = '$id' ";
-	}
-
-	$validityClause = ' AND isvalid = 1';
-
-	$sql = "
-	    SELECT 
-	        identifier as oaiid,
-	        timemodified as datestamp,
-	        'sharedresources' as `set`
-	    FROM 
-	        {sharedresource_entry}
-	    WHERE 
-	        $identityClause
-	        $validityClause
-	";
-
-	return $sql;
-=======
 function selectAllQuery ($id = '') {
     global $CFG;
 
@@ -120,7 +63,6 @@ function idQuery ($id = '') {
     ";
 
     return $sql;
->>>>>>> MOODLE_33_STABLE
 }
 
 // filter for until
@@ -128,21 +70,6 @@ function untilQuery($until) {
     global $OAI;
     
     $until = datestamp2unix($OAI->until);
-<<<<<<< HEAD
-	return " AND timemodified <= '$until' ";
-}
-
-// filter for from
-function fromQuery($from){
-    global $OAI;
-
-    $from = datestamp2unix($OAI->from);
-	return " AND timemodified >= '$from' ";
-}
-
-// filter for sets
-function setQuery($set){
-=======
     return " AND timemodified <= '$until' ";
 }
 
@@ -156,7 +83,6 @@ function fromQuery($from) {
 
 // filter for sets
 function setQuery($set) {
->>>>>>> MOODLE_33_STABLE
     global $OAI;
 
     return '';
@@ -165,14 +91,6 @@ function setQuery($set) {
 /**
 * tels if
 */
-<<<<<<< HEAD
-function isDeleted($id){
-    return false;
-}
-
-?>
-=======
 function isDeleted($id) {
     return false;
 }
->>>>>>> MOODLE_33_STABLE

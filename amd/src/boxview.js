@@ -24,9 +24,7 @@ define(['jquery', 'core/config', 'core/log'], function ($, cfg, log) {
 
     var libraryboxview = {
 
-        init: function (args) {
-
-            that = this;
+        init: function () {
 
             // Resourceitem hover effect.
             $('.box-resource-images').hover(this.opendesc, this.closedesc);
@@ -35,18 +33,22 @@ define(['jquery', 'core/config', 'core/log'], function ($, cfg, log) {
             log.debug('ADM Shared resource Library JS initialized');
         },
 
-        opendesc: function (e) {
+        opendesc: function () {
             var that = $(this);
 
             // Remove either prefixs.
             var identifier = that.attr('id').replace('sharedresource-image-', '');
             identifier = identifier.replace('sharedresource-title-', '');
             $('.sharedresource-info-box').css('display', 'none'); // Ensure all is closed.
-            $('#sharedresource-info-' + identifier).css({'top':e.pageY,'left':e.pageX}).fadeIn('fast');
+            var imageleft = that.css('left');
+            // var imagebottom = that.css('top') + that.css('height');
+            var popupleft = imageleft - 20;
+            // var popupbottom = imagebottom + 20;
+            $('#sharedresource-info-' + identifier).css({'top':imageleft,'left':popupleft}).fadeIn('fast');
             $('#sharedresource-info-' + identifier).css('display', 'inline-block');
         },
 
-        closedesc: function (e) {
+        closedesc: function () {
             var that = $(this);
 
             // Remove either prefixs.

@@ -41,11 +41,7 @@
  - the encoding your data is stored (all below DATABASE SETUP)
 */
 
-<<<<<<< HEAD
-// To install, test and debug use this	
-=======
 // To install, test and debug use this    
->>>>>>> MOODLE_33_STABLE
 // If set to TRUE, will die and display query and database error message
 // as soon as there is a problem. Do not set this to TRUE on a production site,
 // since it will show error messages to everybody.
@@ -65,25 +61,12 @@ $MY_URI = 'http://'.$_SERVER['SERVER_NAME'].$_SERVER['SCRIPT_NAME'];
 
 // MUST (only one)
 $repositoryName       = $SITE->fullname;
-<<<<<<< HEAD
-$baseURL			  = $CFG->wwwroot.'/local/sharedresources/oai/oai2.php';
-=======
 $baseURL              = $CFG->wwwroot.'/local/sharedresources/oai/oai2.php';
->>>>>>> MOODLE_33_STABLE
 
 // do not change
 $protocolVersion      = '2.0';
 
 // How your repository handles deletions
-<<<<<<< HEAD
-// no: 			The repository does not maintain status about deletions.
-//				It MUST NOT reveal a deleted status.
-// persistent:	The repository persistently keeps track about deletions 
-//				with no time limit. It MUST consistently reveal the status
-//				of a deleted record over time.
-// transient:   The repository does not guarantee that a list of deletions is 
-//				maintained. It MAY reveal a deleted status for records.
-=======
 // no:             The repository does not maintain status about deletions.
 //                It MUST NOT reveal a deleted status.
 // persistent:    The repository persistently keeps track about deletions 
@@ -91,7 +74,6 @@ $protocolVersion      = '2.0';
 //                of a deleted record over time.
 // transient:   The repository does not guarantee that a list of deletions is 
 //                maintained. It MAY reveal a deleted status for records.
->>>>>>> MOODLE_33_STABLE
 // 
 // If your database keeps track of deleted records change accordingly.
 // Currently if $record['deleted'] is set to 'true', $status_deleted is set.
@@ -113,19 +95,11 @@ $earliestDatestamp    = '2008-01-01';
 // this is appended if your granularity is seconds.
 // do not change
 if ($granularity == 'YYYY-MM-DDThh:mm:ssZ') {
-<<<<<<< HEAD
-	$earliestDatestamp .= 'T00:00:00.00Z';
-}
-
-// MUST (multiple)
-$adminEmail			= $CFG->supportemail; 
-=======
     $earliestDatestamp .= 'T00:00:00.00Z';
 }
 
 // MUST (multiple)
 $adminEmail            = $CFG->supportemail; 
->>>>>>> MOODLE_33_STABLE
 
 // MAY (multiple) 
 // Comment out, if you do not want to use it.
@@ -133,19 +107,11 @@ $adminEmail            = $CFG->supportemail;
 // and php compiled with libgz). 
 // The client MUST send "Accept-Encoding: gzip" to actually receive 
 // compressed output.
-<<<<<<< HEAD
-$compression		= array('gzip');
-
-// MUST (only one)
-// should not be changed
-$delimiter			= ':';
-=======
 $compression        = array('gzip');
 
 // MUST (only one)
 // should not be changed
 $delimiter            = ':';
->>>>>>> MOODLE_33_STABLE
 
 // MUST (only one)
 // You may choose any name, but for repositories to comply with the oai 
@@ -184,15 +150,6 @@ $expirationdatetime = gmstrftime('%Y-%m-%dT%TZ', time()+$tokenValid);
 
 // define all supported sets in your repository
 $SETS = array (
-<<<<<<< HEAD
-				array('setSpec'=>'sharedresources', 
-				      'setName'=>'Shared Resources', 
-				      'setDescription'=>'Resources from Shared Resource plug-in'),
-				/* array('setSpec'=>'globalsearch', 
-				      'setName'=>'Global Search Index', 
-				      'setDescription'=>'Resources indexed by global search') */
-			);
-=======
                 array('setSpec'=>'sharedresources', 
                       'setName'=>'Shared Resources', 
                       'setDescription'=>'Resources from Shared Resource plug-in'),
@@ -200,7 +157,6 @@ $SETS = array (
                       'setName'=>'Global Search Index', 
                       'setDescription'=>'Resources indexed by global search') */
             );
->>>>>>> MOODLE_33_STABLE
 
 $default_set = 'sharedresources';
 
@@ -213,60 +169,6 @@ $default_set = 'sharedresources';
 // [record_namespace] describe the namespace for this prefix
 
 $METADATAFORMATS = array (
-<<<<<<< HEAD
-						'oai_dc' => array('metadataPrefix'=>'oai_dc', 
-							              'schema' => 'http://www.openarchives.org/OAI/2.0/oai_dc.xsd',
-							              'metadataNamespace' => 'http://www.openarchives.org/OAI/2.0/oai_dc/',
-							              'myhandler' => 'record_dc.php',
-							              'record_prefix' => 'dc',
-							              'record_namespace' => 'http://purl.org/dc/elements/1.1/' ),
-						'shared_lom' => array('metadataPrefix'=>'sharedresource', 
-							              'schema' => 'http://www.openarchives.org/OAI/2.0/oai_dc.xsd',
-							              'metadataNamespace' => 'http://www.openarchives.org/OAI/2.0/oai_dc/',
-							              'myhandler' => 'record_shared_lom.php',
-							              'record_prefix' => 'shared',
-							              'record_namespace' => 'http://purl.org/dc/elements/1.1/' ),
-						'moodlecore' => array('metadataPrefix'=>'moodlecore', 
-							              'schema' => 'http://www.moodle.org/OAI/2.0/oai_moodle.xsd',
-							              'metadataNamespace' => 'http://www.moodle.org/OAI/2.0/oai_dc/',
-							              'myhandler' => 'record_moodle.php',
-							              'record_prefix' => 'moodle',
-							              'record_namespace' => 'http://moodle.org/moodle/elements/1.9/' ),
-						
-			            'oai_lom' => array('metadataPrefix'=>'oai_lom',
-										'schema' => 'http://ltsc.ieee.org/xsd/LOM',
-										'metadataNamespace' => 'http://ltsc.ieee.org/xsd/LOM',
-										'myhandler' => 'record_lom.php',
-										'record_prefix' => 'lom',
-										'defaultnamespace' => false,
-										'record_namespace' => 'http://ltsc.ieee.org/xsd/LOM'),
-						
-			            'oai_lomfr' => array('metadataPrefix' => 'oai_lomfr',
-										'schema' => 'http://ltsc.ieee.org/xsd/LOM',
-										'metadataNamespace' => 'http://ltsc.ieee.org/xsd/LOM',
-										'myhandler' => 'record_lomfr.php',
-										'record_prefix' => 'lomfr',
-										'defaultnamespace' => false,
-										'record_namespace' => 'http://ltsc.ieee.org/xsd/LOM'),
-
-			            'oai_scolomfr' => array('metadataPrefix' => 'oai_scolomfr',
-										'schema' => 'http://ltsc.ieee.org/xsd/LOM',
-										'metadataNamespace' => 'http://ltsc.ieee.org/xsd/LOM',
-										'myhandler' => 'record_scolomfr.php',
-										'record_prefix' => 'scolomfr',
-										'defaultnamespace' => false,
-										'record_namespace' => 'http://ltsc.ieee.org/xsd/LOM'),
-			
-						'oai_lre' => array('metadataPrefix'=>'oai_lre',
-										'schema' => 'http://fire.eun.org/lode/imslorsltitm_v1p0.xsd',
-										'metadataNamespace' => 'http://www.imsglobal.org/xsd/imslorsltitm_v1p0',
-										'myhandler' => 'record_lre.php',
-										'record_prefix' => 'lre',
-										'defaultnamespace' => false,
-										'record_namespace' => 'http://www.w3.org/2001/XMLSchema-instancehttp://www.w3.org/2001/XMLSchema-instance')
-
-					);
-=======
                         'oai_dc' => array('metadataPrefix'=>'oai_dc', 
                                           'schema' => 'http://www.openarchives.org/OAI/2.0/oai_dc.xsd',
                                           'metadataNamespace' => 'http://www.openarchives.org/OAI/2.0/oai_dc/',
@@ -321,7 +223,6 @@ $METADATAFORMATS = array (
                                         'defaultnamespace' => false,
                                         'record_namespace' => 'http://www.w3.org/2001/XMLSchema-instancehttp://www.w3.org/2001/XMLSchema-instance')
                     );
->>>>>>> MOODLE_33_STABLE
 
 // the charset you store your metadata in your database
 // currently only utf-8 and iso8859-1 are supported
@@ -373,11 +274,7 @@ $XMLHEADER =
          http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd">'."\n";
 
 $xmlheader = $XMLHEADER . 
-<<<<<<< HEAD
-			  ' <responseDate>'.$responseDate."</responseDate>\n";
-=======
               ' <responseDate>'.$responseDate."</responseDate>\n";
->>>>>>> MOODLE_33_STABLE
 
 // the xml schema namespace, do not change this
 $XMLSCHEMA = 'http://www.w3.org/2001/XMLSchema-instance';

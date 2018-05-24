@@ -63,7 +63,7 @@ class treeselect_widget extends search_widget {
         $paramkey = str_replace(' ', '_', $this->label);
         $preselect = @$SESSION->searchbag->$paramkey;
 
-        $attrs = array('style' => 'font-size:80%;width: 100%');
+        $attrs = array('class' => 'widget-treeselect-select');
         $template->select = html_writer::select($classificationoptions, $paramkey, $preselect, null, $attrs);
         $template->label = $paramkey;
         $subskey = $paramkey.'_subs';

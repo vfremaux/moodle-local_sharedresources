@@ -24,21 +24,26 @@
 require('../../config.php');
 require_once($CFG->dirroot.'/local/sharedresources/classes/navigator.class.php');
 require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
-<<<<<<< HEAD
-=======
 require_once($CFG->dirroot.'/local/sharedresources/lib.php');
+require_once($CFG->dirroot.'/local/sharedresources/classes/search_widget.class.php');
+
+// DO not rely on moodle classloader.
+if ($searchplugins = glob($CFG->dirroot.'/local/sharedresources/classes/searchwidgets/*')) {
+    foreach ($searchplugins as $sp) {
+        include_once($sp);
+    }
+}
 
 $PAGE->requires->js_call_amd('local_sharedresources/boxview', 'init');
->>>>>>> MOODLE_34_STABLE
+$PAGE->requires->js_call_amd('local_sharedresources/library', 'init');
 
 $config = get_config('local_sharedresources');
 
 $courseid = optional_param('course', false, PARAM_INT);
-<<<<<<< HEAD
-
-// hidden key to open the catalog to the unlogged area.
-=======
 $section = optional_param('section', 0, PARAM_INT);
+$action = optional_param('what', '', PARAM_TEXT);
+$catid = optional_param('catid', '', PARAM_INT);
+$catpath = optional_param('catpath', '', PARAM_RAW);
 
 if ($courseid) {
     if (!$course = $DB->get_record('course', array('id' => $courseid))) {
@@ -53,18 +58,10 @@ if ($courseid) {
 // hidden key to open the catalog to the unlogged area.
 $context = context_system::instance();
 
->>>>>>> MOODLE_34_STABLE
 if (!empty($config->privatecatalog)) {
 
     if ($courseid) {
         $context = context_course::instance($courseid);
-<<<<<<< HEAD
-    } else {
-        $context = context_system::instance();
-    }
-    require_login();
-    require_capability('repository/sharedresources:view', $context);
-=======
         require_login($course);
     } else {
         $context = context_system::instance();
@@ -76,11 +73,11 @@ if (!empty($config->privatecatalog)) {
             print_error('noaccess', 'local_sharedresource');
         }
     }
->>>>>>> MOODLE_34_STABLE
 }
 
-$catid = optional_param('catid', '', PARAM_INT);
-$catpath = optional_param('catpath', '', PARAM_RAW);
+if ($action) {
+    include($CFG->dirroot.'/local/sharedresources/library.controller.php');
+}
 
 $strheading = get_string('sharedresourcesindex', 'local_sharedresources');
 
@@ -88,12 +85,12 @@ $url = new moodle_url('/local/sharedresources/browse.php');
 $PAGE->set_url($url);
 $PAGE->set_context(context_system::instance());
 $PAGE->navbar->add($strheading);
-$PAGE->navbar->add(get_string('browse', 'local_sharedresources'));
+// $PAGE->navbar->add(get_string('browse', 'local_sharedresources'));
 $PAGE->requires->jquery();
 $PAGE->requires->jquery_plugin('animatenumber', 'local_sharedresources');
-
 $PAGE->set_heading($strheading);
 $PAGE->set_title($strheading);
+$PAGE->set_pagelayout('course');
 
 $renderer = $PAGE->get_renderer('local_sharedresources');
 
@@ -101,9 +98,6 @@ $filters = null;
 
 // Getting all filters.
 
-<<<<<<< HEAD
-$navigator = new \local_sharedresources\browser\navigation();
-=======
 try {
     $taxonomyselector = $renderer->taxonomy_select();
     $taxonomyobj = $DB->get_record('sharedresource_classif', array('id' => $SESSION->sharedresources->taxonomy));
@@ -118,15 +112,34 @@ try {
     echo $OUTPUT->footer();
     die;
 }
->>>>>>> MOODLE_34_STABLE
+
+/* Search in sharedresources */
+
+if (empty($config->searchblocksposition)) {
+    set_config('searchblocksposition', 'side-pre', 'local_sharedresources');
+    $config->searchblocksposition = 'side-pre';
+}
+
+$visiblewidgets = array();
+sharedresources_setup_widgets($visiblewidgets, $context);
+$searchfields = array();
+$offset = 0;
+$repo = 'local';
+
+$bc = new block_contents();
+$bc->attributes['id'] = 'local_sharedresource_searchblock';
+$bc->attributes['role'] = 'search';
+$bc->attributes['aria-labelledby'] = 'local_sharedresouces_search_title';
+$bc->title = html_writer::span(get_string('searchinlibrary', 'local_sharedresources'), '', array('id' => 'local_sharedresources_search_title'));
+$bc->content = $renderer->search_widgets_tableless($courseid, $repo, $offset, $context, $visiblewidgets, $searchfields);
+$PAGE->blocks->add_fake_block($bc, $config->searchblocksposition);
+
+/* Fltering */
 
 // $classificationfilters = $navigator->get_category_filters();
 
 $i = 0;
-<<<<<<< HEAD
-=======
 /*
->>>>>>> MOODLE_34_STABLE
 foreach ($classificationfilters as $afilter) {
     $options = $navigator->get_filter_modalities($filter);
     $filters["f$i"] = new StdClass;
@@ -135,11 +148,10 @@ foreach ($classificationfilters as $afilter) {
     $filters["f$i"]->value = optional_param("f$i", '', PARAM_INT);
     $i++;
 }
-<<<<<<< HEAD
-=======
 */
 $filters = null;
->>>>>>> MOODLE_34_STABLE
+
+$renderer->add_path($catpath, $navigator);
 
 echo $OUTPUT->header();
 
@@ -148,35 +160,12 @@ echo $renderer->tools($course);
 if (is_dir($CFG->dirroot.'/local/staticguitexts')) {
     // If static gui texts are installed, add a static text to be edited by administrator.
     echo '<div class="static">';
-<<<<<<< HEAD
-    local_print_static_text('sharedresources_browser_header', $CFG->wwwroot.'/local/sharedresources/browser.php');
-=======
     local_print_static_text('sharedresources_browser_header', $CFG->wwwroot.'/local/sharedresources/browse.php');
->>>>>>> MOODLE_34_STABLE
     echo '</div>';
 }
 
 // Making filters.
 
-<<<<<<< HEAD
-echo $renderer->searchlink();
-// echo $renderer->filters($catid, $catpath);
-
-echo $renderer->taxonomy_select();
-
-// Calling navigation.
-
-if ($catid) {
-    $category = $navigator->get_category($catid, $catpath, $filters);
-    echo $renderer->category($category, $catpath, $navigator->count_entries_rec($category), 'current', true);
-
-    // Root of the catalog cannot have resourses.
-    echo $renderer->resourcelist(array_keys($category->entries));
-} else {
-    $category = new StdClass;
-    $catid = 0;
-    $category->cats = $navigator->get_children($$catid);
-=======
 // echo $renderer->filters($catid, $catpath);
 
 echo $taxonomyselector;
@@ -197,17 +186,16 @@ if ($catid) {
     $catid = 0;
     $category->cats = $navigator->get_children($catid);
     $category->hassubs = count($category->cats);
->>>>>>> MOODLE_34_STABLE
+}
+
+if (!empty($category->entries) && !empty($category->cats)) {
+    echo $OUTPUT->heading(get_string('subcategories', 'local_sharedresources'));
 }
 
 echo $renderer->children($category, $catpath);
 
-<<<<<<< HEAD
-echo $renderer->searchlink();
-=======
 echo '<center>';
 echo $renderer->searchlink();
 echo '</center>';
->>>>>>> MOODLE_34_STABLE
 
 echo $OUTPUT->Footer();
