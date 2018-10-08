@@ -22,6 +22,9 @@
  */
 defined('MOODLE_INTERNAL') || die();
 
+// Privacy.
+$string['privacy:metadata'] = 'The Shared resources Local plugin does not store any personal data about any user.';
+
 $string['accesscontrol'] = 'Access control';
 $string['adminrepository'] = 'Admin Repository';
 $string['backtocourse'] = 'Back to course';
@@ -79,6 +82,7 @@ $string['listviewalways'] = 'Always list';
 $string['makelabelsfromguidance'] = 'Make labels from guidance';
 $string['markliked'] = 'I like it!';
 $string['massimport'] = 'Mass import';
+$string['moodleupgradelocks'] = 'Moodle requires some upgrades. Sharedresource configuration cannot be fullfilled while upgrades are pending.';
 $string['newresource'] = 'Add a new resource';
 $string['noaccess'] = 'You have not the required capabilities to access this service';
 $string['noclassificationenabled'] = 'There is no classification enabled in this site. Administrator should configure the library with classifications, or disable this browser.';

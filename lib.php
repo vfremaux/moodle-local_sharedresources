@@ -288,6 +288,8 @@ function get_remote_repo_resources($repo, &$fullresults, $metadatafilters = '', 
         $res = json_decode($mnetrequest->response);
         if ($res->status == RPC_SUCCESS) {
             $fullresults = (array)$res->resources;
+        } else {
+            print_error($res->error);
         }
     } else {
         $fullresults['entries'] = array();
@@ -722,6 +724,10 @@ function sharedresource_get_top_keywords($courseid) {
     global $DB, $CFG;
 
     $config = get_config('sharedresource');
+
+    if (empty($config->schema)) {
+        print_error('nometadataplugin', 'sharedresource');
+    }
 
     $mtdclass = '\\mod_sharedresource\\plugin_'.$config->schema;
     require_once($CFG->dirroot.'/mod/sharedresource/plugins/'.$config->schema.'/plugin.class.php');

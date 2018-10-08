@@ -34,7 +34,11 @@ class local_sharedresources_renderer extends plugin_renderer_base {
             $this->output = $OUTPUT;
         }
 
-        if (!empty($SESSION->sharedresource->taxonomy)) {
+        $requiredtaxonomy = optional_param('taxonomy', false, PARAM_INT);
+        if (!empty($SESSION->sharedresource->taxonomy) || $requiredtaxonomy) {
+            if ($requiredtaxonomy) {
+                $SESSION->sharedresource->taxonomy = $requiredtaxonomy;
+            }
             $taxonomy = $SESSION->sharedresource->taxonomy;
         } else {
             $taxonomies = \local_sharedresources\browser\navigation::get_taxonomies(true);
@@ -290,7 +294,7 @@ class local_sharedresources_renderer extends plugin_renderer_base {
                 $template->haseditioncommands = !empty($commands);
                 $template->identifier = $resource->identifier;
                 if ($resource->provider != 'local') {
-                    $providerhostid = $DB->get_field('mnet', 'id', array('wwwroot' => $resource->provider));
+                    $providerhostid = $DB->get_field('mnet_host', 'id', array('wwwroot' => $resource->provider));
                 } else {
                     $providerhostid = $CFG->mnet_localhost_id;
                 }
@@ -430,7 +434,7 @@ class local_sharedresources_renderer extends plugin_renderer_base {
 
             $str .= $this->output->render_from_template('local_sharedresources/'.$bodytplname.'end', null);
         } else {
-            $str .= $OUTPUT->notification(get_string('noresources', 'local_sharedresources'));
+            // $str .= $OUTPUT->notification(get_string('noresourceshere', 'local_sharedresources'));
         }
 
         return $str;
@@ -643,7 +647,8 @@ class local_sharedresources_renderer extends plugin_renderer_base {
     }
 
     protected function child(&$cat, $catpath) {
-        return $this->category($cat, $catpath, $this->navigator->count_entries_rec($catpath.$cat->id.'/'), 'sub', false);
+        $catcount = $this->navigator->count_entries_rec($catpath.$cat->id.'/');
+        return $this->category($cat, $catpath, $catcount, 'sub', false);
     }
 
     public function filters() {
@@ -773,7 +778,7 @@ class local_sharedresources_renderer extends plugin_renderer_base {
                 $url = new moodle_url('/local/sharedresources/browse.php', $params);
             }
             $PAGE->navbar->add($taxoname, $url);
-            chop($catpath);
+            $catpath = rtrim($catpath, '/');
 
             if (!empty($catpath)) {
                 $pathids = explode('/', $catpath);

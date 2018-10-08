@@ -77,19 +77,19 @@ define(['jquery', 'core/config', 'core/log'], function ($, cfg, log) {
             var that = $(this);
 
             var imgid = that.attr('id');
-
+            var iconsrc;
             var residentifier = imgid.replace('sharedresource-toggle-', '');
 
             if ($('#sharedresource-info-' + residentifier).css('display') === 'none') {
                 $('#sharedresource-info-' + residentifier).css('display', 'block');
                 $('#sharedresource-social-' + residentifier).css('display', 'block');
-                var iconsrc = $('#sharedresource-toggle-' + residentifier).attr('src');
+                iconsrc = $('#sharedresource-toggle-' + residentifier).attr('src');
                 iconsrc = iconsrc.replace('right', 'top');
                 $('#sharedresource-toggle-' + residentifier).attr('src', iconsrc);
             } else {
                 $('#sharedresource-info-' + residentifier).css('display', 'none');
                 $('#sharedresource-social-' + residentifier).css('display', 'none');
-                var iconsrc = $('#sharedresource-toggle-' + residentifier).attr('src');
+                iconsrc = $('#sharedresource-toggle-' + residentifier).attr('src');
                 iconsrc = iconsrc.replace('top', 'right');
                 $('#sharedresource-toggle-' + residentifier).attr('src', iconsrc);
             }
