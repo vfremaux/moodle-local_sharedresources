@@ -24,7 +24,7 @@
  * This file allows acceding to resources in a platform instance independant way.
  * The user will only need to present a local id (internal resource id) or remote id
  *
- * The resource access layer is for use with mod/taoresource resource plugin.
+ * The resource access layer is for use with mod/sharedresource resource plugin.
  */
 require('../../config.php');
 
@@ -95,6 +95,9 @@ if ($resource->context > 1) {
 // TODO : implement logging.
 
 if (empty($resource->file) && !empty($resource->url)) {
+    if ($resource->url == $FULLME) {
+        print_error('Resource seems be a looping url on the library');
+    }
     redirect($resource->url);
 } else {
     // First form.

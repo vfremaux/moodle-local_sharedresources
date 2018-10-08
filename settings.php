@@ -91,11 +91,18 @@ if ($hasconfig || $usecap || $viewcap || $managecap) {
 }
 
 if ($hassiteconfig) {
-    $settings = new admin_settingpage('local_sharedresources', get_string('pluginname', 'sharedresource'));
+    $upgradelock = false;
+    $message = '';
+    if (moodle_needs_upgrading()) {
+        $message = get_string('moodleupgradelocks', 'local_sharedresources');
+        $upgradelock = true;
+    }
+
+    $settings = new admin_settingpage('local_sharedresources', get_string('pluginname', 'sharedresource').'<br/>'.$message);
 
     $config = get_config('sharedresource');
 
-    if (!empty($config->schema)) {
+    if (!empty($config->schema) && !$upgradelock) {
         if (@$debugwhitepage) {
             echo "\t\tLoading active schema: $config->schema\n";
         }

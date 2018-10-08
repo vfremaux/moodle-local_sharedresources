@@ -78,6 +78,7 @@ $string['listviewalways'] = 'Toujours en liste';
 $string['makelabelsfromguidance'] = 'Créer les étiquettes de guidances';
 $string['markliked'] = 'J\'aime&nbsp;!';
 $string['massimport'] = 'Importer massivement';
+$string['moodleupgradelocks'] = 'La configuration de la librairie ne peut être fournie complète lorsque des mises à jour de moodle sont en attente.';
 $string['newresource'] = 'Ajouter une ressource';
 $string['noclassificationenabled'] = 'Aucune taxonomie de ressources n\'a été activée sur ce site. L\'administrateur des ressources devrait définir ou importer des taxonomies, ou désactiver l\'usage du navigateur de taxonomies.';
 $string['noentries'] = '<p>Aucune ressource dans cette librairie</p>';
