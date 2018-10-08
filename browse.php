@@ -150,7 +150,6 @@ foreach ($classificationfilters as $afilter) {
 }
 */
 $filters = null;
-
 $renderer->add_path($catpath, $navigator);
 
 echo $OUTPUT->header();
@@ -176,7 +175,8 @@ $isediting = has_capability('repository/sharedresources:manage', $context, $USER
 
 if ($catid) {
     $category = $navigator->get_category($catid, $catpath, $filters);
-    echo $renderer->category($category, $catpath, $navigator->count_entries_rec($catpath), 'current', true);
+    $catcount = $navigator->count_entries_rec($catpath);
+    echo $renderer->category($category, $catpath, $catcount, 'current', true);
 
     // Root of the catalog cannot have resources.
     $category->cats = $navigator->get_children($catid);
