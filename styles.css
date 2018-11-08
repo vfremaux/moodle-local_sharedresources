@@ -134,6 +134,7 @@ a.sharedresource-actionlink {
     margin-right:auto;
     margin-top:10px;
     margin-bottom: 10px;
+    width: 100%;
 }
 
 .sharedresource-item-container .resource-download {
@@ -177,6 +178,7 @@ a.sharedresource-actionlink {
     box-shadow: 5px 10px 10px #888;
     max-width: 30%;
     width:25%;
+    z-index: 600;
 }
 
 #local_sharedresource_searchblock input[type="text"] {

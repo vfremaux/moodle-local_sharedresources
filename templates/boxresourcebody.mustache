@@ -43,10 +43,10 @@
 
         <div class="sharedresource-user-controls">
             {{#url}}
-            <a href="{{{url}}}" target="_blank" title="{{downloadstr}}"><img src="{{{boxdownloadpixurl}}}" /></a>
+            <a href="{{{url}}}" target="_blank" title="{{#str}}download, local_sharedresources{{/str}}"><img src="{{{boxdownloadpixurl}}}" /></a>
             {{/url}}
             {{^url}}
-            <img src="{{{boxdownloadpixurl}}}" class="is-hidden-by-rule" alt="{{ishiddenbyrulestr}}" />
+            <img src="{{{boxdownloadpixurl}}}" class="is-hidden-by-rule" alt="{{#str}}ishiddenbyrule, local_sharedresources{{/str}}" />
             {{/url}}
             {{{boxnoticepopupactionlink}}}
         </div>
@@ -55,12 +55,14 @@
            <span id="sharedresource-likes-{{identifier}}">
            {{{stars}}}
            </span>
-            <a class="sharedresource-mark-like" id="sharedresource-{{repoid}}-{{identifier}}">{{{marklikedstr}}}</a>
+            <a class="sharedresource-mark-like" id="sharedresource-{{repoid}}-{{identifier}}">{{#str}}markliked, local_sharedresources{{/str}}</a>
         </div>
 
+        {{#hascommands}}
         <div class="resource-user-commands">
-            {{{rescommands}}}
+            {{> local_sharedresources/resourcecommands}}
         </div>
+        {{/hascommands}}
     </div>
 
     <br/>
@@ -70,18 +72,18 @@
         <div class="sharedresources-description">
             <div class="resource-description">{{{description}}}</div>
 
-            <div class="smalltext resource-keywords">{{keywordsstr}}: <span class="normaltext">{{keywords}}</span></div>
+            <div class="smalltext resource-keywords"><b>{{#str}}keywords, local_sharedresources{{/str}}:</b> <span class="normaltext">{{keywords}}</span></div>
         </div>
         {{/description}}
 
         {{^uses}}
-        <div class="resource-usage">{{{notusedstr}}}</div>
+        <div class="resource-usage">{{#str}}notused, local_sharedresources{{/str}}</div>
         {{/uses}}
         {{#uses}}
-        <div class="resource-usage"><a href="{{{courselisturl}}}">{{{usedstr}}}</a></div>
+        <div class="resource-usage"><a href="{{{courselisturl}}}"><b>{{#str}}used, local_sharedresources{{/str}}:</b> {{uses}}</a></div>
         {{/uses}}
-
-        <div class="resource-views">{{{viewedstr}}}</div>
+        <div class="resource-mimetype"><b>{{#str}}mimetype, local_sharedresources{{/str}}:</b> {{{mimetype}}}</div>
+        <div class="resource-views"><b>{{#str}}viewed, local_sharedresources{{/str}}:</b> {{{views}}}</div>
 
     </div>
 </div>

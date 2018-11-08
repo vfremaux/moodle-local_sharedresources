@@ -135,7 +135,11 @@ if (empty($config->searchblocksposition)) {
 }
 
 $visiblewidgets = array();
-sharedresources_setup_widgets($visiblewidgets, $context);
+if ($repo == 'local') {
+    sharedresources_setup_widgets($visiblewidgets, $context);
+} else {
+    $visiblewidgets = sharedresources_remote_widgets($repo, $context);
+}
 $searchfields = array();
 if (sharedresources_process_search_widgets($visiblewidgets, $searchfields)) {
     // If something has changed in filtering conditions, we might not have same resultset. Keep offset to 0.
@@ -185,9 +189,9 @@ if (!empty($searchfields)) {
 }
 
 if ($repo == 'local' || !local_sharedresources_supports_feature('repo/remote')) {
-    $resources = get_local_resources($repo, $fullresults, $metadatafilters, $offset, $page);
+    $resources = sharedresources_get_local_resources($repo, $fullresults, $metadatafilters, $offset, $page);
 } else {
-    $resources = get_remote_repo_resources($repo, $fullresults, $metadatafilters, $offset, $page);
+    $resources = sharedresources_get_remote_repo_resources($repo, $fullresults, $metadatafilters, $offset, $page);
 }
 
 $SESSION -> resourceresult = $resources;

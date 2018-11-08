@@ -150,6 +150,7 @@ foreach ($classificationfilters as $afilter) {
 }
 */
 $filters = null;
+
 $renderer->add_path($catpath, $navigator);
 
 echo $OUTPUT->header();

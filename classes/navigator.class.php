@@ -255,16 +255,16 @@ class navigation {
     public function get_full_tree_rec($parentid, $idpath, $namepath, $outputlayout, $short = true) {
         global $DB;
 
-        $whereclauses = array("{$this->taxonomy->sqlparent} = ?");
+        $whereclauses = array(" {$this->taxonomy->sqlparent} = ? ");
 
         $params = array($parentid);
 
         if (!empty($this->taxonomy->taxonselection)) {
             list($insql, $inparams) = $DB->get_in_or_equal(explode(',', $this->taxonomy->taxonselection));
             $whereclauses[] = " id $insql";
-            if (!empty($params)) {
-                foreach ($inparams as $param) {
-                    $params[] = $param;
+            if (!empty($inparams)) {
+                foreach ($inparams as $pid => $pvalue) {
+                    $params[] = $pvalue;
                 }
             }
         }
