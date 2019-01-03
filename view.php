@@ -24,7 +24,7 @@
  * This file allows acceding to resources in a platform instance independant way.
  * The user will only need to present a local id (internal resource id) or remote id
  *
- * The resource access layer is for use with mod/taoresource resource plugin.
+ * The resource access layer is for use with mod/sharedresource resource plugin.
  */
 require('../../config.php');
 
@@ -38,10 +38,28 @@ require_once($CFG->libdir.'/filelib.php');
 
 $config = get_config('local_sharedresources');
 
+// For use when library is declared as a private catalog, to authentify valid consumers.
+// When getting resource list from us, the consumers have received a long or persistant key from us.
+$token = optional_param('token', '', PARAM_TEXT);
+
 $isloggedin = false;
 if (!empty($config->privatecatalog)) {
-    require_login();
-    $isloggedin = true;
+
+    $tokenchecked = false;
+    if (!empty($token)) {
+        include_once($CFG->dirroot.'/auth/ticket/lib.php');
+        if ($ticket = ticket_decode($token, 'internal')) {
+            if (!$tokenchecked = ticket_accept($ticket)) {
+                print_error('errorinvalidticket', 'local_sharedresources');
+                exit;
+            }
+        }
+    }
+
+    if (!$tokenchecked) {
+        require_login();
+        $isloggedin = true;
+    }
 }
 
 $resourceid = optional_param('id', '', PARAM_ALPHANUM);
@@ -64,12 +82,12 @@ if (!empty($resourceid)) {
     }
     $idvalue = $identifier;
 } else {
-    print_error('errorinvalidresourceid', 'local_sharedresource');
+    print_error('errorinvalidresourceid', 'local_sharedresources');
     exit;
 }
 
 if (!$resource = $DB->get_record('sharedresource_entry', array($idfield => $idvalue))) {
-    print_error('errorinvalidresource', 'local_sharedresource');
+    print_error('errorinvalidresource', 'local_sharedresources');
 }
 
 // Is resource valid for public delivery ?
@@ -95,6 +113,9 @@ if ($resource->context > 1) {
 // TODO : implement logging.
 
 if (empty($resource->file) && !empty($resource->url)) {
+    if ($resource->url == $FULLME) {
+        print_error('Resource seems be a looping url on the library');
+    }
     redirect($resource->url);
 } else {
     // First form.

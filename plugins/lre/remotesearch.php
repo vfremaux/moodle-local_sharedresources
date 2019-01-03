@@ -39,7 +39,7 @@ $searchform = new Remote_Search_Form(new moodle_url('/local/sharedresources/resu
 
 echo '<table width="95%" style="position:relative;left:-60px">';
 echo '<tr>';
-echo '<td width="120"><img src="'.$OUTPUT->pix_url('lre', 'sharedresourceprovider_lre').'"/></td>';
+echo '<td width="120">'.$OUTPUT->pix_icon('lre', '', 'sharedresourceprovider_lre').'</td>';
 echo '<td width=\"70%\">';
 $searchform->display();
 echo '</td></tr></table>';

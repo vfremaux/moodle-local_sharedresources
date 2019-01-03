@@ -24,46 +24,52 @@
 
 }}
 <!-- resourcecommands -->
-<div class="generalbox sharedresources-commands">
-
 {{#isremote}}
-    <form name="add{{i}}" action="{{formurl}}" style="display:inline">
+    <form name="add{{i}}" action="{{{formurl}}}" style="display:inline">
 {{/isremote}}
 
 {{^isremote}}
-    <form name="add{{i}}" action="{{formurl}}" style="display:inline" method="POST" >
+    <form name="add{{i}}" action="{{{formurl}}}" style="display:inline" method="POST" >
 {{/isremote}}
 
 <input type="hidden" name="id" value="{{courseid}}" />
 <input type="hidden" name="mode" value="shared" />
 <input type="hidden" name="section" value="{{section}}" />
 <input type="hidden" name="identifier" value="{{identifier}}" />
-<input type="hidden" name="description" value="{{quoteddesc}}" />
-<input type="hidden" name="title" value="{{quotedtitle}}" />
+<input type="hidden" name="description" value="{{{quoteddesc}}}" />
+<input type="hidden" name="keywords" value="{{{quotedkeywords}}}" />
+<input type="hidden" name="title" value="{{{quotedtitle}}}" />
 <input type="hidden" name="provider" value="{{repo}}" />
 <input type="hidden" name="file" value="{{file}}" />
-<input type="hidden" name="url" value="{{url}}" />
+<input type="hidden" name="filepath" value="{{{quotedfilepath}}}" />
+<input type="hidden" name="filename" value="{{{quotedfilename}}}" />
+<input type="hidden" name="mimetype" value="{{{quotedmimetype}}}" />
+<input type="hidden" name="url" value="{{{quotedurl}}}" />
+<input type="hidden" name="token" value="{{{token}}}" />
 </form>
 
-{{^isltitool}}
-<a id="id-shared-{{i}}" class="sharedresource-actionlink">{{addtocoursestr}}</a>
+{{#isresource}}
+- <a id="id-shared-{{i}}" class="sharedresource-actionlink">{{#str}}addtocourse, local_sharedresources{{/str}}</a>
+{{/isresource}}
 
 {{#islocalizable}}
- - <a id="id-local-{{i}}" class="sharedresource-actionlink">{{localizetocoursestr}}</a>
+ - <a id="id-local-{{i}}" class="sharedresource-actionlink">{{#str}}localizetocourse, local_sharedresources{{/str}}</a>
 {{/islocalizable}}
-{{/isltitool}}
 
 {{#isltitool}}
- - <a id="id-ltiinstall-{{i}}" class="sharedresource-actionlink">{{installtoolstr}}</a>
+ - <a id="id-ltiinstall-{{i}}" class="sharedresource-actionlink">{{#str}}installltitool, local_sharedresources{{/str}}</a>
 {{/isltitool}}
 
+{{#isscorm}}
+ - <a id="id-scorm-{{i}}" class="sharedresource-actionlink">{{#str}}deployincourse, local_sharedresources{{/str}}</a>
+{{/isscorm}}
+
 {{#isdeployable}}
- - <a id="id-deploy-{{i}}" class="sharedresource-actionlink">{{deployincoursestr}}</a>
+ - <a id="id-deploy-{{i}}" class="sharedresource-actionlink">{{#str}}deployincourse, local_sharedresources{{/str}}</a>
 {{/isdeployable}}
 
-{{#isvideo}}
- - <a id="id-mplayerdeploy-{{i}}" class="sharedresource-actionlink">{{deployinmplayerstr}}</a>
-{{/isvideo}}
+{{#isplayable}}
+ - <a id="id-mplayerdeploy-{{i}}" class="sharedresource-actionlink">{{#str}}deployinmplayer, local_sharedresources{{/str}}</a>
+{{/isplayable}}
 
-</div>
 <!-- /resourcecommands -->

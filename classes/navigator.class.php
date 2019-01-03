@@ -62,6 +62,13 @@ class navigation {
         $this->plugin = sharedresource_get_plugin($this->config->schema);
     }
 
+    public function __get($field) {
+        if (!isset($this->taxonomy->$field)) {
+            throw new \coding_exception("Bad taxonomy attribute $field");
+        }
+        return $this->taxonomy->$field;
+    }
+
     public static function instance_by_id($id) {
         global $DB;
 
@@ -122,9 +129,11 @@ class navigation {
 
     /**
      * get a category given the local category id in the taxonomy
-     *
+     * @param $catid numeric id of the category
+     * @param $catpath slash separated (and terminated) id list of the cat path from root.
+     * @param $filters (for future use)
      */
-    public function get_category($catid, $catpath) {
+    public function get_category($catid, $catpath = null, $filters = array()) {
         global $DB;
 
         if (empty($this->taxonomy)) {
@@ -136,7 +145,9 @@ class navigation {
 
         $category->hassubs = $DB->count_records($this->taxonomy->tablename, array($this->taxonomy->sqlparent => $category->id));
 
-        $category->entries = $this->get_entries($catpath);
+        if (!is_null($catpath)) {
+            $category->entries = $this->get_entries($catpath);
+        }
 
         return $category;
     }
@@ -244,14 +255,18 @@ class navigation {
     public function get_full_tree_rec($parentid, $idpath, $namepath, $outputlayout, $short = true) {
         global $DB;
 
-        $whereclauses = array("{$this->taxonomy->sqlparent} = ?");
+        $whereclauses = array(" {$this->taxonomy->sqlparent} = ? ");
 
         $params = array($parentid);
 
         if (!empty($this->taxonomy->taxonselection)) {
             list($insql, $inparams) = $DB->get_in_or_equal(explode(',', $this->taxonomy->taxonselection));
             $whereclauses[] = " id $insql";
-            $params = $inparams;
+            if (!empty($inparams)) {
+                foreach ($inparams as $pid => $pvalue) {
+                    $params[] = $pvalue;
+                }
+            }
         }
 
         $select = implode(' AND ', $whereclauses);
@@ -307,10 +322,12 @@ class navigation {
         $plugin = $plugins[$shrconfig->schema];
         $elementnode = $plugin->getTaxumpath()['id'];
 
-        $params = array('element' => $elementnode.':0_0_0_0', 'namespace' => $shrconfig->schema, 'value' => $catpath);
-        $count = $DB->count_records('sharedresource_metadata', $params);
+        $params = array('element' => $elementnode.':%', 'namespace' => $shrconfig->schema, 'value' => $catpath);
+        $select = ' element LIKE ? AND namespace = ? AND value = ? AND entryid != 0 ';
+        $count = $DB->count_records_select('sharedresource_metadata', $select, $params);
 
         $children = $this->get_children($catid);
+
         if ($children) {
             foreach ($children as $ch) {
                 $chpath = $catpath.$ch->id.'/';
@@ -322,9 +339,9 @@ class navigation {
     }
 
     /**
-     * Get entries that math this taxonomy level.
+     * Get entries that match this taxonomy level. Any taxonomy entry may match.
      * @param int $catid
-     * // TODO : add mutiple taxonomy source arity. At the moment just handling first instance.
+     * @return An array of resource records.
      */
     public function get_entries($catid) {
         global $DB;
@@ -343,13 +360,13 @@ class navigation {
                 {sharedresource_entry} shr,
                 {sharedresource_metadata} shm
             WHERE
-                shm.element = ? AND
+                shm.element LIKE ? AND
                 shm.namespace = ? AND
                 shr.id = shm.entryid AND
                 shm.value = ?
         ";
 
-        $resources = $DB->get_records_sql($sql, array($elementnode.':0_0_0_0', $shrconfig->schema, $catid));
+        $resources = $DB->get_records_sql($sql, array($elementnode.':%', $shrconfig->schema, $catid));
 
         return $resources;
     }
@@ -485,7 +502,7 @@ class navigation {
         // Delete all resource metadata binding related to this token id.
         $this->plugin->unbind_taxon($token->classificationid, $token->id);
 
-        // finally delete the token.
+        // Finally delete the token.
         $DB->delete_records($this->taxonomy->tablename, array('id' => $tokenid));
     }
 }

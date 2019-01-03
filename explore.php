@@ -40,6 +40,7 @@ require_once($CFG->libdir.'/blocklib.php');
 require_once($CFG->dirroot.'/course/lib.php');
 require_once($CFG->dirroot.'/mod/sharedresource/rpclib.php');
 require_once($CFG->dirroot.'/local/sharedresources/classes/search_widget.class.php');
+require_once($CFG->dirroot.'/local/staticguitexts/lib.php');
 
 // DO not rely on moodle classloader.
 if ($searchplugins = glob($CFG->dirroot.'/local/sharedresources/classes/searchwidgets/*')) {
@@ -49,6 +50,8 @@ if ($searchplugins = glob($CFG->dirroot.'/local/sharedresources/classes/searchwi
 }
 
 require_once($CFG->dirroot.'/local/sharedresources/lib.php');
+
+define('RETURN_PAGE', 2);
 
 $config = get_config('local_sharedresources');
 $shrconfig = get_config('sharedresource');
@@ -106,25 +109,12 @@ $renderer = $PAGE->get_renderer('local_sharedresources');
 $page = 20;
 
 if ($action) {
-    include($CFG->dirroot.'/local/sharedresources/explore.controller.php');
+    include($CFG->dirroot.'/local/sharedresources/library.controller.php');
 }
 
 $course = $DB->get_record('course', array('id' => $courseid));
 
 $resourcesmoodlestr = get_string('resources', 'sharedresource');
-
-$visiblewidgets = array();
-sharedresources_setup_widgets($visiblewidgets, $context);
-$searchfields = array();
-if (sharedresources_process_search_widgets($visiblewidgets, $searchfields)) {
-    // If something has changed in filtering conditions, we might not have same resultset. Keep offset to 0.
-    $offset = 0;
-}
-
-if (empty($config->searchblocksposition)) {
-    set_config('searchblocksposition', 'side-pre', 'local_sharedresources');
-    $config->searchblocksposition = 'side-pre';
-}
 
 if (file_exists($CFG->dirroot.'/blocks/search')) {
     $configsaved = $config;
@@ -139,11 +129,30 @@ if (file_exists($CFG->dirroot.'/blocks/search')) {
     $PAGE->blocks->add_fake_block($bc, $config->searchblocksposition);
 }
 
+/* Search in sharedresources */
+
+if (empty($config->searchblocksposition)) {
+    set_config('searchblocksposition', 'side-pre', 'local_sharedresources');
+    $config->searchblocksposition = 'side-pre';
+}
+
+$visiblewidgets = array();
+if ($repo == 'local') {
+    sharedresources_setup_widgets($visiblewidgets, $context);
+} else {
+    $visiblewidgets = sharedresources_remote_widgets($repo, $context);
+}
+$searchfields = array();
+if (sharedresources_process_search_widgets($visiblewidgets, $searchfields)) {
+    // If something has changed in filtering conditions, we might not have same resultset. Keep offset to 0.
+    $offset = 0;
+}
+
 $bc = new block_contents();
 $bc->attributes['id'] = 'local_sharedresource_searchblock';
 $bc->attributes['role'] = 'search';
 $bc->attributes['aria-labelledby'] = 'local_sharedresouces_search_title';
-$bc->title = html_writer::span(get_string('searchinlibrary', 'sharedresource'), '', array('id' => 'local_sharedresources_search_title'));
+$bc->title = html_writer::span(get_string('searchinlibrary', 'local_sharedresources'), '', array('id' => 'local_sharedresources_search_title'));
 $bc->content = $renderer->search_widgets_tableless($courseid, $repo, $offset, $context, $visiblewidgets, $searchfields);
 $PAGE->blocks->add_fake_block($bc, $config->searchblocksposition);
 
@@ -182,12 +191,20 @@ if (!empty($searchfields)) {
 }
 
 if ($repo == 'local' || !local_sharedresources_supports_feature('repo/remote')) {
-    $resources = get_local_resources($repo, $fullresults, $metadatafilters, $offset, $page);
+    $resources = sharedresources_get_local_resources($repo, $fullresults, $metadatafilters, $offset, $page);
 } else {
-    $resources = get_remote_repo_resources($repo, $fullresults, $metadatafilters, $offset, $page);
+    $resources = sharedresources_get_remote_repo_resources($repo, $fullresults, $metadatafilters, $offset, $page);
 }
 
 $SESSION -> resourceresult = $resources;
+
+if (is_object($mtdplugin) && $mtdplugin->getTaxonomyValueElement()) {
+    // Only browse if there is a taxonomy in the metadata schema.
+    echo '<center>';
+    echo '<br/>';
+    echo $renderer->browserlink();
+    echo '</center>';
+}
 
 echo '<div id="resources">';
 if (empty($resources)) {

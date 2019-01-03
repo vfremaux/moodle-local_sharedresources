@@ -25,6 +25,12 @@
  */
 defined('MOODLE_INTERNAL') || die();
 
+if (!function_exists('debug_trace')) {
+    function debug_trace() {
+        assert(1);
+    }
+}
+
 require_once($CFG->dirroot.'/mnet/xmlrpc/client.php');
 require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
 require_once($CFG->dirroot.'/mod/sharedresource/rpclib.php');
@@ -141,7 +147,7 @@ function cmp($a, $b) {
 /**
  * get a stub of local resources
  */
-function get_local_resources($repo, &$fullresults, $metadatafilters = '', &$offset = 0, $page = 20) {
+function sharedresources_get_local_resources($repo, &$fullresults, $metadatafilters = '', &$offset = 0, $page = 20) {
     global $CFG, $USER, $DB;
 
     $config = get_config('sharedresource');
@@ -191,8 +197,9 @@ function get_local_resources($repo, &$fullresults, $metadatafilters = '', &$offs
             {sharedresource_entry} se
         $clause
         ORDER BY
-           title
+           score DESC, title
     ";
+
     $sqlcount = "
         SELECT
             COUNT(*)
@@ -248,7 +255,7 @@ function get_local_resources($repo, &$fullresults, $metadatafilters = '', &$offs
  * @uses $CFG
  * @param string $repo the repo identifier
  */
-function get_remote_repo_resources($repo, &$fullresults, $metadatafilters = '', $offset = 0, $page = 20) {
+function sharedresources_get_remote_repo_resources($repo, &$fullresults, $metadatafilters = '', $offset = 0, $page = 20) {
     global $CFG, $USER, $DB;
 
     if ($repo == 'local') {
@@ -276,6 +283,7 @@ function get_remote_repo_resources($repo, &$fullresults, $metadatafilters = '', 
         $mnetrequest->add_param('anonymous', 'string');
         $mnetrequest->add_param($CFG->wwwroot, 'string');
     }
+    $mnetrequest->add_param($CFG->wwwroot, 'string'); // Calling host.
 
     // Set filters and offset ad page parameters.
     $mnetrequest->add_param((array)$metadatafilters, 'struct');
@@ -287,12 +295,14 @@ function get_remote_repo_resources($repo, &$fullresults, $metadatafilters = '', 
         $res = json_decode($mnetrequest->response);
         if ($res->status == RPC_SUCCESS) {
             $fullresults = (array)$res->resources;
+        } else {
+            print_error($res->error);
         }
     } else {
         $fullresults['entries'] = array();
         $fullresults['maxobjects'] = 0;
         foreach ($mnetrequest->error as $errormessage) {
-            list($code, $message) = array_map('trim',explode(':', $errormessage, 2));
+            list($code, $message) = array_map('trim', explode(':', $errormessage, 2));
             $message .= "ERROR $code:<br/>$errormessage<br/>";
         }
         print_error("RPC mod/sharedresource/get_list:<br/>$message");
@@ -356,6 +366,33 @@ function sharedresources_get_consumers() {
     return $consumers;
 }
 
+/**
+ * Resources consumers are mnet_hosts for which we have a subscription to its consumer service API
+ * service
+ */
+function sharedresources_is_consumer($hostroot) {
+    global $CFG, $DB;
+
+    $sql = "
+        SELECT
+            mh.*
+        FROM
+            {mnet_host} mh,
+            {mnet_host2service} h2s,
+            {mnet_service} ms
+        WHERE
+            mh.id = h2s.hostid AND
+            h2s.serviceid = ms.id AND
+            ms.name = 'sharedresourceservice' AND
+            h2s.publish = 1 AND
+            mh.deleted = 0 AND
+            mh.wwwroot = ?
+    ";
+
+    $consumers = $DB->get_records_sql($sql, array($hostroot));
+
+    return $consumers;
+}
 
 /**
  * fetch remotely or locally amount of usages about a resource.
@@ -518,6 +555,13 @@ function sharedresources_repo($wwwroot) {
 */
 function sharedresources_setup_widgets(&$visiblewidgets, $context) {
     global $CFG, $DB;
+    static $loaded = false;
+
+    // Load all widget classes.
+    $widgetclasses = glob($CFG->dirroot.'/local/sharedresources/classes/searchwidgets/*');
+    foreach ($widgetclasses as $classfile) {
+        include_once($classfile);
+    }
 
     $config = get_config('sharedresource');
 
@@ -542,17 +586,86 @@ function sharedresources_setup_widgets(&$visiblewidgets, $context) {
     if ($activewidgets = unserialize(@$config->activewidgets)) {
         $count = 0;
         foreach ($activewidgets as $key => $widget) {
+
         /*
         // TODO : complete the code when setting up new capabilities related to widgets usage (read).
             if ($DB->record_exists_select('config_plugins', "name LIKE 'config_{$pluginname}_{$capability}_{$widget->id}'")) {
         */
                 $count++;
-                array_push($visiblewidgets, $widget);
+                $visiblewidgets[$key] = $widget;
         /*
             }
         */
         }
+    } else {
+        debug_trace('Failed deserializeing');
     }
+}
+
+/**
+ * Get local widgets from a remote resource producer.
+ * @param int $repo the repo id (mnet_host id)
+ * @param string $context role context for sharedresources
+ */
+function sharedresources_remote_widgets($repo, $context) {
+    global $USER, $DB, $CFG;
+
+    // Load all widget classes.
+    $widgetclasses = glob($CFG->dirroot.'/local/sharedresources/classes/searchwidgets/*');
+    foreach ($widgetclasses as $classfile) {
+        include_once($classfile);
+    }
+
+    // Get the originating (ID provider) host info.
+    if (!$remotepeer = new mnet_peer()) {
+        print_error('errormnetpeer', 'local_sharedresources');
+    }
+    if (!$remotehost = $DB->get_record('mnet_host', array('id' => $repo))) {
+        if (debugging()) {
+            print_error("No such host $repo in the neighborghood");
+        }
+        return;
+    }
+    $remotepeer->set_wwwroot($remotehost->wwwroot);
+
+    // Set up the RPC request.
+    $mnetrequest = new mnet_xmlrpc_client();
+    $mnetrequest->set_method('mod/sharedresource/rpclib.php/sharedresource_rpc_get_widgets');
+
+    // Set remoteuser and remoteuserhost parameters.
+    if (!empty($USER->username)) {
+        $mnetrequest->add_param($USER->username, 'string');
+        $userremoteuserhost = $DB->get_record('mnet_host', array('id'=> $USER->mnethostid));
+        $mnetrequest->add_param($userremoteuserhost->wwwroot, 'string');
+    } else {
+        $mnetrequest->add_param('anonymous', 'string');
+        $mnetrequest->add_param($CFG->wwwroot, 'string');
+    }
+
+    $mnetrequest->add_param($CFG->wwwroot, 'string'); // Calling host.
+
+    // Set filters and offset ad page parameters.
+    $mnetrequest->add_param('', 'string'); // Context. Not yet in use.
+
+    // Do RPC call and store response.
+    if ($mnetrequest->send($remotepeer) === true) {
+        $res = json_decode($mnetrequest->response);
+        if ($res->status == RPC_SUCCESS) {
+            $widgets = (array)$res->widgets;
+            foreach ($widgets as $ix => $wdg) {
+                // We need reclass.
+                $classname = "\\local_sharedresources\\search\\".$wdg->type.'_widget';
+                $reclassed = new $classname($wdg->id, $wdg->label, $wdg->type);
+                $widgets[$ix] = $reclassed;
+            }
+        } else {
+            print_error($res->error);
+        }
+    } else {
+        $widgets = array();
+    }
+
+    return $widgets;
 }
 
 /**
@@ -641,32 +754,79 @@ function sharedresources_get_string($identifier, $subplugin, $a = '', $lang = ''
 
 /**
  * provides a mean to recognize sharedresource hides an LTI Tool definition
- * TODO : find other ways to guess it
+ * TODO : find other ways to guess it.
+ * Admits the lti typology has been resolved remotely. In this case, the resource has a islti marker.
  * @param object $resource a sharedresource descriptor
  */
 function sharedresource_is_lti($resource) {
     global $CFG;
 
-    return(preg_match('/LTI/', $resource->keywords));
+    return(preg_match('/LTI/', $resource->keywords) || @$resource->islti);
 }
 
 /**
  * provides a mean to recognize sharedresource hides an media or a media
  * proxy that can be played in a mplayer
  * TODO : refine filtering of mime types that are acceptable
+ * Admits the media typology has been resolved remotely. In this case, the resource has a ismedia marker.
  * @param object $resource a sharedresource descriptor
  */
 function sharedresource_is_media($resource) {
+
+    if (!empty($resource->ismedia)) {
+        // Resolved remotely.
+        return true;
+    }
+
+    if ($resource->file) {
+        $fs = get_file_storage();
+        if ($resourcefile = $fs->get_file_by_id($resource->file)) {
+            if (preg_match('#^video/#', $resourcefile->get_mimetype())) {
+                return true;
+            }
+        }
+    }
+
+    if (preg_match('/youtube\.com|youtu\.be/', $resource->url)) {
+        return true;
+    }
+
+    return false;
+}
+
+/**
+ * Based on the structure of the zip file.
+ */
+function sharedresource_is_scorm($resource) {
+    global $CFG;
+
+    if (!empty($resource->isscorm)) {
+        // Resolved remotely.
+        return true;
+    }
 
     $fs = get_file_storage();
 
     if ($resource->file) {
         if ($resourcefile = $fs->get_file_by_id($resource->file)) {
+            $filename = $resourcefile->get_filename();
+            if (preg_match('/\.zip$/', $filename)) {
 
-            if (preg_match('#^video/#', $resourcefile->get_mimetype())) {
-                return true;
+                $zip = new ZipArchive;
+
+                $contenthash = $resourcefile->get_contenthash();
+                $l1 = $contenthash[0] . $contenthash[1];
+                $l2 = $contenthash[2] . $contenthash[3];
+                $filepath = $CFG->dataroot."/filedir/$l1/$l2/{$contenthash}";
+
+                if ($zip->open($filepath) !== true) {
+                    return false;
+                }
+
+                if ($zip->locateName('imsmanifest.xml', ZipArchive::FL_NOCASE|ZIPARCHIVE::FL_NODIR)) {
+                    return true;
+                }
             }
-
         }
     }
 
@@ -696,7 +856,7 @@ function sharedresources_get_courses($entry) {
 }
 
 /**
- * provides a mean to recognize sharedresource hides an LTI Tool definition
+ * provides a mean to recognize sharedresource hides a deployable moodle backup.
  * @param sharedresource $resource
  */
 function sharedresource_is_moodle_activity($resource) {
@@ -705,7 +865,7 @@ function sharedresource_is_moodle_activity($resource) {
 
     if ($stored_file = $fs->get_file_by_id($resource->file)) {
         $archivename = $stored_file->get_filename();
-        if (preg_match('/^backup-moodle2-activity-.*\.mbz$/', $archivename)) {
+        if ('application/vnd.moodle.backup' == $stored_file->get_mimetype()) {
             return true;
         }
     }
@@ -721,6 +881,10 @@ function sharedresource_get_top_keywords($courseid) {
     global $DB, $CFG;
 
     $config = get_config('sharedresource');
+
+    if (empty($config->schema)) {
+        print_error('nometadataplugin', 'sharedresource');
+    }
 
     $mtdclass = '\\mod_sharedresource\\plugin_'.$config->schema;
     require_once($CFG->dirroot.'/mod/sharedresource/plugins/'.$config->schema.'/plugin.class.php');

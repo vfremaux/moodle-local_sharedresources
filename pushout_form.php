@@ -30,7 +30,7 @@ class PushOut_Form extends moodleform {
 
     public function __construct($resourceid) {
         $this->resourceID = $resourceid;
-        parent::moodleform();
+        parent::__construct();
     }
 
     public function definition() {

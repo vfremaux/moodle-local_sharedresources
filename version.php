@@ -19,7 +19,7 @@
  *
  * @package     local_sharedresources
  * @category    local
- * @author      Valery Fremaux <valery.fremaux@club-internet.fr>
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL
  */
 defined('MOODLE_INTERNAL') || die();
@@ -29,7 +29,8 @@ $plugin->requires = 2016051900;   // Requires this Moodle version.
 $plugin->component = 'local_sharedresources';
 $plugin->release = '3.1.0 (Build 2018011800)';
 $plugin->maturity = MATURITY_RC;
+$plugin->dependencies = array('local_staticguitexts' => 2013121900);
 
 // Non moodle attributes.
-$plugin->codeincrement = '3.1.0002';
+$plugin->codeincrement = '3.1.0003';
 $plugin->privacy = 'dualrelease';
