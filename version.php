@@ -32,5 +32,5 @@ $plugin->maturity = MATURITY_RC;
 $plugin->dependencies = array('local_staticguitexts' => 2013121900);
 
 // Non moodle attributes.
-$plugin->codeincrement = '3.5.0002';
+$plugin->codeincrement = '3.5.0003';
 $plugin->privacy = 'dualrelease';

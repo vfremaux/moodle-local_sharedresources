@@ -22,7 +22,12 @@
  */
 defined('MOODLE_INTERNAL') || die();
 
+// Privacy.
+$string['privacy:metadata'] = 'La librairie Shared resources ne stocke aucune donnée relative aux utilisateurs.';
+
 $string['accesscontrol'] = 'Contrôle d\'accès';
+$string['addtocourse'] = 'Ajouter au cours';
+$string['localizetocourse'] = 'Localiser dans le cours';
 $string['adminrepository'] = 'Administrer la librairie';
 $string['backtocourse'] = 'Revenir au cours';
 $string['backtoindex'] = 'Revenir à l\'index';
@@ -42,13 +47,17 @@ $string['confignotfound'] = 'Fichier de configuration introuvable';
 $string['configprohdr'] = 'Fonctionnalités "pro" additionnelles';
 $string['configprivatecatalog'] = 'Catalogue privé';
 $string['configsearchblocksposition'] = 'Position des blocs de recherche';
+$string['confighidenotice'] = 'Cacher le lien vers la notice';
 $string['convertresources'] = 'Convertir des ressources';
 $string['confirm'] = 'Confirmer';
 $string['confirmsimulate'] = 'Confirmer la simulation';
 $string['contains'] = 'contient';
 $string['deducetaxonomyfrompath'] = 'Déduire la taxonomie du chemin';
 $string['deployzips'] = 'Déployer les archives ZIP';
+$string['deployincourse'] = 'Déployer dans le cours';
+$string['deployinmplayer'] = 'Déployer un player';
 $string['doresetvolume'] = 'Réinitialiser le volume d\'import';
+$string['download'] = 'Télécharger';
 $string['emulatecommunity'] = 'Emuler la version communautaire';
 $string['emulatecommunity_desc'] = 'Bascule le code sur la version communautaire. Le résultat est plus compatible avec d\'autres installations, mais certaines fonctionnalités avancées ne seront plus disponibles.';
 $string['encoding'] = 'Encodage des fichiers de métadonnées';
@@ -56,6 +65,7 @@ $string['endswith'] = 'finit par';
 $string['equalto'] = 'est égal à';
 $string['errorinvalidresource'] = 'Resource invalide';
 $string['errorinvalidresourceid'] = 'Identifiant de ressource inconnu';
+$string['errorinvalidticket'] = 'Ticket d\'accès invalide';
 $string['errormnetpeer'] = 'Erreur d\'initialisation du client MNET';
 $string['errornotadir'] = 'Le répertoire d\'import n\'existe pas ou n\'est pas accessible';
 $string['errornotwritable'] = 'Le répertoire d\'import n\'est pas accessible en écriture. Modifiez les droits de ce répertoire avant d\'importer.';
@@ -78,6 +88,7 @@ $string['listviewalways'] = 'Toujours en liste';
 $string['makelabelsfromguidance'] = 'Créer les étiquettes de guidances';
 $string['markliked'] = 'J\'aime&nbsp;!';
 $string['massimport'] = 'Importer massivement';
+$string['mimetype'] = 'Type de contenu&nbsp;';
 $string['moodleupgradelocks'] = 'La configuration de la librairie ne peut être fournie complète lorsque des mises à jour de moodle sont en attente.';
 $string['newresource'] = 'Ajouter une ressource';
 $string['noclassificationenabled'] = 'Aucune taxonomie de ressources n\'a été activée sur ce site. L\'administrateur des ressources devrait définir ou importer des taxonomies, ou désactiver l\'usage du navigateur de taxonomies.';
@@ -92,6 +103,7 @@ $string['purposediscriminator'] = 'Objectif spécifique de la taxonomie';
 $string['reinitialized'] = '{$a} fichiers rétablis';
 $string['relocalize'] = 'Relocaliser';
 $string['reset'] = 'Réinitialiser';
+$string['resetdone'] = 'Librarie réinitialisée';
 $string['resetvolume'] = 'Réinitialiser le volume pour l\'import';
 $string['resourceimport'] = 'Importation de ressources';
 $string['resources'] = 'Ressources';
@@ -117,7 +129,7 @@ $string['updateresourcespageon'] = 'Mode édition';
 $string['used'] = 'Utilisée&nbsp;: {$a}';
 $string['useimportpath'] = 'Téléverser une archive';
 $string['uselocalpath'] = 'Utiliser un chemin local';
-$string['viewed'] = 'Vue&nbsp;: {$a}';
+$string['viewed'] = 'Vues&nbsp;';
 
 $string['configdefaulttaxonomyonimport_desc'] = 'La taxonomie à alimenter lors des imports.';
 

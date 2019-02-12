@@ -30,20 +30,24 @@
         <td class="resource-cell resource-title" width="70%">
             <img id="sharedresource-toggle-{{identifier}}" class="sharedresource-toggle-handle" src="{{handlepixurl}}">
 
-            <img src="{{pixurl}}" class="iconlarge" /> <a href="{{url}}" target="_blank">{{title}}</a>
+            <img src="{{{pixurl}}}" class="iconlarge" /> <a href="{{{url}}}" target="_blank">{{title}}</a>
         </td>
 
         <td class="resource-cell resource-download" width="10%">
-            <!-- a href="{{url}}" target="_blank"><img src="{{downloadpixurl}}" class="iconlarge" /> </a -->
+            <!-- a href="{{{url}}}" target="_blank"><img src="{{{downloadpixurl}}}" class="iconlarge" /> </a -->
         </td>
 
+        {{#haseditioncommands}}
         <td class="resource-cell resource-commands" width="20%">
             {{{editioncommands}}}
         </td>
+        {{/haseditioncommands}}
     </tr>
 
     <tr class="sharedresource-user-control {{ishiddenbyrule}}">
-        <td colspan="3"><div class="resource-user-controls">{{{noticepopupactionlink}}} {{{rescommands}}}</div></td>
+        <td colspan="3">
+            <div class="resource-user-controls">{{#shownotice}}{{{noticepopupactionlink}}}{{/shownotice}} {{#hascommands}}{{> local_sharedresources/resourcecommands}}{{/hascommands}}</div>
+        </td>
     </tr>
 
     <tr class="sharedresource-info {{ishiddenbyrule}}">
@@ -51,19 +55,20 @@
             {{^hidesocial}}
             <div class="generalbox resource-social" id="sharedresource-social-{{identifier}}" style="display:none">
                 {{^uses}}
-                <div class="resource-usage">{{{notusedstr}}}</div>
+                <div class="resource-usage">{{#str}}notused, local_sharedresources{{/str}}</div>
                 {{/uses}}
                 {{#uses}}
-                <div class="resource-usage"><a href="{{courselisturl}}">{{{used}}}</a></div>
+                <div class="resource-usage"><a href="{{courselisturl}}">{{#str}}used, local_sharedresources{{/str}}: {{uses}}</a></div>
                 {{/uses}}
 
-                <div class="resource-views">{{{viewedstr}}}</div>
+                <div class="resource-mimetype">{{#str}}mimetype, local_sharedresources{{/str}}: {{{mimetype}}}</div>
+                <div class="resource-views">{{#str}}viewed, local_sharedresources{{/str}}: {{{views}}}</div>
 
                 <div class="resource-likes">
                    <span id="sharedresource-likes-{{identifier}}">
                    {{{stars}}}
                    </span>
-                    <a class="sharedresource-mark-like" id="sharedresource-{{repoid}}-{{identifier}}">{{{marklikedstr}}}</a>
+                    <a class="sharedresource-mark-like" id="sharedresource-{{repoid}}-{{identifier}}">{{#str}}markliked, local_sharedresources{{/str}}</a>
                 </div>
             </div>
             {{/hidesocial}}
@@ -74,7 +79,7 @@
                     <div class="resource-thumbnail">{{{thumbnail}}}</div>
                     <div class="resource-description">{{{description}}}</div>
 
-                    <div class="smalltext resource-keywords">{{keywordsstr}}: <b>{{keywords}}</b></div>
+                    <div class="smalltext resource-keywords">{{#str}}keywords, local_sharedresources{{/str}}: <b>{{keywords}}</b></div>
                 </div>
             {{/description}}
             </div>

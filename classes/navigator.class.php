@@ -255,16 +255,16 @@ class navigation {
     public function get_full_tree_rec($parentid, $idpath, $namepath, $outputlayout, $short = true) {
         global $DB;
 
-        $whereclauses = array("{$this->taxonomy->sqlparent} = ?");
+        $whereclauses = array(" {$this->taxonomy->sqlparent} = ? ");
 
         $params = array($parentid);
 
         if (!empty($this->taxonomy->taxonselection)) {
             list($insql, $inparams) = $DB->get_in_or_equal(explode(',', $this->taxonomy->taxonselection));
             $whereclauses[] = " id $insql";
-            if (!empty($params)) {
-                foreach ($inparams as $param) {
-                    $params[] = $param;
+            if (!empty($inparams)) {
+                foreach ($inparams as $pid => $pvalue) {
+                    $params[] = $pvalue;
                 }
             }
         }
@@ -420,24 +420,45 @@ class navigation {
 
     /**
      * Prints a displayable taxonomy path.
-     *
+     * @param mixed $taxonvalue a single taxon id, or a slashed taxon path. slashtaxonpaths will end with a trailing slash even if one single node.
+     * @return A slashe readable textual path.
      */
     public function get_printable_taxon_path($taxonvalue) {
         global $DB;
 
-        if ($taxon = $DB->get_record($this->taxonomy->tablename, array('id' => $taxonvalue))) {
-            $labelfield = $this->taxonomy->sqllabel;
-            $parentfield = $this->taxonomy->sqlparent;
-            $taxonpathelms[] = $taxon->$labelfield;
-            while ($taxon->$parentfield) {
-                $taxon = $DB->get_record($this->taxonomy->tablename, array('id' => $taxon->$parentfield));
-                $taxonpathelms[] = $taxon->$labelfield;
-            }
+        if (empty($taxonvalue)) {
+            return '';
+        }
 
-            $taxonpathelms = array_reverse($taxonpathelms);
+        if (!is_numeric($taxonvalue)) {
+            $taxonvalue = preg_replace('/\/$/', '', $taxonvalue);
+            $taxonids = explode('/', $taxonvalue);
+            $taxonpathelms = array();
+            foreach ($taxonids as $tid) {
+                if ($taxon = $DB->get_record($this->taxonomy->tablename, array('id' => $tid))) {
+                    $labelfield = $this->taxonomy->sqllabel;
+                    $taxonpathelms[] = $taxon->$labelfield;
+                } else {
+                    throw new coding_exception('Taxon not found for value '.$tid);
+                }
+            }
             return implode(' / ', $taxonpathelms);
         } else {
-            throw new coding_exception('Taxon not found for value '.$taxonvalue);
+
+            if ($taxon = $DB->get_record($this->taxonomy->tablename, array('id' => $taxonvalue))) {
+                $labelfield = $this->taxonomy->sqllabel;
+                $parentfield = $this->taxonomy->sqlparent;
+                $taxonpathelms[] = $taxon->$labelfield;
+                while ($taxon->$parentfield) {
+                    $taxon = $DB->get_record($this->taxonomy->tablename, array('id' => $taxon->$parentfield));
+                    $taxonpathelms[] = $taxon->$labelfield;
+                }
+
+                $taxonpathelms = array_reverse($taxonpathelms);
+                return implode(' / ', $taxonpathelms);
+            } else {
+                throw new coding_exception('Taxon not found for value '.$taxonvalue);
+            }
         }
     }
 

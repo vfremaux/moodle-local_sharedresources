@@ -66,7 +66,7 @@ if ($hasconfig || $usecap || $viewcap || $managecap) {
     if ($DB->get_field('modules', 'visible', array('name' => 'sharedresource'))) {
 
         if (!$ADMIN->locate('resources')) {
-            $ADMIN->add('root', new admin_category('resources', get_string('resources', 'local_sharedresources')));
+            $ADMIN->add('root', new admin_category('resources', get_string('pluginname', 'local_sharedresources')));
         }
 
         $label = get_string('pluginname', 'local_sharedresources');
@@ -98,7 +98,12 @@ if ($hassiteconfig) {
         $upgradelock = true;
     }
 
-    $settings = new admin_settingpage('local_sharedresources', get_string('pluginname', 'sharedresource').'<br/>'.$message);
+    $label = get_string('pluginname', 'sharedresource');
+    $settings = new admin_settingpage('local_sharedresources', $label);
+
+    if (!empty($message)) {
+            $settings->add(new admin_setting_heading('lockedmessage', '', $message));
+    }
 
     $config = get_config('sharedresource');
 
