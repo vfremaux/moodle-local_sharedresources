@@ -34,6 +34,8 @@ if ($searchplugins = glob($CFG->dirroot.'/local/sharedresources/classes/searchwi
     }
 }
 
+define('RETURN_PAGE', 1);
+
 $PAGE->requires->js_call_amd('local_sharedresources/boxview', 'init');
 $PAGE->requires->js_call_amd('local_sharedresources/library', 'init');
 
@@ -67,11 +69,8 @@ if (!empty($config->privatecatalog)) {
         $context = context_system::instance();
         require_login();
     }
-    $caps = array('repository/sharedresources:use','repository/sharedresources:create', 'repository/sharedresources:manage');
     if (!sharedresources_has_capability_somewhere('repository/sharedresources:view', false, false, false, CONTEXT_COURSECAT.','.CONTEXT_COURSE)) {
-        if (!has_any_capability($caps, $context)) {
-            print_error('noaccess', 'local_sharedresource');
-        }
+        print_error('noaccess', 'local_sharedresource');
     }
 }
 
@@ -91,6 +90,7 @@ $PAGE->requires->jquery_plugin('animatenumber', 'local_sharedresources');
 $PAGE->set_heading($strheading);
 $PAGE->set_title($strheading);
 $PAGE->set_pagelayout('course');
+$PAGE->set_cacheable(false);
 
 $renderer = $PAGE->get_renderer('local_sharedresources');
 
@@ -150,11 +150,16 @@ foreach ($classificationfilters as $afilter) {
 }
 */
 $filters = null;
+
 $renderer->add_path($catpath, $navigator);
 
 echo $OUTPUT->header();
 
 echo $renderer->tools($course);
+
+echo '<center>';
+echo $renderer->searchlink();
+echo '</center>';
 
 if (is_dir($CFG->dirroot.'/local/staticguitexts')) {
     // If static gui texts are installed, add a static text to be edited by administrator.
@@ -171,7 +176,8 @@ echo $taxonomyselector;
 
 // Calling navigation.
 
-$isediting = has_capability('repository/sharedresources:manage', $context, $USER->id);
+// $isediting = has_capability('repository/sharedresources:manage', $context, $USER->id);
+$isediting = sharedresources_has_capability_somewhere('repository/sharedresources:create', false, false, false, CONTEXT_COURSECAT.','.CONTEXT_COURSE);
 
 if ($catid) {
     $category = $navigator->get_category($catid, $catpath, $filters);
