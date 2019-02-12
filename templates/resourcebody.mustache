@@ -37,16 +37,16 @@
             <!-- a href="{{{url}}}" target="_blank"><img src="{{{downloadpixurl}}}" class="iconlarge" /> </a -->
         </td>
 
-        {{#hascommands}}
+        {{#haseditioncommands}}
         <td class="resource-cell resource-commands" width="20%">
             {{{editioncommands}}}
         </td>
-        {{/hascommands}}
+        {{/haseditioncommands}}
     </tr>
 
     <tr class="sharedresource-user-control {{ishiddenbyrule}}">
         <td colspan="3">
-            <div class="resource-user-controls">{{{noticepopupactionlink}}} {{> local_sharedresources/resourcecommands}}</div>
+            <div class="resource-user-controls">{{#shownotice}}{{{noticepopupactionlink}}}{{/shownotice}} {{#hascommands}}{{> local_sharedresources/resourcecommands}}{{/hascommands}}</div>
         </td>
     </tr>
 

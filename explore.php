@@ -51,6 +51,8 @@ if ($searchplugins = glob($CFG->dirroot.'/local/sharedresources/classes/searchwi
 
 require_once($CFG->dirroot.'/local/sharedresources/lib.php');
 
+define('RETURN_PAGE', 2);
+
 $config = get_config('local_sharedresources');
 $shrconfig = get_config('sharedresource');
 $mtdplugin = sharedresource_get_plugin($shrconfig->schema);
@@ -75,14 +77,12 @@ if (!empty($config->privatecatalog)) {
         $context = context_course::instance($courseid);
         $course = $DB->get_record('course', array('id' => $courseid));
         require_login($course);
-        $caps = array('repository/sharedresources:use','repository/sharedresources:create', 'repository/sharedresources:manage');
-        if (!sharedresources_has_capability_somewhere('repository/sharedresources:view', false, false, false, CONTEXT_COURSECAT.','.CONTEXT_COURSE)) {
-            if (!has_any_capability($caps, $context)) {
-                print_error('noaccess', 'local_sharedresource');
-            }
-        }
     } else {
         $context = context_system::instance();
+    }
+
+    if (!sharedresources_has_capability_somewhere('repository/sharedresources:view', false, false, false, CONTEXT_COURSECAT.','.CONTEXT_COURSE)) {
+        print_error('noaccess', 'local_sharedresource');
     }
 }
 
@@ -175,7 +175,8 @@ if (($repo == 'local') || empty($repo)) {
     echo $renderer->tools($course);
 }
 
-$isediting = has_capability('repository/sharedresources:manage', $context, $USER->id) && ($repo == 'local');
+// $isediting = has_capability('repository/sharedresources:manage', $context, $USER->id);
+$isediting = sharedresources_has_capability_somewhere('repository/sharedresources:create', false, false, false, CONTEXT_COURSECAT.','.CONTEXT_COURSE);
 
 $fullresults = array();
 

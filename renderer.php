@@ -224,12 +224,19 @@ class local_sharedresources_renderer extends plugin_renderer_base {
                 // Librarian controls.
                 $commands = '';
                 if ($isediting) {
+                    $catid = optional_param('catid', '', PARAM_INT);
+                    $catpath = optional_param('catpath', '', PARAM_TEXT);
+                    if (!defined('RETURN_PAGE')) {
+                        define('RETURN_PAGE', 0);
+                    }
                     $params = array('course' => 1,
                                     'type' => 'file',
                                     'add' => 'sharedresource',
-                                    'return' => 1,
+                                    'return' => RETURN_PAGE,
                                     'mode' => 'update',
-                                    'entryid' => $resource->id);
+                                    'entryid' => $resource->id,
+                                    'catid' => $catid,
+                                    'catpath' => $catpath);
                     $editurl = new moodle_url('/mod/sharedresource/edit.php', $params);
                     $commands = '<a href="'.$editurl.'" title="'.$editstr.'">'.$this->output->pix_icon('t/edit', get_string('edit')).'</a>';
 
@@ -275,10 +282,11 @@ class local_sharedresources_renderer extends plugin_renderer_base {
                 if (!$isremote) {
                     $mainfile = false;
                     if (!empty($resource->file)) {
-                        $mainfile = $fs->get_file_by_id($resource->file);
-                        $resource->filename = $mainfile->get_filename();
-                        $resource->filepath = $mainfile->get_filepath();
-                        $template->mimetype = $mainfile->get_mimetype();
+                        if ($mainfile = $fs->get_file_by_id($resource->file)) {
+                            $resource->filename = $mainfile->get_filename();
+                            $resource->filepath = $mainfile->get_filepath();
+                            $template->mimetype = $mainfile->get_mimetype();
+                        }
                     }
 
                     $customresourcethumbs = $fs->get_area_files($contextid, $component, $area, $itemid, '', false);
@@ -325,13 +333,17 @@ class local_sharedresources_renderer extends plugin_renderer_base {
                 $template->repoid = $providerhostid;
 
                 // Print notice access.
-                $readnotice = get_string('readnotice', 'sharedresource');
-                $url = "{$reswwwroot}/mod/sharedresource/metadatanotice.php?identifier={$resource->identifier}";
-                $popupaction = new popup_action('click', $url, 'popup', array('width' => 800, 'height' => 600));
-                $pixicon = new pix_icon('notice', $readnotice, 'local_sharedresources');
-                $template->noticepopupactionlink = $this->output->action_link($url, '', $popupaction, array('title' => $readnotice), $pixicon);
-                $pixicon = new pix_icon('boxnotice', $readnotice, 'local_sharedresources');
-                $template->boxnoticepopupactionlink = $this->output->action_link($url, '', $popupaction, array('title' => $readnotice), $pixicon);
+                $template->shownotice = false;
+                if (empty($config->hidenotice)) {
+                    $template->shownotice = true;
+                    $readnotice = get_string('readnotice', 'sharedresource');
+                    $url = "{$reswwwroot}/mod/sharedresource/metadatanotice.php?identifier={$resource->identifier}";
+                    $popupaction = new popup_action('click', $url, 'popup', array('width' => 800, 'height' => 600));
+                    $pixicon = new pix_icon('notice', $readnotice, 'local_sharedresources');
+                    $template->noticepopupactionlink = $this->output->action_link($url, '', $popupaction, array('title' => $readnotice), $pixicon);
+                    $pixicon = new pix_icon('boxnotice', $readnotice, 'local_sharedresources');
+                    $template->boxnoticepopupactionlink = $this->output->action_link($url, '', $popupaction, array('title' => $readnotice), $pixicon);
+                }
 
                 // Content toggler.
                 $template->handlepixurl = $this->output->image_url('rightarrow', 'local_sharedresources');
@@ -347,7 +359,6 @@ class local_sharedresources_renderer extends plugin_renderer_base {
                 $template->views = $resource->scoreview;
 
                 // Likes.
-
                 $template->stars = $this->stars($resource->scorelike, 15);
 
                 // Resource descriptors.
@@ -370,10 +381,15 @@ class local_sharedresources_renderer extends plugin_renderer_base {
                 if (!$isremote) {
                     if ($resource->context > 1) {
                         $viewcap = 'repository/sharedresources:view';
-                        if (sharedresources_has_capability_in_upper_contexts($viewcap, $resource->context, true, true)) {
-                            $template->url = $resourceurl;
-                        } else {
-                            // Show the resource but do not allow download.
+                        try {
+                            $access = sharedresources_has_capability_in_upper_contexts($viewcap, $resource->context, true, true);
+                            if ($access) {
+                                $template->url = $resourceurl;
+                            } else {
+                                // Show the resource but do not allow download.
+                                $template->url = false;
+                            }
+                        } catch (Exception $e) {
                             $template->url = false;
                         }
                     } else {
@@ -409,10 +425,11 @@ class local_sharedresources_renderer extends plugin_renderer_base {
                 // Ressource commands.
                 $template->hascommands = false;
                 if (!empty($course) && ($course->id > SITEID)) {
-                    $template->hascommands = true;
                     $context = context_course::instance($course->id);
 
-                    if (has_capability('moodle/course:manageactivities', $context)) {
+                    if (has_capability('moodle/course:manageactivities', $context) &&
+                        has_capability('repository/sharedresources:use', $context)) {
+                        $template->hascommands = true;
 
                         $template->isremote = $isremote;
                         if (!$isremote) {
@@ -478,31 +495,31 @@ class local_sharedresources_renderer extends plugin_renderer_base {
 
         $template = new StdClass;
 
-        if ($course->id == SITEID) {
-            $context = context_system::instance();
-        } else {
-            $context = context_course::instance($course->id);
-        }
+        $systemcontext = context_system::instance();
+        if (sharedresources_has_capability_somewhere('repository/sharedresources:create', false, false, false, CONTEXT_COURSECAT.','.CONTEXT_COURSE)) {
 
-        $toollinks = array();
-
-        if ($course->id > SITEID) {
-            if (has_capability('repository/sharedresources:create', $context)) {
+            if ($course->id > SITEID) {
                 // User has capability to convert his local resources to shared entries.
                 $template->convertstr = get_string('resourceconversion', 'local_sharedresources');
                 $template->converturl = new moodle_url('/mod/sharedresource/admin_convertall.php', array('course' => $course->id));
             }
-        }
 
-        if (has_capability('repository/sharedresources:create', $context)) {
             // Librarian should have the capability everywhere. Enabled teachers in their own course.
             $template->newresourcestr = get_string('newresource', 'local_sharedresources');
-            $params = array('course' => $course->id, 'type' => 'file', 'add' => 'sharedresource', 'return' => 1, 'mode' => 'add');
+            $catid = optional_param('catid', 0, PARAM_INT);
+            $catpath = optional_param('catpath', '', PARAM_TEXT);
+            $params = array('course' => $course->id,
+                            'type' => 'file',
+                            'add' => 'sharedresource',
+                            'return' => RETURN_PAGE,
+                            'mode' => 'add',
+                            'catid' => $catid,
+                            'catpath' => $catpath);
             $template->editurl = new moodle_url('/mod/sharedresource/edit.php', $params);
         }
 
         if (local_sharedresources_supports_feature('import/mass')) {
-            if (has_capability('repository/sharedresources:manage', $context)) {
+            if (has_capability('repository/sharedresources:manage', $systemcontext)) {
                 // Only librarians in a "pro" version can mass import.
                 $template->massimportstr = get_string('massimport', 'local_sharedresources');
                 $template->importurl = new moodle_url('/local/sharedresources/pro/admin/admin_mass_import.php', array('course' => $course->id));

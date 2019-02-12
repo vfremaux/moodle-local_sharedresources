@@ -377,14 +377,14 @@ function sharedresources_is_consumer($hostroot) {
         SELECT
             mh.*
         FROM
-            {$CFG->prefix}mnet_host mh,
-            {$CFG->prefix}mnet_host2service h2s,
-            {$CFG->prefix}mnet_service ms
+            {mnet_host} mh,
+            {mnet_host2service} h2s,
+            {mnet_service} ms
         WHERE
             mh.id = h2s.hostid AND
             h2s.serviceid = ms.id AND
             ms.name = 'sharedresourceservice' AND
-            h2s.subscribe = 1 AND
+            h2s.publish = 1 AND
             mh.deleted = 0 AND
             mh.wwwroot = ?
     ";
