@@ -189,6 +189,10 @@ a.sharedresource-actionlink {
     height:1.8em !important;
 }
 
+#local_sharedresource_searchblock h2 {
+    font-size: initial;
+}
+
 .box-resource-images {
     max-width: 128px;
     max-height: 128px;
