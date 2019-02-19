@@ -66,7 +66,7 @@ if ($hasconfig || $usecap || $viewcap || $managecap) {
     if ($DB->get_field('modules', 'visible', array('name' => 'sharedresource'))) {
 
         if (!$ADMIN->locate('resources')) {
-            $ADMIN->add('root', new admin_category('resources', get_string('pluginname', 'local_sharedresources')));
+            $ADMIN->add('root', new admin_category('resources', get_string('resources', 'local_sharedresources')));
         }
 
         $label = get_string('pluginname', 'local_sharedresources');
