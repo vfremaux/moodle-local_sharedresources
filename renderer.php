@@ -68,7 +68,7 @@ class local_sharedresources_renderer extends plugin_renderer_base {
 
         for ($i = 0; $i < $maxstars; $i++) {
             $icon = ($i < $stars) ? 'star' : 'star_shadow';
-            $str .= '<img src="'.$OUTPUT->image_url($icon, 'local_sharedresources').'" />';
+            $str .= $OUTPUT->pix_icon($icon, '', 'local_sharedresources');
         }
 
         return $str;

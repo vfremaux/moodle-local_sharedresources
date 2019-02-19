@@ -25,12 +25,6 @@
  */
 defined('MOODLE_INTERNAL') || die();
 
-if (!function_exists('debug_trace')) {
-    function debug_trace() {
-        assert(1);
-    }
-}
-
 require_once($CFG->dirroot.'/mnet/xmlrpc/client.php');
 require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
 require_once($CFG->dirroot.'/mod/sharedresource/rpclib.php');
@@ -598,7 +592,9 @@ function sharedresources_setup_widgets(&$visiblewidgets, $context) {
         */
         }
     } else {
-        debug_trace('Failed deserializeing');
+        if (function_exists('debug_trace')) {
+            debug_trace('Failed deserializing');
+        }
     }
 }
 
