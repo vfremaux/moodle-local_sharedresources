@@ -89,10 +89,10 @@ if (!empty($config->privatecatalog)) {
 // Prepare the page.
 
 $PAGE->set_context($context);
-$PAGE->set_pagelayout('course');
 $PAGE->navbar->add(get_string('sharedresources_library', 'local_sharedresources'));
 $PAGE->set_title(get_string('sharedresources_library', 'local_sharedresources'));
 $PAGE->set_heading(get_string('sharedresources_library', 'local_sharedresources'));
+$PAGE->set_pagelayout('standard');
 
 $params = array('edit' => $edit,
                 'blockaction' => $blockaction,
