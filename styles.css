@@ -145,13 +145,15 @@ a.sharedresource-actionlink {
     display: inline-block;
 }
 
-.sharedresource-librarian-controls,
 .sharedresource-user-controls  {
     padding-left: 10px;
+    text-align:center;
 }
 
-.sharedresource-user-controls {
-    text-align:center;
+.sharedresource-librarian-controls{
+    padding-left: 10px;
+    text-align: right;
+    padding-right: 5px;
 }
 
 .sharedresource-item-container {
@@ -216,4 +218,31 @@ a.sharedresource-actionlink {
     font-size: 85%;
     height: 2em;
     margin-bottom: 3px;
+}
+
+#page-local-sharedresources-explore .header h2,
+#page-local-sharedresources-browse .header h2 {
+    font-size: 1rem;
+}
+
+#mtd-form-schema {
+    padding-bottom: 20px;
+    font-size: 0.8rem;
+}
+
+.sharedresource-picture {
+    text-align: center;
+}
+
+.sharedresource-picture img {
+    width: 25%;
+}
+
+.sharedresource-user-controls{
+    text-align: center;
+    padding-left: 0px;
+}
+
+#sharedresources-link-to-browser {
+    margin-bottom: 10px;
 }
