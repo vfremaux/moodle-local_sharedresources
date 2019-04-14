@@ -89,7 +89,7 @@ $PAGE->requires->jquery();
 $PAGE->requires->jquery_plugin('animatenumber', 'local_sharedresources');
 $PAGE->set_heading($strheading);
 $PAGE->set_title($strheading);
-$PAGE->set_pagelayout('course');
+$PAGE->set_pagelayout('standard');
 $PAGE->set_cacheable(false);
 
 $renderer = $PAGE->get_renderer('local_sharedresources');
@@ -162,6 +162,7 @@ echo $renderer->searchlink();
 echo '</center>';
 
 if (is_dir($CFG->dirroot.'/local/staticguitexts')) {
+    include_once($CFG->dirroot.'/local/staticguitexts/lib.php');
     // If static gui texts are installed, add a static text to be edited by administrator.
     echo '<div class="static">';
     local_print_static_text('sharedresources_browser_header', $CFG->wwwroot.'/local/sharedresources/browse.php');
