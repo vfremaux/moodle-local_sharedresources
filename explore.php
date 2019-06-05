@@ -112,9 +112,14 @@ if ($action) {
 
 $course = $DB->get_record('course', array('id' => $courseid));
 
+if (empty($config->searchblocksposition)) {
+    set_config('searchblocksposition', 'side-pre', 'local_sharedresources');
+    $config->searchblocksposition = 'side-pre';
+}
+
 $resourcesmoodlestr = get_string('resources', 'sharedresource');
 
-if (file_exists($CFG->dirroot.'/blocks/search')) {
+if (file_exists($CFG->dirroot.'/blocks/search') && get_config('local_search', 'enable')) {
     $configsaved = $config;
     $block = block_instance('search');
     $bc = new block_contents();
@@ -128,11 +133,6 @@ if (file_exists($CFG->dirroot.'/blocks/search')) {
 }
 
 /* Search in sharedresources */
-
-if (empty($config->searchblocksposition)) {
-    set_config('searchblocksposition', 'side-pre', 'local_sharedresources');
-    $config->searchblocksposition = 'side-pre';
-}
 
 $visiblewidgets = array();
 if ($repo == 'local') {

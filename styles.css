@@ -246,3 +246,27 @@ a.sharedresource-actionlink {
 #sharedresources-link-to-browser {
     margin-bottom: 10px;
 }
+
+a.force-delete i {
+    color: red;
+}
+
+.sh-icon {
+    margin-right: 20px;
+    margin-left: 10px;
+}
+
+img.icon48 {
+    width: 48px;
+    height: 48px;
+}
+
+img.icon16 {
+    width: 16px;
+    height: 16px;
+}
+
+img.icon32 {
+    width: 32px;
+    height: 32px;
+}
