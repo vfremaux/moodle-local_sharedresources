@@ -189,8 +189,8 @@ class local_sharedresources_renderer extends plugin_renderer_base {
         $aclsstr = get_string('accesscontrol', 'local_sharedresources');
 
         $aclspix = $this->output->pix_icon('i/permissions', $aclsstr);
-        $deletepix = $this->output->pix_icon('delete', $deletestr, 'sharedresource');
-        $forcedeletepix = $this->output->pix_icon('t/delete', $forcedeletestr);
+        $deletepix = $this->output->pix_icon('t/delete', $deletestr, 'core');
+        $forcedeletepix = $this->output->pix_icon('t/delete', $forcedeletestr, 'core');
         $exportpix = $this->output->pix_icon('export', $exportstr, 'sharedresource');
         $defaultresourcepixurl = $this->output->image_url('defaultdocument', 'sharedresource');
 
@@ -253,7 +253,7 @@ class local_sharedresources_renderer extends plugin_renderer_base {
                     } else {
                         $params = array('what' => 'forcedelete', 'course' => $courseid, 'id' => $resource->id);
                         $deleteurl = new moodle_url($FULLME, $params);
-                        $commands .= '&nbsp;<a href="'.$deleteurl.'" title="'.$forcedeletestr.'">'.$forcedeletepix.'</a>';
+                        $commands .= '&nbsp;<a href="'.$deleteurl.'" title="'.$forcedeletestr.'" class="force-delete">'.$forcedeletepix.'</a>';
                     }
                     $params = array('course' => $courseid, 'resourceid' => $resource->id);
                     $pushurl = new moodle_url('/local/sharedresources/pushout.php', $params);
@@ -289,6 +289,9 @@ class local_sharedresources_renderer extends plugin_renderer_base {
                         }
                     }
 
+                    // Used with iconurl.
+                    $template->iconsize = 32;
+
                     $customresourcethumbs = $fs->get_area_files($contextid, $component, $area, $itemid, '', false);
                     $template->iscustomicon = false;
                     if (!empty($customresourcethumbs)) {
@@ -299,6 +302,13 @@ class local_sharedresources_renderer extends plugin_renderer_base {
                     } else {
                         if (!empty($mainfile)) {
                             $template->largepixurl = $this->output->image_url(file_file_icon($mainfile, 128));
+                            $template->pixurl = $this->output->image_url(file_extension_icon($mainfile->get_filename()));
+                            $template->filesize = sprintf('%.2f', $mainfile->get_filesize() / 1000);
+                            $template->fileunit = ' ko';
+                            if ($template->filesize > 1000) {
+                                $template->filesize = sprintf('%.2f', $template->filesize / 1000);
+                                $template->fileunit = ' Mo';
+                            }
                         } else {
                             $template->largepixurl = $this->output->image_url('weblink', 'local_sharedresources');
                         }

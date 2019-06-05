@@ -30,7 +30,10 @@
         <td class="resource-cell resource-title" width="70%">
             <img id="sharedresource-toggle-{{identifier}}" class="sharedresource-toggle-handle" src="{{handlepixurl}}">
 
-            <img src="{{{pixurl}}}" class="iconlarge" /> <a href="{{{url}}}" target="_blank">{{title}}</a>
+            <img src="{{{pixurl}}}" class="icon{{iconsize}} sh-icon" /> <a href="{{{url}}}" target="_blank">{{title}}</a> 
+            {{#filesize}}
+            ({{filesize}}{{fileunit}})
+            {{/filesize}}
         </td>
 
         <td class="resource-cell resource-download" width="10%">
