@@ -52,6 +52,7 @@ define(['jquery', 'core/config', 'core/log', 'core/str'], function ($, cfg, log,
             $('.sharedresource-toggle-handle').bind('click', this.toggle_info_panel);
             $('.sharedresource-mark-like').on('click', '', args, this.ajax_mark_like);
             $('.sharedresource-actionlink').bind('click', this.integrate);
+            $('.sharedresource.delete').bind('click', this.confirm);
             $('.sharedresource.force-delete').bind('click', this.confirm);
 
             log.debug('ADM Shared resource Library JS initialized');
