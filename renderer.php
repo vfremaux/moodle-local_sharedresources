@@ -253,7 +253,7 @@ class local_sharedresources_renderer extends plugin_renderer_base {
                     } else {
                         $params = array('what' => 'forcedelete', 'course' => $courseid, 'id' => $resource->id);
                         $deleteurl = new moodle_url($FULLME, $params);
-                        $commands .= '&nbsp;<a href="'.$deleteurl.'" title="'.$forcedeletestr.'" class="force-delete">'.$forcedeletepix.'</a>';
+                        $commands .= '&nbsp;<a href="'.$deleteurl.'" title="'.$forcedeletestr.'" class="sharedresource force-delete">'.$forcedeletepix.'</a>';
                     }
                     $params = array('course' => $courseid, 'resourceid' => $resource->id);
                     $pushurl = new moodle_url('/local/sharedresources/pushout.php', $params);

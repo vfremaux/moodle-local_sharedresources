@@ -50,6 +50,7 @@ $string['configprivatecatalog'] = 'Private catalog';
 $string['configprohdr'] = 'Additional "pro" features';
 $string['configsearchblocksposition'] = 'Location of the search blocks';
 $string['confirm'] = 'Confirm';
+$string['confirmresourcedeletion'] = 'This resource is used in courses. Do you realy want to remove it from everywhere ?';
 $string['confirmsimulate'] = 'Confirm simulation';
 $string['contains'] = 'contains';
 $string['courselist'] = 'Course list';

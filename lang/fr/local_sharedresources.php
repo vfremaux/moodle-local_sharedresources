@@ -50,6 +50,7 @@ $string['configsearchblocksposition'] = 'Position des blocs de recherche';
 $string['confighidenotice'] = 'Cacher le lien vers la notice';
 $string['convertresources'] = 'Convertir des ressources';
 $string['confirm'] = 'Confirmer';
+$string['confirmresourcedeletion'] = 'Cette ressource est utilisée dans des cours. Voulez-vous vraiment la supprimer de la librairie ?';
 $string['confirmsimulate'] = 'Confirmer la simulation';
 $string['contains'] = 'contient';
 $string['deducetaxonomyfrompath'] = 'Déduire la taxonomie du chemin';

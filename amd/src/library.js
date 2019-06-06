@@ -20,11 +20,21 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 // jshint unused: true, undef:true
-define(['jquery', 'core/config', 'core/log'], function ($, cfg, log) {
+define(['jquery', 'core/config', 'core/log', 'core/str'], function ($, cfg, log, str) {
 
     var sharedresourceslibrary = {
 
+        strs: [],
+
         init: function (args) {
+
+            var stringdefs = [
+                {key: 'confirmresourcedeletion', component: 'local_sharedresources'}, // 0
+            ];
+
+            str.get_strings(stringdefs).done(function(s) {
+                sharedresourceslibrary.strs = s;
+            });
 
             var that = $(this);
 
@@ -41,6 +51,7 @@ define(['jquery', 'core/config', 'core/log'], function ($, cfg, log) {
             $('.sharedresource-toggle-handle').bind('click', this.toggle_info_panel);
             $('.sharedresource-mark-like').on('click', '', args, this.ajax_mark_like);
             $('.sharedresource-actionlink').bind('click', this.integrate);
+            $('.sharedresource.force-delete').bind('click', this.confirm);
 
             log.debug('ADM Shared resource Library JS initialized');
         },
@@ -104,6 +115,14 @@ define(['jquery', 'core/config', 'core/log'], function ($, cfg, log) {
             var ix = matches[2];
             document.forms['add' + ix].mode.value = command;
             document.forms['add' + ix].submit();
+        },
+
+        confirm: function(e) {
+            if (!confirm(sharedresourceslibrary.strs[0])) {
+                e.preventDefault();
+                e.stopImmediatePropagation();
+                return false;
+            }
         }
 
     };
