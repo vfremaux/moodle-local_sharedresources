@@ -29,7 +29,8 @@ define(['jquery', 'core/config', 'core/log', 'core/str'], function ($, cfg, log,
         init: function (args) {
 
             var stringdefs = [
-                {key: 'confirmresourcedeletion', component: 'local_sharedresources'}, // 0
+                {key: 'confirmresourceforcedeletion', component: 'local_sharedresources'}, // 0
+                {key: 'confirmresourcedeletion', component: 'local_sharedresources'}, // 1
             ];
 
             str.get_strings(stringdefs).done(function(s) {
@@ -118,7 +119,15 @@ define(['jquery', 'core/config', 'core/log', 'core/str'], function ($, cfg, log,
         },
 
         confirm: function(e) {
-            if (!confirm(sharedresourceslibrary.strs[0])) {
+
+            var that = $(this);
+
+            var strindex = 0;
+            if (that.hasClass('delete')) {
+                strindex = 1;
+            }
+
+            if (!confirm(sharedresourceslibrary.strs[strindex])) {
                 e.preventDefault();
                 e.stopImmediatePropagation();
                 return false;
