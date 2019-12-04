@@ -5,7 +5,7 @@
     padding: 10px;
 }
 
-#side-pre-like{
+#side-pre-like {
     background-color: #fafafa;
     padding: 20px;
 }
@@ -86,8 +86,26 @@
     display:inline;
 }
 
+.sharedresources-pager {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
 .sharedresources-pager a {
-    margin-right:10px;
+    overflow-wrap: normal;
+    margin-bottom: 10px;
+    line-height: 28px;
+    background-color: #ccc;
+    color: #fff; 
+    border-radius: 4px;
+    padding-left: 10px;
+    padding-right: 10px;
+    margin-right: 15px;
+}
+
+#page-local-sharedresources-explore #region-main {
+    margin: 0;
 }
 
 #sharedresources-link-to-search {
@@ -126,10 +144,12 @@ a.sharedresource-actionlink {
 /* boxed template */
 .sharedresource-list.boxed {
     vertical-align: top;
-    margin-left: 5%;
+    margin-left: 2%;
+    display: flex;
+    flex-wrap: wrap;
 }
 
-.sharedresource-picture img{
+.sharedresource-picture img {
     margin-left:auto;
     margin-right:auto;
     margin-top:10px;
@@ -158,10 +178,34 @@ a.sharedresource-actionlink {
 
 .sharedresource-item-container {
     display:inline-block;
-    max-width:28%;
-    width: 23%;
     vertical-align: top;
-    margin-right: 15px;
+    margin-right: 10px;
+}
+
+.sharedresource-item-container {
+    width: 23%;
+}
+
+@media all and (max-width: 480px) {
+    .sharedresource-item-container {
+        width: 100%;
+    }
+
+    .sharedresources-pager a {
+        margin-right: 5px;
+    }
+}
+
+@media all and (min-width: 480px) and (max-width:1024px) {
+    .sharedresource-item-container {
+        width: 48%;
+    }
+}
+
+@media all and (min-width: 1024px) and (max-width:1200px) {
+    .sharedresource-item-container {
+        width: 31%;
+    }
 }
 
 .sharedresource-list.boxed .resource-likes {
@@ -169,6 +213,7 @@ a.sharedresource-actionlink {
 }
 .sharedresource-list.boxed .resource-likes img {
     width: 12px;
+    height: 12px;
 }
 
 .sharedresource-info-box {
