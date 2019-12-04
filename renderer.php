@@ -593,7 +593,7 @@ class local_sharedresources_renderer extends plugin_renderer_base {
             $urlsearchbase = new moodle_url('/local/sharedresources/index.php', $params);
 
             foreach ($topkws as $kw => $kwinfo) {
-                $freq = sprintf('%02d', $kwinfo->rank);
+                $freq = sprintf('%02d', $kwinfo->ranking);
                 $keyword = urlencode($kwinfo->value);
                 $str .= "<a style=\"font-size:1.{$freq}em\" href=\"$urlsearchbase&amp;Keyword=$keyword\" >{$kwinfo->value}</a> ";
             }
