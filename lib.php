@@ -217,9 +217,7 @@ function sharedresources_get_local_resources($repo, &$fullresults, $metadatafilt
             $rentry = new $entryclass($r);
 
             if (mod_sharedresource_supports_feature('entry/accessctl')) {
-                if (function_exists('debug_trace')) {
-                    debug_trace('local sharedresources: applying access control to result '.$id);
-                }
+                debug_trace('local sharedresources: applying access control to result '.$id);
                 if (!$rentry->has_access()) {
                     if (!has_capability('repository/sharedresources:manage', $systemcontext)) {
                         unset($fullresults['entries'][$id]);
@@ -592,9 +590,7 @@ function sharedresources_setup_widgets(&$visiblewidgets, $context) {
         */
         }
     } else {
-        if (function_exists('debug_trace')) {
-            debug_trace('Failed deserializing');
-        }
+        debug_trace('Failed deserializing');
     }
 }
 
@@ -914,7 +910,7 @@ function sharedresource_get_top_keywords($courseid) {
     $sql = "
         SELECT
             value,
-            COUNT(DISTINCT entryid) as rank
+            COUNT(DISTINCT entryid) as ranking
         FROM
             {sharedresource_metadata} shm,
             {sharedresource_entry} sh
@@ -928,7 +924,7 @@ function sharedresource_get_top_keywords($courseid) {
         GROUP BY
             value
         ORDER BY
-            rank DESC
+            ranking DESC
         LIMIT
             0, $topranksize
     ";
