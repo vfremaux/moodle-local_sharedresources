@@ -27,17 +27,6 @@ require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
 require_once($CFG->dirroot.'/mod/sharedresource/metadatalib.php');
 require_once($CFG->dirroot.'/local/sharedresources/classes/navigator.class.php');
 
-// Settings default init.
-if (is_dir($CFG->dirroot.'/local/adminsettings')) {
-    // Integration driven code.
-    require_once($CFG->dirroot.'/local/adminsettings/lib.php');
-    list($hasconfig, $hassiteconfig, $capability) = local_adminsettings_access();
-} else {
-    // Standard Moodle code.
-    $capability = 'moodle/site:config';
-    $hasconfig = $hassiteconfig = has_capability($capability, context_system::instance());
-}
-
 $shcaps = array(
     'repository/sharedresouces:use',
     'repository/sharedresouces:view',
@@ -60,7 +49,7 @@ if ($namespace = get_config('sharedresource', 'schema')) {
     }
 }
 
-if ($hasconfig || $usecap || $viewcap || $managecap) {
+if (!empty($hasconfig) || $usecap || $viewcap || $managecap) {
     // Needs this condition or there is error on login page.
 
     if ($DB->get_field('modules', 'visible', array('name' => 'sharedresource'))) {
