@@ -254,13 +254,13 @@ function sharedresources_get_remote_repo_resources($repo, &$fullresults, $metada
         print_error('errorrepoprogramming');
     }
 
-    $remote_host = $DB->get_record('mnet_host', array('id' => $repo));
+    $remotehost = $DB->get_record('mnet_host', array('id' => $repo));
 
     // Get the originating (ID provider) host info.
     if (!$remotepeer = new mnet_peer()) {
         print_error('errormnetpeer', 'local_sharedresources');
     }
-    $remotepeer->set_wwwroot($remote_host->wwwroot);
+    $remotepeer->set_wwwroot($remotehost->wwwroot);
 
     // Set up the RPC request.
     $mnetrequest = new mnet_xmlrpc_client();
@@ -269,7 +269,7 @@ function sharedresources_get_remote_repo_resources($repo, &$fullresults, $metada
     // Set remoteuser and remoteuserhost parameters.
     if (!empty($USER->username)) {
         $mnetrequest->add_param($USER->username, 'string');
-        $remoteuserhost = $DB->get_record('mnet_host', array('id'=> $USER->mnethostid));
+        $remoteuserhost = $DB->get_record('mnet_host', array('id' => $USER->mnethostid));
         $mnetrequest->add_param($remoteuserhost->wwwroot, 'string');
     } else {
         $mnetrequest->add_param('anonymous', 'string');
@@ -336,7 +336,7 @@ function sharedresources_get_providers() {
  * service
  */
 function sharedresources_get_consumers() {
-    global $CFG,$DB;
+    global $CFG, $DB;
 
     $sql = "
         SELECT
@@ -403,7 +403,7 @@ function sharedresource_get_usages($entry, &$response, $consumers = null, $user 
     }
 
     if (is_null($consumers)) {
-        $uses = $DB->count_records('sharedresource', array('identifier'=> $entry->identifier));
+        $uses = $DB->count_records('sharedresource', array('identifier' => $entry->identifier));
     } else {
         $uses = 0;
         if ($consumers) {
@@ -422,7 +422,7 @@ function sharedresource_get_usages($entry, &$response, $consumers = null, $user 
                 // Set remoteuser and remoteuserhost parameters.
                 $mnetrequest->add_param($user->username);
 
-                $remoteuserhost = $DB->get_record('mnet_host', array('id'=> $user->mnethostid));
+                $remoteuserhost = $DB->get_record('mnet_host', array('id' => $user->mnethostid));
                 $mnetrequest->add_param($remoteuserhost->wwwroot);
 
                 // Set category and resourceID parameter.
@@ -433,7 +433,7 @@ function sharedresource_get_usages($entry, &$response, $consumers = null, $user 
                     $uses += (int) json_decode($mnetrequest->response);
                 } else {
                     foreach ($mnetrequest->error as $errormessage) {
-                        list($code, $message) = array_map('trim',explode(':', $errormessage, 2));
+                        list($code, $message) = array_map('trim', explode(':', $errormessage, 2));
                         $message .= " Callback ERROR $code:<br/>$errormessage<br/>";
                     }
                     $response['error'][] = "RPC mod/sharedresource/check:<br/>$message";
@@ -453,13 +453,13 @@ function sharedresource_get_usages($entry, &$response, $consumers = null, $user 
 function sharedresource_submit($repo, &$resourceentry) {
     global $CFG, $DB;
 
-    $remote_host = $DB->get_record('mnet_host', array('id'=> $repo));
+    $remotehost = $DB->get_record('mnet_host', array('id' => $repo));
 
     // Get the originating (ID provider) host info.
     if (!$remotepeer = new mnet_peer()) {
         error ("MNET client initialisation error");
     }
-    $remotepeer->set_wwwroot($remote_host->wwwroot);
+    $remotepeer->set_wwwroot($remotehost->wwwroot);
 
     // Set up the RPC request.
     $mnetrequest = new mnet_xmlrpc_client();
@@ -468,7 +468,7 @@ function sharedresource_submit($repo, &$resourceentry) {
     // Set $remoteuser and $remoteuserhost parameters.
     if (!empty($USER->username)) {
         $mnetrequest->add_param($USER->username);
-        $remoteuserhost = $DB->get_record('mnet_host',array('id', $USER->mnethostid));
+        $remoteuserhost = $DB->get_record('mnet_host', array('id', $USER->mnethostid));
         $mnetrequest->add_param($remoteuserhost->wwwroot);
     } else {
         $mnetrequest->add_param('anonymous');
@@ -500,9 +500,9 @@ function sharedresource_submit($repo, &$resourceentry) {
                 $file = $resourceentry->file;
 
                 // Convert local.
-                $resourceentry->url = $remote_host->wwwroot.'/resources/view.php?id='.$resourceentry->identifier;
+                $resourceentry->url = $remotehost->wwwroot.'/resources/view.php?id='.$resourceentry->identifier;
                 $resourceentry->file = '';
-                $resourceentry->provider = sharedresources_repo($remote_host->wwwroot);
+                $resourceentry->provider = sharedresources_repo($remotehost->wwwroot);
                 $DB->update_record('sharedresource', $resourceentry);
 
                 // Destroy local file.
@@ -514,7 +514,7 @@ function sharedresource_submit($repo, &$resourceentry) {
         }
     } else {
         foreach ($mnetrequest->error as $errormessage) {
-            list($code, $message) = array_map('trim',explode(':', $errormessage, 2));
+            list($code, $message) = array_map('trim', explode(':', $errormessage, 2));
             $message .= "ERROR $code:<br/>$errormessage<br/>";
         }
         print_error('rpcsharedresourceerror', 'local_sharedresources', $message);
@@ -540,11 +540,11 @@ function sharedresources_repo($wwwroot) {
 }
 
 /**
-* setup visible search widgets depending on metadata plugin and
-* user quality
-* @param array ref $visiblewidgets an array to be filled by the function with objets reprensenting visible widgets
-* @param object $context course or site context
-*/
+ * setup visible search widgets depending on metadata plugin and
+ * user quality
+ * @param array ref $visiblewidgets an array to be filled by the function with objets reprensenting visible widgets
+ * @param object $context course or site context
+ */
 function sharedresources_setup_widgets(&$visiblewidgets, $context) {
     global $CFG;
 
@@ -578,6 +578,7 @@ function sharedresources_remote_widgets($repo, $context) {
 
     // Load all widget classes.
     $widgetclasses = glob($CFG->dirroot.'/local/sharedresources/classes/searchwidgets/*');
+
     foreach ($widgetclasses as $classfile) {
         include_once($classfile);
     }
@@ -586,6 +587,7 @@ function sharedresources_remote_widgets($repo, $context) {
     if (!$remotepeer = new mnet_peer()) {
         print_error('errormnetpeer', 'local_sharedresources');
     }
+
     if (!$remotehost = $DB->get_record('mnet_host', array('id' => $repo))) {
         if (debugging()) {
             print_error("No such host $repo in the neighborghood");
