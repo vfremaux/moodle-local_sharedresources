@@ -546,8 +546,7 @@ function sharedresources_repo($wwwroot) {
 * @param object $context course or site context
 */
 function sharedresources_setup_widgets(&$visiblewidgets, $context) {
-    global $CFG, $DB;
-    static $loaded = false;
+    global $CFG;
 
     // Load all widget classes.
     $widgetclasses = glob($CFG->dirroot.'/local/sharedresources/classes/searchwidgets/*');
@@ -557,37 +556,12 @@ function sharedresources_setup_widgets(&$visiblewidgets, $context) {
 
     $config = get_config('sharedresource');
 
-    /*
-    // TODO : complete the code when setting up new capabilities related to widgets usage (read).
-
-    // Setup the catalog view separating providers with tabs.
-    $plugins = sharedresource_get_plugins();
-    $pluginname = $plugins[$config->schema]->pluginname;
-
-    if (has_capability('repository/sharedresources:systemmetadata', $context)) {
-        $capability = 'system';
-    } else if (has_capability('repository/sharedresources:indexermetadata', $context)) {
-        $capability = 'indexer';
-    } else if (has_capability('repository/sharedresources:authormetadata', $context)) {
-        $capability = 'author';
-    } else {
-        print_error(get_string('noaccessform', 'sharedresource'));
-    }
-    */
-
     if ($activewidgets = unserialize(@$config->activewidgets)) {
         $count = 0;
         foreach ($activewidgets as $key => $widget) {
 
-        /*
-        // TODO : complete the code when setting up new capabilities related to widgets usage (read).
-            if ($DB->record_exists_select('config_plugins', "name LIKE 'config_{$pluginname}_{$capability}_{$widget->id}'")) {
-        */
-                $count++;
-                $visiblewidgets[$key] = $widget;
-        /*
-            }
-        */
+            $count++;
+            $visiblewidgets[$key] = $widget;
         }
     } else {
         debug_trace('Failed deserializing');
@@ -751,8 +725,6 @@ function sharedresources_get_string($identifier, $subplugin, $a = '', $lang = ''
  * @param object $resource a sharedresource descriptor
  */
 function sharedresource_is_lti($resource) {
-    global $CFG;
-
     return(preg_match('/LTI/', $resource->keywords) || @$resource->islti);
 }
 
@@ -978,7 +950,7 @@ function sharedresources_scan_importpath($upath, &$importlines, &$metadatadefine
 
     // Apply overriding aliases to taxonomy.
     if (!function_exists('alias_taxon_tokens')) {
-        function alias_taxon_tokens(&$item, $k, $aliases) {
+        function alias_taxon_tokens(&$item, $unused, $aliases) {
             if (array_key_exists($item, $aliases)) {
                 $item = $aliases[$item];
             }
