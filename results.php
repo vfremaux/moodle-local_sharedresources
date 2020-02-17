@@ -70,7 +70,7 @@ resources_search_print_tabs($repo, $course);
 
 echo $OUTPUT->heading($searchresultsstr);
 
-include($CFG->dirroot."/local/sharedresources/plugins/{$repo}/remoteresults.php");
+require($CFG->dirroot."/local/sharedresources/plugins/{$repo}/remoteresults.php");
 
 echo '<center>';
 $params = array('repo' => $repo, 'id' => $courseid);

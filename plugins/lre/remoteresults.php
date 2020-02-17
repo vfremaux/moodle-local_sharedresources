@@ -25,7 +25,7 @@
  */
 defined('MOODLE_INTERNAL') || die();
 
-/**
+/*
  * get the query parts, recompose the complete LRE SQI query and shoots a SQI SOAP call.
  */
 

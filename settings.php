@@ -169,10 +169,6 @@ if ($hassiteconfig) {
     $desc = get_string('configlistviewthreshold_desc', 'local_sharedresources');
     $settings->add(new admin_setting_configselect($key, $label, $desc, 30, $options));
 
-    /*
-    $options = array('left' => get_string('toleft', 'local_sharedresources')),
-                     'right' => get_string('toright', 'local_sharedresources'));
-    */
     $themeconfig = theme_config::load($CFG->theme);
     $layoutregions = $themeconfig->layouts['course']['regions'];
     $options = array();

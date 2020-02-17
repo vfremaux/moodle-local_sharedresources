@@ -145,15 +145,15 @@ class local_sharedresources_renderer extends plugin_renderer_base {
         if ($courseid) {
             for ($i = 1; $i <= $nbrpages; $i++) {
                 $pageoffset = ($i - 1) * $page;
-                $pagestyle = ($pageoffset == $offset) ? 'color:black;font-size:14pt' : 'color:grey;font-size:12pt' ;
+                $pagestyle = ($pageoffset == $offset) ? 'color:black;font-size:14pt' : 'color:grey;font-size:12pt';
                 $params = array('course' => $courseid, 'repo' => $repo, 'offset' => $pageoffset, 'isediting' => $isediting);
                 $libraryurl = new moodle_url($FULLME, $params);
                 $str .= '<a style="'.$pagestyle.'" name="page'.$i.'" href="'.$libraryurl.'">'.$i.'</a>';
             }
         } else {
             for ($i = 1; $i <= $nbrpages; $i++) {
-                $pageoffset = ($i - 1)*$page;
-                $pagestyle = ($pageoffset == $offset) ? 'color:black;font-size:14pt' : 'color:grey;font-size:12pt' ;
+                $pageoffset = ($i - 1) * $page;
+                $pagestyle = ($pageoffset == $offset) ? 'color:black;font-size:14pt' : 'color:grey;font-size:12pt';
                 $params = array('repo' => $repo, 'offset' => $pageoffset, 'isediting' => $isediting);
                 $libraryurl = new moodle_url('/local/sharedresources/index.php', $params);
                 $str .= '<a style="'.$pagestyle.'" name="page'.$i.'" href="'.$libraryurl.'">'.$i.'</a>';
@@ -415,8 +415,8 @@ class local_sharedresources_renderer extends plugin_renderer_base {
                 }
 
                 // Resource caracterization.
-                $template->isresource = true; // default, may be overriden by other types.
-                $template->islocalizable = true; // default, may be overriden by other types.
+                $template->isresource = true; // Default, may be overriden by other types.
+                $template->islocalizable = true; // Default, may be overriden by other types.
                 $template->i = $i;
                 $template->isltitool = sharedresource_is_lti($resource);
                 $template->ismoodleactivity = sharedresource_is_moodle_activity($resource);
@@ -463,7 +463,7 @@ class local_sharedresources_renderer extends plugin_renderer_base {
                         }
 
                         if ($template->ismoodleactivity) {
-                        // Check deployable moodle activity.
+                            // Check deployable moodle activity.
                             if (file_exists($CFG->dirroot.'/blocks/activity_publisher/lib/activity_publisher.class.php')) {
                                 include_once($CFG->dirroot.'/blocks/activity_publisher/lib/activity_publisher.class.php');
                                 $template->isdeployable = true;
@@ -491,7 +491,7 @@ class local_sharedresources_renderer extends plugin_renderer_base {
 
             $str .= $this->output->render_from_template('local_sharedresources/'.$bodytplname.'end', null);
         } else {
-            // $str .= $OUTPUT->notification(get_string('noresourceshere', 'local_sharedresources'));
+            $str .= $OUTPUT->notification(get_string('noresourceshere', 'local_sharedresources'));
         }
 
         return $str;
@@ -649,7 +649,7 @@ class local_sharedresources_renderer extends plugin_renderer_base {
         $nextpath = (empty($catpath)) ? $cat->id.'/' : $catpath.$cat->id.'/';
 
         if (strpos($catpath, '/') === false) {
-            $prevpath =  '';
+            $prevpath = '';
         } else {
             $prevpath = preg_replace('#'.$cat->id.'/$#', '', $catpath);
         }

@@ -56,8 +56,9 @@ class select_widget extends search_widget {
         $template->selectsearchhelpicon = $OUTPUT->help_icon('selectsearch', 'sharedresource', false);
         $options = '';
         foreach ($mtdstandard->METADATATREE[$this->id]['values'] as $optvalue) {
-            $selected = ($value == $optvalue) ? 'selected="selected"' : '' ;
-            $options .= "<option value=\"$optvalue\" $selected >".get_string(clean_string_key($optvalue), 'sharedmetadata_'.$this->schema).'</option>';
+            $selected = ($value == $optvalue) ? 'selected="selected"' : '';
+            $str = get_string(clean_string_key($optvalue), 'sharedmetadata_'.$this->schema);
+            $options .= "<option value=\"$optvalue\" $selected >".$str.'</option>';
         }
         $template->options = $options;
 

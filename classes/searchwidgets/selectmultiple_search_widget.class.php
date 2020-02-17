@@ -60,7 +60,6 @@ class selectmultiple_widget extends search_widget {
         $template->selectsearchstr = $OUTPUT->help_icon('selectsearch', 'sharedresource', false);
         $template->selectallstr = get_string('selectall', 'sharedresource');
         $template->unselectallstr = get_string('unselectall', 'sharedresource');
-// search_widget_selectall(\''.$this->id.'\')
         $template->id = $this->id;
 
         foreach ($mtdstandard->METADATATREE[$this->id]['values'] as $optvalue) {

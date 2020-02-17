@@ -142,7 +142,7 @@ function cmp($a, $b) {
  * get a stub of local resources
  */
 function sharedresources_get_local_resources($repo, &$fullresults, $metadatafilters = '', &$offset = 0, $page = 20) {
-    global $CFG, $USER, $DB;
+    global $DB;
 
     $config = get_config('sharedresource');
     $systemcontext = context_system::instance();
@@ -363,7 +363,7 @@ function sharedresources_get_consumers() {
  * service
  */
 function sharedresources_is_consumer($hostroot) {
-    global $CFG, $DB;
+    global $DB;
 
     $sql = "
         SELECT
@@ -603,7 +603,7 @@ function sharedresources_remote_widgets($repo, $context) {
     // Set remoteuser and remoteuserhost parameters.
     if (!empty($USER->username)) {
         $mnetrequest->add_param($USER->username, 'string');
-        $userremoteuserhost = $DB->get_record('mnet_host', array('id'=> $USER->mnethostid));
+        $userremoteuserhost = $DB->get_record('mnet_host', array('id' => $USER->mnethostid));
         $mnetrequest->add_param($userremoteuserhost->wwwroot, 'string');
     } else {
         $mnetrequest->add_param('anonymous', 'string');
@@ -642,7 +642,6 @@ function sharedresources_remote_widgets($repo, $context) {
  * @param arrayref &$searchfields an array of input search fields  for widget filters.
  */
 function sharedresources_process_search_widgets(&$visiblewidgets, &$searchfields) {
-    global $CFG;
 
     $result = false;
     $config = get_config('sharedresource');
@@ -686,12 +685,12 @@ function sharedresources_get_string($identifier, $subplugin, $a = '', $lang = ''
 
     if (array_key_exists($identifier, $plugstring[$plug])) {
         $result = $plugstring[$plug][$identifier];
-        if ($a !== NULL) {
+        if ($a !== null) {
             if (is_object($a) or is_array($a)) {
                 $a = (array)$a;
                 $search = array();
                 $replace = array();
-                foreach ($a as $key=>$value) {
+                foreach ($a as $key => $value) {
                     if (is_int($key)) {
                         // We do not support numeric keys - sorry!
                         continue;
@@ -789,7 +788,7 @@ function sharedresource_is_scorm($resource) {
                     return false;
                 }
 
-                if ($zip->locateName('imsmanifest.xml', ZipArchive::FL_NOCASE|ZIPARCHIVE::FL_NODIR)) {
+                if ($zip->locateName('imsmanifest.xml', ZipArchive::FL_NOCASE | ZIPARCHIVE::FL_NODIR)) {
                     return true;
                 }
             }
@@ -829,9 +828,9 @@ function sharedresource_is_moodle_activity($resource) {
 
     $fs = get_file_storage();
 
-    if ($stored_file = $fs->get_file_by_id($resource->file)) {
-        $archivename = $stored_file->get_filename();
-        if ('application/vnd.moodle.backup' == $stored_file->get_mimetype()) {
+    if ($storedfile = $fs->get_file_by_id($resource->file)) {
+        $archivename = $storedfile->get_filename();
+        if ('application/vnd.moodle.backup' == $storedfile->get_mimetype()) {
             return true;
         }
     }
@@ -858,7 +857,7 @@ function sharedresource_get_top_keywords($courseid) {
     $kwelement = $mtdstandard->getKeywordElement();
 
     if (!$kwelement) {
-        // Some metadata standard have no keywords. (DC)
+        // Some metadata standard have no keywords (DC).
         return '';
     }
 
@@ -937,16 +936,16 @@ function sharedresources_scan_importpath($upath, &$importlines, &$metadatadefine
     }
 
     // Process an optional alias file for taxonomy tokens.
-    $ALIASES = array();
+    $aliasescache = array();
     if (file_exists($importpath.'/taxonomy_aliases.txt')) {
-        $aliases = file($_importpath.'/taxonomy_aliases.txt');
+        $aliases = file($importpath.'/taxonomy_aliases.txt');
         foreach ($aliases as $aliasline) {
             // Taxonomy aliases should share the same encoding than the metadata.csv.
             if ($data->encoding != 'UTF-8') {
                 $aliasline = utf8_encode($aliasline);
             }
             list($from, $to) = explode('=', chop($aliasline));
-            $ALIASES[rtrim($from)] = ltrim($to);
+            $aliasescache[rtrim($from)] = ltrim($to);
         }
     }
 
@@ -974,7 +973,7 @@ function sharedresources_scan_importpath($upath, &$importlines, &$metadatadefine
             $taxonparts = explode('/', $cleanedpath);
 
             // Eventually translate using an aliasing table.
-            array_walk($taxonparts, 'alias_taxon_tokens', $ALIASES);
+            array_walk($taxonparts, 'alias_taxon_tokens', $aliasescache);
         }
     }
 
@@ -1061,7 +1060,6 @@ function sharedresources_scan_importpath($upath, &$importlines, &$metadatadefine
  * @param array $options some operation options comming from from context such as encoding.
  */
 function sharedresources_parse_metadata(&$metadata, &$metadatadefines, $upath, $options) {
-    global $CFG;
 
     static $sortorder = 0; // An absolute counter for ordering file in inputlist, based on metadata analysis.
 
