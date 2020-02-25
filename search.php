@@ -37,7 +37,7 @@ if (!$course = $DB->get_record('course', array('id' => $courseid))) {
     print_error('coursemisconf');
 }
 
-$systemcontext = context_system::instance():
+$systemcontext = context_system::instance();
 
 $strtitle = get_string('search', 'local_sharedresources');
 $PAGE->set_pagelayout('standard');
