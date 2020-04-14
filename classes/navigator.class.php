@@ -17,13 +17,15 @@
 /**
  * A navigator provides data exploration services for a browser. An instance represents
  * one available taxonomy tree.
- * 
+ *
  * @package    local_sharedresources
  * @author     Valery Fremaux <valery.fremaux@club-internet.fr>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
  * @copyright  (C) 1999 onwards Martin Dougiamas  http://dougiamas.com
  */
 namespace local_sharedresources\browser;
+
+defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
 if (mod_sharedresource_supports_feature('taxonomy/accessctl')) {
@@ -100,7 +102,7 @@ class navigation {
      * @param boolean $enabled
      * @return array of classif records.
      */
-    static function get_taxonomies($enabled = true) {
+    public static function get_taxonomies($enabled = true) {
         global $DB;
 
         return $DB->get_records('sharedresource_classif', array('enabled' => $enabled));
@@ -179,10 +181,10 @@ class navigation {
         $select = implode(' AND ', $whereclauses);
 
         return $DB->count_records_select($this->taxonomy->tablename, $select, $params);
-     }
+    }
 
     /**
-     * Get a hierarchical object with all categories and subcategories (taxon tree) depending on 
+     * Get a hierarchical object with all categories and subcategories (taxon tree) depending on
      * restriction rules.
      * @param string $outputlayout if flat, returns a flat associative array
      * @param bool $short if short, names of parents are shortened to a single '-';
@@ -244,11 +246,12 @@ class navigation {
     }
 
     /**
-     * Get a hierarchical object with all categories and subcategories depending on 
+     * Get a hierarchical object with all categories and subcategories depending on
      * restriction rules.
      * @param int parentid
      * @param string $idpath the slashed full path of taxon ids with all parents
-     * @param string $namepath namepath will get the full label slashed path construct, or a shortened indentation indication for selects
+     * @param string $namepath namepath will get the full label slashed path construct, or a shortened
+     * indentation indication for selects
      * @param string $outputlayout if flat, will return a flattened array of all taxonomy tokens.
      * @param boolean $short if true, the namepath and the taxon label
      */
@@ -392,7 +395,7 @@ class navigation {
             return $childrensets[$catid];
         }
 
-        // Lazy loading;
+        // Lazy loading.
 
         $fields = "{$this->taxonomy->sqlid} as id, ";
         $fields .= "{$this->taxonomy->sqllabel} as name, ";
@@ -420,7 +423,8 @@ class navigation {
 
     /**
      * Prints a displayable taxonomy path.
-     * @param mixed $taxonvalue a single taxon id, or a slashed taxon path. slashtaxonpaths will end with a trailing slash even if one single node.
+     * @param mixed $taxonvalue a single taxon id, or a slashed taxon path. slashtaxonpaths will end with a
+     * trailing slash even if one single node.
      * @return A slashe readable textual path.
      */
     public function get_printable_taxon_path($taxonvalue) {

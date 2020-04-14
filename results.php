@@ -70,11 +70,12 @@ resources_search_print_tabs($repo, $course);
 
 echo $OUTPUT->heading($searchresultsstr);
 
-include($CFG->dirroot."/local/sharedresources/plugins/{$repo}/remoteresults.php");
+require($CFG->dirroot."/local/sharedresources/plugins/{$repo}/remoteresults.php");
 
 echo '<center>';
-$params = array('repo' => $repo, 'id' => $courseid), get_string('othersearch', 'sharedresource');
-echo $OUTPUT->single_button(new moodle_url.'/local/sharedresources/search.php', $params);
+$params = array('repo' => $repo, 'id' => $courseid);
+$buttonstr = get_string('othersearch', 'sharedresource');
+echo $OUTPUT->single_button(new moodle_url('/local/sharedresources/search.php', $params), $buttonstr);
 echo $OUTPUT->continue_button($CFG->wwwroot);
 echo '</center>';
 

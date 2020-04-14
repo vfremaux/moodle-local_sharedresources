@@ -25,17 +25,18 @@
  */
 defined('MOODLE_INTERNAL') || die();
 
-/**
+/*
  * Implements an SQI querier
  */
 
-require_once($CFG->dirroot.'/local/sharedresources/plugin/lre/sqilib.php');
+require_once($CFG->dirroot.'/local/sharedresources/plugin/lre/extlib/sqilib.php');
 require_once($CFG->dirroot.'/local/sharedresources/plugin/lre/form_remote_search.class.php');
 
 echo $OUTPUT->heading(get_string('lresearch', 'local_sharedresources'));
 echo $OUTPUT->box_start(true, 'emptyleftspace');
 
-$searchform = new Remote_Search_Form(new moodle_url('/local/sharedresources/results.php', array('id' => $courseid, 'repo' => $repo)));
+$params = array('id' => $courseid, 'repo' => $repo);
+$searchform = new Remote_Search_Form(new moodle_url('/local/sharedresources/results.php', $params));
 
 echo '<table width="95%" style="position:relative;left:-60px">';
 echo '<tr>';

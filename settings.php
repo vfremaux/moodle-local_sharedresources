@@ -44,9 +44,12 @@ $shcaps = array(
     'repository/sharedresouces:manage',
 );
 
-$usecap = sharedresources_has_capability_somewhere('repository/sharedresources:use', false, false, true, CONTEXT_COURSECAT.','.CONTEXT_COURSE);
-$viewcap = sharedresources_has_capability_somewhere('repository/sharedresources:view', false, false, true, CONTEXT_COURSECAT.','.CONTEXT_COURSE);
-$managecap = sharedresources_has_capability_somewhere('repository/sharedresources:manage', false, false, true, CONTEXT_COURSECAT.','.CONTEXT_COURSE);
+$usecap = sharedresources_has_capability_somewhere('repository/sharedresources:use', false, false,
+                                                    true, CONTEXT_COURSECAT.','.CONTEXT_COURSE);
+$viewcap = sharedresources_has_capability_somewhere('repository/sharedresources:view', false, false,
+                                                    true, CONTEXT_COURSECAT.','.CONTEXT_COURSE);
+$managecap = sharedresources_has_capability_somewhere('repository/sharedresources:manage', false, false,
+                                                      true, CONTEXT_COURSECAT.','.CONTEXT_COURSE);
 
 $hasmetadata = false;
 $hasclassification = false;
@@ -154,17 +157,18 @@ if ($hassiteconfig) {
         $settings->add(new admin_setting_configselect($key, $label, $desc, 'explore', $defaultpages));
     }
 
-    $options = array(0 => get_string('listviewalways', 'local_sharedresources'), 10 => 10, 20 => 20,
-                     30 => 30, 50 => 50, 100 => 100, 10000 => get_string('boxviewalways', 'local_sharedresources'));
+    $options = array(0 => get_string('listviewalways', 'local_sharedresources'),
+                     10 => 10,
+                     20 => 20,
+                     30 => 30,
+                     50 => 50,
+                     100 => 100,
+                     10000 => get_string('boxviewalways', 'local_sharedresources'));
     $key = 'local_sharedresources/listviewthreshold';
     $label = get_string('configlistviewthreshold', 'local_sharedresources');
     $desc = get_string('configlistviewthreshold_desc', 'local_sharedresources');
     $settings->add(new admin_setting_configselect($key, $label, $desc, 30, $options));
 
-    /*
-    $options = array('left' => get_string('toleft', 'local_sharedresources')),
-                     'right' => get_string('toright', 'local_sharedresources'));
-    */
     $themeconfig = theme_config::load($CFG->theme);
     $layoutregions = $themeconfig->layouts['course']['regions'];
     $options = array();
@@ -183,7 +187,7 @@ if ($hassiteconfig) {
     $default = true;
     $settings->add(new admin_setting_configcheckbox($key, $label, $desc, $default));
 
-    $plugins =  core_component::get_plugin_list('local/sharedresources/plugins');
+    $plugins = core_component::get_plugin_list('local/sharedresources/plugins');
     foreach ($plugins as $plugin) {
         if (@$debugwhitepage) {
             echo "Loading subsettings for plugin: $plugin\n";
