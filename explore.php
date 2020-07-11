@@ -28,9 +28,9 @@
  * entries in the current view, after a contextual query has been fired to remote connected
  * resource sets.
  *
- * The index will provide a "top viewed" resources side tray, and a "top used" side tray, 
- * that will count local AND remote inttegration of the resource. The remote query to 
- * bound catalogs will also get information about local catalog resource used by remote courses. 
+ * The index will provide a "top viewed" resources side tray, and a "top used" side tray,
+ * that will count local AND remote inttegration of the resource. The remote query to
+ * bound catalogs will also get information about local catalog resource used by remote courses.
  *
  * The index is public access. Browsing the catalog should although be done through a Guest identity,
  * having as a default the repository/sharedresources:view capability.
@@ -126,7 +126,8 @@ if (file_exists($CFG->dirroot.'/blocks/search') && get_config('local_search', 'e
     $bc->attributes['id'] = 'local_sharedresource_globalsearch_block';
     $bc->attributes['role'] = 'search';
     $bc->attributes['aria-labelledby'] = 'local_sharedresouces_search_title';
-    $bc->title = html_writer::span(get_string('textsearch', 'local_sharedresources'), '', array('id' => 'local_sharedresources_globalsearch_title'));
+    $args = array('id' => 'local_sharedresources_globalsearch_title');
+    $bc->title = html_writer::span(get_string('textsearch', 'local_sharedresources'), '', $args);
     $bc->content = $block->get_content()->text;
     $config = $configsaved; // Bring back the local_sharedresource config that has been tweaked by the search block loading.
     $PAGE->blocks->add_fake_block($bc, $config->searchblocksposition);
@@ -150,7 +151,8 @@ $bc = new block_contents();
 $bc->attributes['id'] = 'local_sharedresource_searchblock';
 $bc->attributes['role'] = 'search';
 $bc->attributes['aria-labelledby'] = 'local_sharedresouces_search_title';
-$bc->title = html_writer::span(get_string('searchinlibrary', 'local_sharedresources'), '', array('id' => 'local_sharedresources_search_title'));
+$args = array('id' => 'local_sharedresources_search_title');
+$bc->title = html_writer::span(get_string('searchinlibrary', 'local_sharedresources'), '', $args);
 $bc->content = $renderer->search_widgets_tableless($courseid, $repo, $offset, $context, $visiblewidgets, $searchfields);
 $PAGE->blocks->add_fake_block($bc, $config->searchblocksposition);
 
@@ -160,7 +162,8 @@ if (!empty($topkeywords)) {
     $bc->attributes['id'] = 'local_sharedresource_searchblock';
     $bc->attributes['role'] = 'search';
     $bc->attributes['aria-labelledby'] = 'local_sharedresouces_search_title';
-    $bc->title = html_writer::span(get_string('topkeywords', 'local_sharedresources'), '', array('id' => 'local_sharedresources_topkeywords_title'));
+    $args = array('id' => 'local_sharedresources_topkeywords_title');
+    $bc->title = html_writer::span(get_string('topkeywords', 'local_sharedresources'), '', $args);
     $bc->content = $topkeywords;
     $PAGE->blocks->add_fake_block($bc, $config->searchblocksposition);
 }
@@ -175,8 +178,8 @@ if (($repo == 'local') || empty($repo)) {
     echo $renderer->tools($course);
 }
 
-// $isediting = has_capability('repository/sharedresources:manage', $context, $USER->id);
-$isediting = sharedresources_has_capability_somewhere('repository/sharedresources:create', false, false, false, CONTEXT_COURSECAT.','.CONTEXT_COURSE);
+$levels = CONTEXT_COURSECAT.','.CONTEXT_COURSE;
+$isediting = sharedresources_has_capability_somewhere('repository/sharedresources:create', false, false, false, $levels);
 
 $fullresults = array();
 
@@ -195,7 +198,7 @@ if ($repo == 'local' || !local_sharedresources_supports_feature('repo/remote')) 
     $resources = sharedresources_get_remote_repo_resources($repo, $fullresults, $metadatafilters, $offset, $page);
 }
 
-$SESSION -> resourceresult = $resources;
+$SESSION->resourceresult = $resources;
 
 if (is_object($mtdplugin) && $mtdplugin->getTaxonomyValueElement()) {
     // Only browse if there is a taxonomy in the metadata schema.
@@ -213,7 +216,7 @@ if (empty($resources)) {
         // Do we have enough resource for one page ?
         echo $renderer->resources_list($resources, $course, $section, $isediting, $repo);
     } else {
-        $nbrpages = ceil($fullresults['maxobjects']/$page);
+        $nbrpages = ceil($fullresults['maxobjects'] / $page);
         echo $renderer->pager($courseid, $repo, $nbrpages, $page, $offset, $isediting);
         echo $renderer->resources_list($resources, $course, $section, $isediting, $repo, $page, $offset);
         echo $renderer->pager($courseid, $repo, $nbrpages, $page, $offset, $isediting);
@@ -236,5 +239,5 @@ if ($courseid > SITEID) {
     print($OUTPUT->single_button($url, get_string('backtocourse', 'local_sharedresources')));
     echo '</p></center>';
 }
- 
+
 echo $OUTPUT->footer();

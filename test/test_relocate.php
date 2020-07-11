@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 require('../../config.php');
-require_once($CFG->dirroot.'/local/sharedresourceS/lib.php');
+require_once($CFG->dirroot.'/local/sharedresources/lib.php');
 require_once($CFG->dirroot.'/mnet/xmlrpc/client.php');
 require_once($CFG->dirroot.'/local/sharedresources/relocate_testform.php');
 
@@ -23,7 +23,7 @@ $context = context_system::instance();
 require_login();
 require_capability('moodle/site:doanything', $context);
 
-/**
+/*
  * Purpose is to test the resource provider relocation service
  * addressed remotely to an consumer platform
  *
@@ -33,7 +33,7 @@ $form = new Relocate_Test_Form();
 
 if ($data = $form->get_data()) {
 
-    $consumer = $DB->get_record('mnet_host', array('id'=> $data->consumer));
+    $consumer = $DB->get_record('mnet_host', array('id' => $data->consumer));
 
     $client = new mnet_xmlrpc_client();
     $client->set_method('mod/sharedresource/rpclib.php/sharedresource_rpc_move');

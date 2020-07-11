@@ -1,4 +1,4 @@
-.resourceitem{
+.resourceitem {
     background-color: #f8f8f8;
     border: 1px solid #e8e8e8;
     margin-bottom: 1px;
@@ -15,31 +15,31 @@
 }
 
 .resource-thumbnail {
-    padding-right:20px;
-    padding-top:20px;
     display: inline-block;
     float: right;
     max-width: 350px;
+    padding-right: 20px;
+    padding-top: 20px;
 }
 
 .resource-info {
     border-radius: 0 8px 8px 8px;
     border: 1px solid #d0d0d0;
+    display: inline-block;
     font-weight: normal;
     margin-bottom: 10px;
-    padding: 10px;
-    display: inline-block;
-    min-height:120px;
+    min-height: 120px;
     overflow: auto; /* for overflowing picts */
+    padding: 10px;
 }
 
 .resource-social {
-    width: 480px;
-    border-top: 1px solid #d0d0d0;
-    border-left: 1px solid #d0d0d0;
-    border-right: 1px solid #d0d0d0;
-    border-radius: 8px 8px 0 0;
     background-color: #e0e0e0;
+    border-left: 1px solid #d0d0d0;
+    border-radius: 8px 8px 0 0;
+    border-right: 1px solid #d0d0d0;
+    border-top: 1px solid #d0d0d0;
+    width: 480px;
 }
 
 .resource-user-controls {
@@ -83,29 +83,11 @@
 }
 
 .sharedresources-taxonomy-chooser * {
-    display:inline;
-}
-
-.sharedresources-pager {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
+    display: inline;
 }
 
 .sharedresources-pager a {
-    overflow-wrap: normal;
-    margin-bottom: 10px;
-    line-height: 28px;
-    background-color: #ccc;
-    color: #fff; 
-    border-radius: 4px;
-    padding-left: 10px;
-    padding-right: 10px;
-    margin-right: 15px;
-}
-
-#page-local-sharedresources-explore #region-main {
-    margin: 0;
+    margin-right: 10px;
 }
 
 #sharedresources-link-to-search {
@@ -121,15 +103,15 @@ a.sharedresource-actionlink {
 }
 
 .is-hidden-by-rule {
-    -moz-opacity:0.5;
+    -moz-opacity: 0.5;
     filter: alpha(opacity=50);  /* Opacity for IE8 and lower */
-    opacity:0.5;
+    opacity: 0.5;
 }
 
 /* List template */
 .sharedresource-item {
-    width: 100%;
     margin-bottom: 1.8em;
+    width: 100%;
 }
 
 .sharedresource-line .resource-cell {
@@ -143,17 +125,15 @@ a.sharedresource-actionlink {
 
 /* boxed template */
 .sharedresource-list.boxed {
+    margin-left: 5%;
     vertical-align: top;
-    margin-left: 2%;
-    display: flex;
-    flex-wrap: wrap;
 }
 
-.sharedresource-picture img {
-    margin-left:auto;
-    margin-right:auto;
-    margin-top:10px;
+.sharedresource-picture img{
     margin-bottom: 10px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 10px;
     width: 100%;
 }
 
@@ -165,75 +145,50 @@ a.sharedresource-actionlink {
     display: inline-block;
 }
 
-.sharedresource-user-controls  {
+.sharedresource-user-controls {
     padding-left: 10px;
-    text-align:center;
+    text-align: center;
 }
 
 .sharedresource-librarian-controls{
     padding-left: 10px;
-    text-align: right;
     padding-right: 5px;
+    text-align: right;
 }
 
 .sharedresource-item-container {
-    display:inline-block;
+    display: inline-block;
+    margin-right: 15px;
+    max-width: 28%;
     vertical-align: top;
-    margin-right: 10px;
-}
-
-.sharedresource-item-container {
     width: 23%;
 }
 
-@media all and (max-width: 480px) {
-    .sharedresource-item-container {
-        width: 100%;
-    }
-
-    .sharedresources-pager a {
-        margin-right: 5px;
-    }
-}
-
-@media all and (min-width: 480px) and (max-width:1024px) {
-    .sharedresource-item-container {
-        width: 48%;
-    }
-}
-
-@media all and (min-width: 1024px) and (max-width:1200px) {
-    .sharedresource-item-container {
-        width: 31%;
-    }
-}
-
 .sharedresource-list.boxed .resource-likes {
-    font-size:80%;
+    font-size: 80%;
 }
 .sharedresource-list.boxed .resource-likes img {
     width: 12px;
-    height: 12px;
 }
 
 .sharedresource-info-box {
-    position: absolute;
-    padding: 10px !important;
-    border: 1px solid #fefefe !important;
-    border-radius: 5px;
     background-color: #fff;
+    border-radius: 5px;
+    border: 1px solid #fefefe !important;
     box-shadow: 5px 10px 10px #888;
     max-width: 30%;
-    width:25%;
+    padding: 10px !important;
+    position: absolute;
+    width: 25%;
     z-index: 600;
 }
 
 #local_sharedresource_searchblock input[type="text"] {
-    padding:3px;
+    padding: 3px;
 }
 
 #local_sharedresource_searchblock .inner-block .header {
-    height:1.8em !important;
+    height: 1.8em !important;
 }
 
 #local_sharedresource_searchblock h2 {
@@ -241,8 +196,8 @@ a.sharedresource-actionlink {
 }
 
 .box-resource-images {
-    max-width: 128px;
     max-height: 128px;
+    max-width: 128px;
 }
 
 .sharedresources-librarian-tools {
@@ -271,8 +226,8 @@ a.sharedresource-actionlink {
 }
 
 #mtd-form-schema {
-    padding-bottom: 20px;
     font-size: 0.8rem;
+    padding-bottom: 20px;
 }
 
 .sharedresource-picture {
@@ -284,8 +239,8 @@ a.sharedresource-actionlink {
 }
 
 .sharedresource-user-controls{
-    text-align: center;
     padding-left: 0px;
+    text-align: center;
 }
 
 #sharedresources-link-to-browser {
@@ -302,16 +257,16 @@ a.force-delete i {
 }
 
 img.icon48 {
-    width: 48px;
     height: 48px;
+    width: 48px;
 }
 
 img.icon16 {
-    width: 16px;
     height: 16px;
+    width: 16px;
 }
 
 img.icon32 {
-    width: 32px;
     height: 32px;
+    width: 32px;
 }

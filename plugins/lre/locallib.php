@@ -27,7 +27,7 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot.'/local/sharedresources/plugins/lre/extlib/simpleXmlDeserializer.php');
 
 /**
- * given an XML result bulk, get the interesting data in and 
+ * given an XML result bulk, get the interesting data in and
  * makes a hit array. Implenting a Saxe parser
  * @param string $results
  * @return array
@@ -48,9 +48,9 @@ function lre_parse_xml_results($results) {
             if (count($identifiers) == 1) {
                 $hit->remoteid = $identifiers[0]['ENTRY'][0]['value'];
             } else {
-                foreach ($identifiers as $IDENTIFIER) {
-                    if ($IDENTIFIER['CATALOG'][0]['value'] == 'oai') {
-                        $hit->remoteid = $IDENTIFIER['ENTRY'][0]['value'];
+                foreach ($identifiers as $identifierarr) {
+                    if ($identifierarr['CATALOG'][0]['value'] == 'oai') {
+                        $hit->remoteid = $identifierarr['ENTRY'][0]['value'];
                     }
                 }
             }
@@ -85,8 +85,8 @@ function lre_parse_xml_results($results) {
             $keywordstrings = @$lom['GENERAL'][0]['KEYWORD'][0]['STRING'];
             if (!empty($keywordstrings)) {
                 foreach ($keywordstrings as $keywordstring) {
-                    $keywordLanguage = $keywordstring['attributes']['LANGUAGE'];
-                    if ($keywordLanguage == substr(current_language(), 0, 2) || $keywordLanguage == $hit->language) {
+                    $keywordlanguage = $keywordstring['attributes']['LANGUAGE'];
+                    if ($keywordlanguage == substr(current_language(), 0, 2) || $keywordlanguage == $hit->language) {
                         $keywordset[] = $keywordstring['value'];
                     }
                 }
@@ -154,14 +154,14 @@ function lre_print_search_result($hit, $courseid, $page) {
 }
 
 function lre_print_paging($page, $maxpage, $courseid, $fullquery) {
-    global $CFG;
 
     $links = array();
 
     $maxpageceil = min($maxpage, 20);
     for ($i = 1; $i <= $maxpageceil; $i++) {
         if ($page != $i) {
-            $qurl = new moodle_url('/resources/results.php', array('repo' => 'lre', 'id' => $courseid, 'p' => $i, 'query' => urlencode($fullquery)));
+            $params = array('repo' => 'lre', 'id' => $courseid, 'p' => $i, 'query' => urlencode($fullquery));
+            $qurl = new moodle_url('/resources/results.php', $params);
             $links[] = '<a href="'.$qurl.'">'.$i.'</a>';
         } else {
             $links[] = '<b><u>'.$i.'</u></b>';
