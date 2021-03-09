@@ -139,7 +139,7 @@ class local_sharedresources_renderer extends plugin_renderer_base {
     public function pager($courseid, $repo, $nbrpages, $page, $offset = 0, $isediting = false) {
         global $FULLME;
 
-        $template = new Stdclass;
+        $template = new StdClass();
 
         if ($courseid) {
             for ($i = 1; $i <= $nbrpages; $i++) {
@@ -497,7 +497,9 @@ class local_sharedresources_renderer extends plugin_renderer_base {
 
             $str .= $this->output->render_from_template('local_sharedresources/'.$bodytplname.'end', null);
         } else {
-            $str .= $OUTPUT->notification(get_string('noresourceshere', 'local_sharedresources'));
+            if ($CFG->debug == DEBUG_DEVELOPER) {
+                $str .= $CFG->debug.$OUTPUT->notification(get_string('noresourceshere', 'local_sharedresources'));
+            }
         }
 
         return $str;
@@ -648,6 +650,8 @@ class local_sharedresources_renderer extends plugin_renderer_base {
     public function category(&$cat, &$catpath, $resourcecount, $current = 'current', $up = false) {
         global $COURSE;
 
+        $courseid = optional_param('course', $COURSE->id, PARAM_INT);
+
         $template = new StdClass;
 
         $template->current = $current;
@@ -664,12 +668,12 @@ class local_sharedresources_renderer extends plugin_renderer_base {
             $template->hasup = true;
             $template->upstr = get_string('up', 'local_sharedresources');
             if (!is_null($cat->parent)) {
-                $params = array('catid' => $cat->parent, 'catpath' => $prevpath, 'course' => $COURSE->id);
+                $params = array('catid' => $cat->parent, 'catpath' => $prevpath, 'course' => $courseid);
                 $template->parentcaturl = new moodle_url('/local/sharedresources/browse.php', $params);
                 $template->upiconurl = $this->output->image_url('up', 'local_sharedresources');
                 $template->catspan = 9;
             } else {
-                $params = array('catid' => 0, 'catpath' => '', 'course' => $COURSE->id);
+                $params = array('catid' => 0, 'catpath' => '', 'course' => $courseid);
                 $template->parentcaturl = new moodle_url('/local/sharedresources/browse.php', $params);
                 $template->upiconurl = $this->output->image_url('up', 'local_sharedresources');
                 $template->catspan = 9;
@@ -679,7 +683,7 @@ class local_sharedresources_renderer extends plugin_renderer_base {
         }
 
         if ($current == 'sub') {
-            $params = array('catid' => $cat->id, 'catpath' => $nextpath, 'course' => $COURSE->id);
+            $params = array('catid' => $cat->id, 'catpath' => $nextpath, 'course' => $courseid);
             $template->caturl = new moodle_url('/local/sharedresources/browse.php', $params);
             $template->hassubs = $cat->hassubs;
         }
@@ -721,9 +725,11 @@ class local_sharedresources_renderer extends plugin_renderer_base {
     public function searchlink() {
         global $COURSE;
 
+        $courseid = optional_param('course', $COURSE->id, PARAM_INT);
+
         $template = new StdClass;
         $template->buttonstr = get_string('searchinlibrary', 'local_sharedresources');
-        $template->buttonurl = new moodle_url('/local/sharedresources/explore.php', array('course' => $COURSE->id));
+        $template->buttonurl = new moodle_url('/local/sharedresources/explore.php', array('course' => $courseid));
         $template->class = 'sharedresources-link-to-search';
 
         return $this->output->render_from_template('local_sharedresources/modebutton', $template);
@@ -732,13 +738,14 @@ class local_sharedresources_renderer extends plugin_renderer_base {
     public function browserlink() {
         global $COURSE;
 
-        $template = new StdClass;
+        $courseid = optional_param('course', $COURSE->id, PARAM_INT);
 
+        $template = new StdClass;
         $template->buttonstr = get_string('browse', 'local_sharedresources');
-        if ($COURSE->id == SITEID) {
+        if ($courseid == SITEID) {
             $template->buttonurl = new moodle_url('/local/sharedresources/browse.php');
         } else {
-            $template->buttonurl = new moodle_url('/local/sharedresources/browse.php', array('course' => $COURSE->id));
+            $template->buttonurl = new moodle_url('/local/sharedresources/browse.php', array('course' => $courseid));
         }
         $template->class = 'sharedresources-link-to-browser';
 
