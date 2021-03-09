@@ -28,7 +28,7 @@ namespace local_sharedresources\browser;
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
-if (mod_sharedresource_supports_feature('taxonomy/accessctl')) {
+if (sharedresource_supports_feature('taxonomy/accessctl')) {
     include_once($CFG->dirroot.'/mod/sharedresource/pro/classes/sharedresource_access_control.class.php');
 }
 
@@ -473,7 +473,7 @@ class navigation {
      */
     public function can_use() {
 
-        if (!mod_sharedresource_supports_feature('taxonomy/accessctl')) {
+        if (!sharedresource_supports_feature('taxonomy/accessctl')) {
             // Always access granted when not supporting the feature.
             return true;
         }
