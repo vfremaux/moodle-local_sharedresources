@@ -40,7 +40,7 @@ class duration_widget extends search_widget {
      * Fonction used to display the widget. The parameter $display determines if plugins are displayed on a row or on a column
      */
     public function print_search_widget($layout, $value = 0) {
-        global $OUTPUT, $CFG;
+        global $OUTPUT;
 
         $template = new StdClass;
 

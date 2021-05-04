@@ -26,8 +26,8 @@ defined('MOODLE_INTERNAL') || die();
 $string['privacy:metadata'] = 'La librairie Shared resources ne stocke aucune donnée relative aux utilisateurs.';
 
 $string['accesscontrol'] = 'Contrôle d\'accès';
-$string['addtocourse'] = 'Ajouter au cours';
-$string['localizetocourse'] = 'Localiser dans le cours';
+$string['addtocourse'] = 'Ajout au cours (mutu.)';
+$string['localizetocourse'] = 'Ajout au cours (local)';
 $string['adminrepository'] = 'Administrer la librairie';
 $string['backtocourse'] = 'Revenir au cours';
 $string['backtoindex'] = 'Revenir à l\'index';
@@ -60,8 +60,6 @@ $string['deployincourse'] = 'Déployer dans le cours';
 $string['deployinmplayer'] = 'Déployer un player';
 $string['doresetvolume'] = 'Réinitialiser le volume d\'import';
 $string['download'] = 'Télécharger';
-$string['emulatecommunity'] = 'Emuler la version communautaire';
-$string['emulatecommunity_desc'] = 'Bascule le code sur la version communautaire. Le résultat est plus compatible avec d\'autres installations, mais certaines fonctionnalités avancées ne seront plus disponibles.';
 $string['encoding'] = 'Encodage des fichiers de métadonnées';
 $string['endswith'] = 'finit par';
 $string['equalto'] = 'est égal à';
@@ -81,10 +79,6 @@ $string['ishiddenbyrule'] = 'Cette ressource est mutualisée dans un contexte re
 $string['keywords'] = 'Mots-clefs&nbsp;:&ensp;';
 $string['library'] = 'Librairie';
 $string['librarian'] = 'Documentaliste';
-$string['licenseprovider'] = 'Fournisseur version Pro';
-$string['licenseprovider_desc'] = 'Entrez la clef de votre distributeur.';
-$string['licensekey'] = 'Clef de license pro';
-$string['licensekey_desc'] = 'Entrez ici la clef de produit que vous avez reçu de votre distributeur.';
 $string['liked'] = 'Appréciée&nbsp;:&ensp;';
 $string['listviewalways'] = 'Toujours en liste';
 $string['makelabelsfromguidance'] = 'Créer les étiquettes de guidances';
@@ -99,7 +93,6 @@ $string['noaccess'] = 'vous n\'avez pas les permissions requises pour utiliser c
 $string['noresources'] = '<p>Aucune ressource locale dans cette librairie</p>';
 $string['noresourceshere'] = '</p>Aucune ressource à ce niveau de classement</p>';
 $string['notused'] = 'Jamais utilisée dans ce site';
-$string['plugindist'] = 'Distribution du plugin';
 $string['pluginname'] = 'Librairie de ressources';
 $string['purposediscriminator'] = 'Objectif spécifique de la taxonomie';
 $string['reinitialized'] = '{$a} fichiers rétablis';
@@ -181,14 +174,6 @@ elle sera également décompactée.';
 $string['makelabelsfromguidance_help'] = 'Si le fichier metadata.csv contient une colonne "guidance", créer des labels avec ce texte
 avant la publication des ressources dans le cours.';
 
-$string['plugindist_desc'] = '
-<p>Ce plugin est distribué dans la communauté Moodle pour l\'évaluation de ses fonctions centrales
-correspondant à une utilisation courante du plugin. Une version "professionnelle" de ce plugin existe et est distribuée
-sous certaines conditions, afin de soutenir l\'effort de développement, amélioration; documentation et suivi des versions.</p>
-<p>Contactez un distributeur pour obtenir la version "Pro" et son support.</p>
-<p>Notez que les deux composant local_sharedresources et mod_sharedresource doivent fonctionner au même niveau de distribution</p>
-<p><a href="http://www.mylearningfactory.com/index.php/documentation/Distributeurs?lang=fr_utf8">Distributeurs MyLF</a></p>';
-
 $string['configlistviewthreshold_desc'] = 'Nombre de ressources du résultat pour passer en affichage de liste.';
 
 $string['librarian_desc'] = 'Les documentalistes peuvent gérer la librairie de ressource, modifier les description, supprimer
@@ -196,3 +181,5 @@ et ajouter les ressources. Ils deviennent de facto les repsonsables de toutes le
 quelle que soit leur origine.';
 
 $string['configsearchblocksposition_desc'] = '';
+
+include(__DIR__.'/pro_additional_strings.php');

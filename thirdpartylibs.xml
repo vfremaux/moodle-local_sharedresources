@@ -1,10 +1,38 @@
 <?xml version="1.0"?>
 <libraries>
   <library>
+    <location>plugins</location>
+    <name>Sub plugins</name>
+    <license>GPL</license>
+    <version>3.0</version>
+    <licenseversion>3=GPL V3</licenseversion>
+  </library>
+  <library>
     <location>oai</location>
     <name>OAI Implementation</name>
     <license>GPL</license>
-    <version></version>
-    <licenseversion></licenseversion>
+    <version>3.0</version>
+    <licenseversion>GPL V3</licenseversion>
+  </library>
+  <library>
+    <location>jquery/jquery-animateNumber-0.0.13</location>
+    <name>Animate number</name>
+    <license>GPL</license>
+    <version>3.0</version>
+    <licenseversion>GPL V3</licenseversion>
+  </library>
+  <library>
+    <location>jquery/slick</location>
+    <name>Slick slider</name>
+    <license>GPL</license>
+    <version>3.0</version>
+    <licenseversion>GPL V3</licenseversion>
+  </library>
+  <library>
+    <location>test</location>
+    <name>Developer files</name>
+    <license>GPL</license>
+    <version>3.0</version>
+    <licenseversion>GPL V3</licenseversion>
   </library>
 </libraries>
