@@ -96,23 +96,24 @@ if ($hasconfig || $usecap || $viewcap || $managecap) {
 if ($hassiteconfig) {
     $upgradelock = false;
     $message = '';
+
     if (moodle_needs_upgrading()) {
         $message = get_string('moodleupgradelocks', 'local_sharedresources');
         $upgradelock = true;
     }
 
     $label = get_string('pluginname', 'sharedresource');
-    $settings = new admin_settingpage('local_sharedresources', $label);
+    $settings = new admin_settingpage('localsettingsharedresources', $label);
 
     if (!empty($message)) {
-            $settings->add(new admin_setting_heading('lockedmessage', '', $message));
+        $settings->add(new admin_setting_heading('lockedmessage', '', $message));
     }
 
     $config = get_config('sharedresource');
 
     if (!empty($config->schema) && !$upgradelock) {
         if (@$debugwhitepage) {
-            echo "\t\tLoading active schema: $config->schema\n";
+            echo "\t\tLoading active schema: {$config->schema}\n";
         }
         include_once($CFG->dirroot.'/mod/sharedresource/plugins/'.$config->schema.'/plugin.class.php');
         $mtdclass = '\\mod_sharedresource\\plugin_'.$config->schema;

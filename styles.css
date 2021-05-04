@@ -48,10 +48,10 @@
 }
 
 .resource-user-controls a {
-    font-weight: 0.95%;
+    font-weight: 0.95;
 }
 
-.resourceitem .generalbox{
+.resourceitem .generalbox {
     margin-left: 15px;
 }
 
@@ -129,7 +129,7 @@ a.sharedresource-actionlink {
     vertical-align: top;
 }
 
-.sharedresource-picture img{
+.sharedresource-picture img {
     margin-bottom: 10px;
     margin-left: auto;
     margin-right: auto;
@@ -150,7 +150,7 @@ a.sharedresource-actionlink {
     text-align: center;
 }
 
-.sharedresource-librarian-controls{
+.sharedresource-librarian-controls {
     padding-left: 10px;
     padding-right: 5px;
     text-align: right;
@@ -174,10 +174,10 @@ a.sharedresource-actionlink {
 .sharedresource-info-box {
     background-color: #fff;
     border-radius: 5px;
-    border: 1px solid #fefefe !important;
+    border: 1px solid #fefefe;
     box-shadow: 5px 10px 10px #888;
     max-width: 30%;
-    padding: 10px !important;
+    padding: 10px;
     position: absolute;
     width: 25%;
     z-index: 600;
@@ -188,7 +188,7 @@ a.sharedresource-actionlink {
 }
 
 #local_sharedresource_searchblock .inner-block .header {
-    height: 1.8em !important;
+    height: 1.8em;
 }
 
 #local_sharedresource_searchblock h2 {
@@ -238,8 +238,8 @@ a.sharedresource-actionlink {
     width: 25%;
 }
 
-.sharedresource-user-controls{
-    padding-left: 0px;
+.sharedresource-user-controls {
+    padding-left: 0;
     text-align: center;
 }
 

@@ -41,11 +41,13 @@ if (local_sharedresources_supports_feature('admin/pro')) {
  * implementation path where to fetch resources.
  * @param string $feature a feature key to be tested.
  */
-function local_sharedresources_supports_feature($feature) {
+function local_sharedresources_supports_feature($feature = null, $getsupported = false) {
     global $CFG;
     static $supports;
 
-    $config = get_config('sharedresource');
+    if (!during_initial_install()) {
+        $config = get_config('local_sharedresources');
+    }
 
     if (!isset($supports)) {
         $supports = array(
@@ -61,6 +63,10 @@ function local_sharedresources_supports_feature($feature) {
         $prefer = array();
     }
 
+    if ($getsupported) {
+        return $supports;
+    }
+
     // Check existance of the 'pro' dir in plugin.
     if (is_dir(__DIR__.'/pro')) {
         if ($feature == 'emulate/community') {
@@ -73,6 +79,11 @@ function local_sharedresources_supports_feature($feature) {
         }
     } else {
         $versionkey = 'community';
+    }
+
+    if (empty($feature)) {
+        // Just return version.
+        return $versionkey;
     }
 
     list($feat, $subfeat) = explode('/', $feature);
@@ -216,8 +227,10 @@ function sharedresources_get_local_resources($repo, &$fullresults, $metadatafilt
             $entryclass = \mod_sharedresource\entry_factory::get_entry_class();
             $rentry = new $entryclass($r);
 
-            if (mod_sharedresource_supports_feature('entry/accessctl')) {
-                debug_trace('local sharedresources: applying access control to result '.$id);
+            if (sharedresource_supports_feature('entry/accessctl')) {
+                if (function_exists('debug_trace')) {
+                    debug_trace('local sharedresources: applying access control to result '.$id);
+                }
                 if (!$rentry->has_access()) {
                     if (!has_capability('repository/sharedresources:manage', $systemcontext)) {
                         unset($fullresults['entries'][$id]);
@@ -564,7 +577,9 @@ function sharedresources_setup_widgets(&$visiblewidgets, $context) {
             $visiblewidgets[$key] = $widget;
         }
     } else {
-        debug_trace('Failed deserializing');
+        if (function_exists('debug_trace')) {
+            debug_trace('Failed deserializing');
+        }
     }
 }
 
