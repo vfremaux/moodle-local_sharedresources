@@ -28,7 +28,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->libdir.'/formslib.php');
-require_once($CFG->dirroot.'/local/sharedresources/plugins/lre/sqilib.php');
+require_once($CFG->dirroot.'/local/sharedresources/plugins/lre/extlib/sqilib.php');
 
 class Remote_Search_Form extends moodleform {
 

@@ -61,8 +61,6 @@ $string['deployincourse'] = 'Deploy in course';
 $string['deployinmplayer'] = 'Deploy a player';
 $string['doresetvolume'] = 'Reset';
 $string['download'] = 'Download';
-$string['emulatecommunity'] = 'Emulate the community version.';
-$string['emulatecommunity_desc'] = 'Switches the code to the community version. The result will be more compatible, but some features will not be available anymore.';
 $string['encoding'] = 'Metadata files encoding';
 $string['endswith'] = 'ends with';
 $string['equalto'] = 'equals to';
@@ -82,10 +80,6 @@ $string['ishiddenbyrule'] = 'This resource is shared in a restricted context. Yo
 $string['keywords'] = 'Mots clefs';
 $string['library'] = 'Librairy';
 $string['librarian'] = 'Librarian';
-$string['licenseprovider'] = 'Pro License provider';
-$string['licenseprovider_desc'] = 'Input here your provider key';
-$string['licensekey'] = 'Pro license key';
-$string['licensekey_desc'] = 'Input here the product license key you got from your provider';
 $string['liked'] = 'Liked: ';
 $string['listviewalways'] = 'Always list';
 $string['makelabelsfromguidance'] = 'Make labels from guidance';
@@ -100,7 +94,6 @@ $string['noentries'] = 'This repository has no resources';
 $string['noresources'] = 'This repository has no local resources';
 $string['noresourceshere'] = 'There is no resource at this level';
 $string['notused'] = 'Never used in this site';
-$string['plugindist'] = 'Plugin distribution';
 $string['pluginname'] = 'Shared Resources Center';
 $string['publish_sharedresource'] = 'Publish Sharedresource';
 $string['purposediscriminator'] = 'Purpose discriminator';
@@ -178,17 +171,11 @@ $string['deployzips_help'] = 'If the file is a zip, and the resource is added to
 
 $string['makelabelsfromguidance_help'] = 'If the metadata.csv file contains a colomn "guidance", add labels course modules before the resources with the guidance text.';
 
-$string['plugindist_desc'] = '
-<p>This plugin is the community version and is published for anyone to use as is and check the plugin\'s
-core application. A "pro" version of this plugin exists and is distributed under conditions to feed the life cycle, upgrade, documentation
-and improvement effort.</p>
-<p>Note that both components local_sharedresources and mod_sharedresource must work using the same distribution level.</p>
-<p>Please contact one of our distributors to get "Pro" version support.</p>
-<p><a href="http://www.mylearningfactory.com/index.php/documentation/Distributeurs?lang=en_utf8">MyLF Distributors</a></p>';
-
 $string['configlistviewthreshold_desc'] = 'Number of resources in result over which display switches to list view.';
 
 $string['librarian_desc'] = 'Librarian can add and manage library entries, change metadata and description. Librarian become
 responsible of all the resources stored in the library, where and whoever they come from.';
 
 $string['configsearchblocksposition_desc'] = '';
+
+include(__DIR__.'/pro_additional_strings.php');

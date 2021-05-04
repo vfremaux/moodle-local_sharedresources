@@ -139,29 +139,35 @@ class local_sharedresources_renderer extends plugin_renderer_base {
     public function pager($courseid, $repo, $nbrpages, $page, $offset = 0, $isediting = false) {
         global $FULLME;
 
-        $str = '';
+        $template = new StdClass();
 
-        $str .= '<center><div class="sharedresources-pager">';
         if ($courseid) {
             for ($i = 1; $i <= $nbrpages; $i++) {
                 $pageoffset = ($i - 1) * $page;
-                $pagestyle = ($pageoffset == $offset) ? 'color:black;font-size:14pt' : 'color:grey;font-size:12pt' ;
+                $pagestyle = ($pageoffset == $offset) ? 'color:black;font-size:14pt' : 'color:grey;font-size:12pt';
                 $params = array('course' => $courseid, 'repo' => $repo, 'offset' => $pageoffset, 'isediting' => $isediting);
                 $libraryurl = new moodle_url($FULLME, $params);
-                $str .= '<a style="'.$pagestyle.'" name="page'.$i.'" href="'.$libraryurl.'">'.$i.'</a>';
+                $pagetpl = new StdClass;
+                $pagetpl->i = $i;
+                $pagetpl->pagestyle = $pagestyle;
+                $pagetpl->libraryurl = $libraryurl;
+                $template->pages[] = $pagetpl;
             }
         } else {
             for ($i = 1; $i <= $nbrpages; $i++) {
-                $pageoffset = ($i - 1)*$page;
-                $pagestyle = ($pageoffset == $offset) ? 'color:black;font-size:14pt' : 'color:grey;font-size:12pt' ;
+                $pageoffset = ($i - 1) * $page;
+                $pagestyle = ($pageoffset == $offset) ? 'color:black;font-size:14pt' : 'color:grey;font-size:12pt';
                 $params = array('repo' => $repo, 'offset' => $pageoffset, 'isediting' => $isediting);
                 $libraryurl = new moodle_url('/local/sharedresources/index.php', $params);
-                $str .= '<a style="'.$pagestyle.'" name="page'.$i.'" href="'.$libraryurl.'">'.$i.'</a>';
+                $pagetpl = new StdClass;
+                $pagetpl->i = $i;
+                $pagetpl->pagestyle = $pagestyle;
+                $pagetpl->libraryurl = $libraryurl;
+                $template->pages[] = $pagetpl;
             }
         }
-        $str .= '<div></center>';
 
-        return $str;
+        return $this->output->render_from_template('local_sharedresources/pager', $template);
     }
 
     /**
@@ -240,7 +246,7 @@ class local_sharedresources_renderer extends plugin_renderer_base {
                     $editurl = new moodle_url('/mod/sharedresource/edit.php', $params);
                     $commands = '<a href="'.$editurl.'" title="'.$editstr.'">'.$this->output->pix_icon('t/edit', get_string('edit')).'</a>';
 
-                    if (mod_sharedresource_supports_feature('entry/accessctl') && $shrconfig->accesscontrol) {
+                    if (sharedresource_supports_feature('entry/accessctl') && $shrconfig->accesscontrol) {
                         $params = array('course' => $courseid, 'resourceid' => $resource->id, 'return' => 'localindex');
                         $aclsurl = new moodle_url('/mod/sharedresource/pro/classificationacls.php', $params);
                         $commands .= '&nbsp;<a href="'.$aclsurl.'" title="'.$aclsstr.'">'.$aclspix.'</a>';
@@ -415,8 +421,8 @@ class local_sharedresources_renderer extends plugin_renderer_base {
                 }
 
                 // Resource caracterization.
-                $template->isresource = true; // default, may be overriden by other types.
-                $template->islocalizable = true; // default, may be overriden by other types.
+                $template->isresource = true; // Default, may be overriden by other types.
+                $template->islocalizable = true; // Default, may be overriden by other types.
                 $template->i = $i;
                 $template->isltitool = sharedresource_is_lti($resource);
                 $template->ismoodleactivity = sharedresource_is_moodle_activity($resource);
@@ -463,7 +469,7 @@ class local_sharedresources_renderer extends plugin_renderer_base {
                         }
 
                         if ($template->ismoodleactivity) {
-                        // Check deployable moodle activity.
+                            // Check deployable moodle activity.
                             if (file_exists($CFG->dirroot.'/blocks/activity_publisher/lib/activity_publisher.class.php')) {
                                 include_once($CFG->dirroot.'/blocks/activity_publisher/lib/activity_publisher.class.php');
                                 $template->isdeployable = true;
@@ -491,7 +497,9 @@ class local_sharedresources_renderer extends plugin_renderer_base {
 
             $str .= $this->output->render_from_template('local_sharedresources/'.$bodytplname.'end', null);
         } else {
-            // $str .= $OUTPUT->notification(get_string('noresourceshere', 'local_sharedresources'));
+            if ($CFG->debug == DEBUG_DEVELOPER) {
+                $str .= $CFG->debug.$OUTPUT->notification(get_string('noresourceshere', 'local_sharedresources'));
+            }
         }
 
         return $str;
@@ -642,6 +650,8 @@ class local_sharedresources_renderer extends plugin_renderer_base {
     public function category(&$cat, &$catpath, $resourcecount, $current = 'current', $up = false) {
         global $COURSE;
 
+        $courseid = optional_param('course', $COURSE->id, PARAM_INT);
+
         $template = new StdClass;
 
         $template->current = $current;
@@ -649,7 +659,7 @@ class local_sharedresources_renderer extends plugin_renderer_base {
         $nextpath = (empty($catpath)) ? $cat->id.'/' : $catpath.$cat->id.'/';
 
         if (strpos($catpath, '/') === false) {
-            $prevpath =  '';
+            $prevpath = '';
         } else {
             $prevpath = preg_replace('#'.$cat->id.'/$#', '', $catpath);
         }
@@ -658,12 +668,12 @@ class local_sharedresources_renderer extends plugin_renderer_base {
             $template->hasup = true;
             $template->upstr = get_string('up', 'local_sharedresources');
             if (!is_null($cat->parent)) {
-                $params = array('catid' => $cat->parent, 'catpath' => $prevpath, 'course' => $COURSE->id);
+                $params = array('catid' => $cat->parent, 'catpath' => $prevpath, 'course' => $courseid);
                 $template->parentcaturl = new moodle_url('/local/sharedresources/browse.php', $params);
                 $template->upiconurl = $this->output->image_url('up', 'local_sharedresources');
                 $template->catspan = 9;
             } else {
-                $params = array('catid' => 0, 'catpath' => '', 'course' => $COURSE->id);
+                $params = array('catid' => 0, 'catpath' => '', 'course' => $courseid);
                 $template->parentcaturl = new moodle_url('/local/sharedresources/browse.php', $params);
                 $template->upiconurl = $this->output->image_url('up', 'local_sharedresources');
                 $template->catspan = 9;
@@ -673,7 +683,7 @@ class local_sharedresources_renderer extends plugin_renderer_base {
         }
 
         if ($current == 'sub') {
-            $params = array('catid' => $cat->id, 'catpath' => $nextpath, 'course' => $COURSE->id);
+            $params = array('catid' => $cat->id, 'catpath' => $nextpath, 'course' => $courseid);
             $template->caturl = new moodle_url('/local/sharedresources/browse.php', $params);
             $template->hassubs = $cat->hassubs;
         }
@@ -715,9 +725,11 @@ class local_sharedresources_renderer extends plugin_renderer_base {
     public function searchlink() {
         global $COURSE;
 
+        $courseid = optional_param('course', $COURSE->id, PARAM_INT);
+
         $template = new StdClass;
         $template->buttonstr = get_string('searchinlibrary', 'local_sharedresources');
-        $template->buttonurl = new moodle_url('/local/sharedresources/explore.php', array('course' => $COURSE->id));
+        $template->buttonurl = new moodle_url('/local/sharedresources/explore.php', array('course' => $courseid));
         $template->class = 'sharedresources-link-to-search';
 
         return $this->output->render_from_template('local_sharedresources/modebutton', $template);
@@ -726,13 +738,14 @@ class local_sharedresources_renderer extends plugin_renderer_base {
     public function browserlink() {
         global $COURSE;
 
-        $template = new StdClass;
+        $courseid = optional_param('course', $COURSE->id, PARAM_INT);
 
+        $template = new StdClass;
         $template->buttonstr = get_string('browse', 'local_sharedresources');
-        if ($COURSE->id == SITEID) {
+        if ($courseid == SITEID) {
             $template->buttonurl = new moodle_url('/local/sharedresources/browse.php');
         } else {
-            $template->buttonurl = new moodle_url('/local/sharedresources/browse.php', array('course' => $COURSE->id));
+            $template->buttonurl = new moodle_url('/local/sharedresources/browse.php', array('course' => $courseid));
         }
         $template->class = 'sharedresources-link-to-browser';
 
