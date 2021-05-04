@@ -1,5 +1,5 @@
 {{!
-    This file is part of The Dashboard Block
+    This file is part of The Sharedresource Library
 
     Moodle is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -23,14 +23,14 @@
     * mod/sharedresource/amd/view.js
 
 }}
-<!-- resourcebody -->
+<!-- local_sharedresources/resourcebody -->
 <table class="sharedresource-item">
 
     <tr class="sharedresource-line {{ishiddenbyrule}}">
         <td class="resource-cell resource-title" width="70%">
-            <img id="sharedresource-toggle-{{identifier}}" class="sharedresource-toggle-handle" src="{{handlepixurl}}">
-
-            <img src="{{{pixurl}}}" class="icon{{iconsize}} sh-icon" /> <a href="{{{url}}}" target="_blank">{{title}}</a> 
+            <img id="sharedresource-toggle-{{identifier}}" class="sharedresource-toggle-handle" src="{{handlepixurl}}" />
+            <img src="{{{pixurl}}}" class="icon{{iconsize}} sh-icon" />
+            <a href="{{{url}}}" target="_blank">{{title}}</a>
             {{#filesize}}
             ({{filesize}}{{fileunit}})
             {{/filesize}}
@@ -49,7 +49,8 @@
 
     <tr class="sharedresource-user-control {{ishiddenbyrule}}">
         <td colspan="3">
-            <div class="resource-user-controls">{{#shownotice}}{{{noticepopupactionlink}}}{{/shownotice}} {{#hascommands}}{{> local_sharedresources/resourcecommands}}{{/hascommands}}</div>
+            <div class="resource-user-controls">{{#shownotice}}{{{noticepopupactionlink}}}{{/shownotice}}
+            {{#hascommands}}{{> local_sharedresources/resourcecommands}}{{/hascommands}}</div>
         </td>
     </tr>
 
@@ -89,4 +90,4 @@
         </td>
     </tr>
 </table>
-<!-- /resourcebody -->
+<!-- /local_sharedresources/resourcebody -->

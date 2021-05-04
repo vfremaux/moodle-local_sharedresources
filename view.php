@@ -120,9 +120,9 @@ if (empty($resource->file) && !empty($resource->url)) {
 } else {
     // First form.
     $fs = get_file_storage();
-    $stored_file = $fs->get_file_by_id($resource->file);
-    if (!$stored_file) {
+    $storedfile = $fs->get_file_by_id($resource->file);
+    if (!$storedfile) {
         send_file_not_found();
     }
-    send_stored_file($stored_file, 60 * 60, 0, $forcedownload);
+    send_stored_file($storedfile, 60 * 60, 0, $forcedownload);
 }

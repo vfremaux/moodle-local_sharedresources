@@ -41,11 +41,13 @@ if (local_sharedresources_supports_feature('admin/pro')) {
  * implementation path where to fetch resources.
  * @param string $feature a feature key to be tested.
  */
-function local_sharedresources_supports_feature($feature) {
+function local_sharedresources_supports_feature($feature = null, $getsupported = false) {
     global $CFG;
     static $supports;
 
-    $config = get_config('sharedresource');
+    if (!during_initial_install()) {
+        $config = get_config('local_sharedresources');
+    }
 
     if (!isset($supports)) {
         $supports = array(
@@ -61,6 +63,10 @@ function local_sharedresources_supports_feature($feature) {
         $prefer = array();
     }
 
+    if ($getsupported) {
+        return $supports;
+    }
+
     // Check existance of the 'pro' dir in plugin.
     if (is_dir(__DIR__.'/pro')) {
         if ($feature == 'emulate/community') {
@@ -73,6 +79,11 @@ function local_sharedresources_supports_feature($feature) {
         }
     } else {
         $versionkey = 'community';
+    }
+
+    if (empty($feature)) {
+        // Just return version.
+        return $versionkey;
     }
 
     list($feat, $subfeat) = explode('/', $feature);
@@ -142,7 +153,7 @@ function cmp($a, $b) {
  * get a stub of local resources
  */
 function sharedresources_get_local_resources($repo, &$fullresults, $metadatafilters = '', &$offset = 0, $page = 20) {
-    global $CFG, $USER, $DB;
+    global $DB;
 
     $config = get_config('sharedresource');
     $systemcontext = context_system::instance();
@@ -216,8 +227,10 @@ function sharedresources_get_local_resources($repo, &$fullresults, $metadatafilt
             $entryclass = \mod_sharedresource\entry_factory::get_entry_class();
             $rentry = new $entryclass($r);
 
-            if (mod_sharedresource_supports_feature('entry/accessctl')) {
-                debug_trace('local sharedresources: applying access control to result '.$id);
+            if (sharedresource_supports_feature('entry/accessctl')) {
+                if (function_exists('debug_trace')) {
+                    debug_trace('local sharedresources: applying access control to result '.$id);
+                }
                 if (!$rentry->has_access()) {
                     if (!has_capability('repository/sharedresources:manage', $systemcontext)) {
                         unset($fullresults['entries'][$id]);
@@ -254,13 +267,13 @@ function sharedresources_get_remote_repo_resources($repo, &$fullresults, $metada
         print_error('errorrepoprogramming');
     }
 
-    $remote_host = $DB->get_record('mnet_host', array('id' => $repo));
+    $remotehost = $DB->get_record('mnet_host', array('id' => $repo));
 
     // Get the originating (ID provider) host info.
     if (!$remotepeer = new mnet_peer()) {
         print_error('errormnetpeer', 'local_sharedresources');
     }
-    $remotepeer->set_wwwroot($remote_host->wwwroot);
+    $remotepeer->set_wwwroot($remotehost->wwwroot);
 
     // Set up the RPC request.
     $mnetrequest = new mnet_xmlrpc_client();
@@ -269,7 +282,7 @@ function sharedresources_get_remote_repo_resources($repo, &$fullresults, $metada
     // Set remoteuser and remoteuserhost parameters.
     if (!empty($USER->username)) {
         $mnetrequest->add_param($USER->username, 'string');
-        $remoteuserhost = $DB->get_record('mnet_host', array('id'=> $USER->mnethostid));
+        $remoteuserhost = $DB->get_record('mnet_host', array('id' => $USER->mnethostid));
         $mnetrequest->add_param($remoteuserhost->wwwroot, 'string');
     } else {
         $mnetrequest->add_param('anonymous', 'string');
@@ -336,7 +349,7 @@ function sharedresources_get_providers() {
  * service
  */
 function sharedresources_get_consumers() {
-    global $CFG,$DB;
+    global $CFG, $DB;
 
     $sql = "
         SELECT
@@ -363,7 +376,7 @@ function sharedresources_get_consumers() {
  * service
  */
 function sharedresources_is_consumer($hostroot) {
-    global $CFG, $DB;
+    global $DB;
 
     $sql = "
         SELECT
@@ -403,7 +416,7 @@ function sharedresource_get_usages($entry, &$response, $consumers = null, $user 
     }
 
     if (is_null($consumers)) {
-        $uses = $DB->count_records('sharedresource', array('identifier'=> $entry->identifier));
+        $uses = $DB->count_records('sharedresource', array('identifier' => $entry->identifier));
     } else {
         $uses = 0;
         if ($consumers) {
@@ -422,7 +435,7 @@ function sharedresource_get_usages($entry, &$response, $consumers = null, $user 
                 // Set remoteuser and remoteuserhost parameters.
                 $mnetrequest->add_param($user->username);
 
-                $remoteuserhost = $DB->get_record('mnet_host', array('id'=> $user->mnethostid));
+                $remoteuserhost = $DB->get_record('mnet_host', array('id' => $user->mnethostid));
                 $mnetrequest->add_param($remoteuserhost->wwwroot);
 
                 // Set category and resourceID parameter.
@@ -433,7 +446,7 @@ function sharedresource_get_usages($entry, &$response, $consumers = null, $user 
                     $uses += (int) json_decode($mnetrequest->response);
                 } else {
                     foreach ($mnetrequest->error as $errormessage) {
-                        list($code, $message) = array_map('trim',explode(':', $errormessage, 2));
+                        list($code, $message) = array_map('trim', explode(':', $errormessage, 2));
                         $message .= " Callback ERROR $code:<br/>$errormessage<br/>";
                     }
                     $response['error'][] = "RPC mod/sharedresource/check:<br/>$message";
@@ -453,13 +466,13 @@ function sharedresource_get_usages($entry, &$response, $consumers = null, $user 
 function sharedresource_submit($repo, &$resourceentry) {
     global $CFG, $DB;
 
-    $remote_host = $DB->get_record('mnet_host', array('id'=> $repo));
+    $remotehost = $DB->get_record('mnet_host', array('id' => $repo));
 
     // Get the originating (ID provider) host info.
     if (!$remotepeer = new mnet_peer()) {
         error ("MNET client initialisation error");
     }
-    $remotepeer->set_wwwroot($remote_host->wwwroot);
+    $remotepeer->set_wwwroot($remotehost->wwwroot);
 
     // Set up the RPC request.
     $mnetrequest = new mnet_xmlrpc_client();
@@ -468,7 +481,7 @@ function sharedresource_submit($repo, &$resourceentry) {
     // Set $remoteuser and $remoteuserhost parameters.
     if (!empty($USER->username)) {
         $mnetrequest->add_param($USER->username);
-        $remoteuserhost = $DB->get_record('mnet_host',array('id', $USER->mnethostid));
+        $remoteuserhost = $DB->get_record('mnet_host', array('id', $USER->mnethostid));
         $mnetrequest->add_param($remoteuserhost->wwwroot);
     } else {
         $mnetrequest->add_param('anonymous');
@@ -500,9 +513,9 @@ function sharedresource_submit($repo, &$resourceentry) {
                 $file = $resourceentry->file;
 
                 // Convert local.
-                $resourceentry->url = $remote_host->wwwroot.'/resources/view.php?id='.$resourceentry->identifier;
+                $resourceentry->url = $remotehost->wwwroot.'/resources/view.php?id='.$resourceentry->identifier;
                 $resourceentry->file = '';
-                $resourceentry->provider = sharedresources_repo($remote_host->wwwroot);
+                $resourceentry->provider = sharedresources_repo($remotehost->wwwroot);
                 $DB->update_record('sharedresource', $resourceentry);
 
                 // Destroy local file.
@@ -514,7 +527,7 @@ function sharedresource_submit($repo, &$resourceentry) {
         }
     } else {
         foreach ($mnetrequest->error as $errormessage) {
-            list($code, $message) = array_map('trim',explode(':', $errormessage, 2));
+            list($code, $message) = array_map('trim', explode(':', $errormessage, 2));
             $message .= "ERROR $code:<br/>$errormessage<br/>";
         }
         print_error('rpcsharedresourceerror', 'local_sharedresources', $message);
@@ -540,14 +553,13 @@ function sharedresources_repo($wwwroot) {
 }
 
 /**
-* setup visible search widgets depending on metadata plugin and
-* user quality
-* @param array ref $visiblewidgets an array to be filled by the function with objets reprensenting visible widgets
-* @param object $context course or site context
-*/
+ * setup visible search widgets depending on metadata plugin and
+ * user quality
+ * @param array ref $visiblewidgets an array to be filled by the function with objets reprensenting visible widgets
+ * @param object $context course or site context
+ */
 function sharedresources_setup_widgets(&$visiblewidgets, $context) {
-    global $CFG, $DB;
-    static $loaded = false;
+    global $CFG;
 
     // Load all widget classes.
     $widgetclasses = glob($CFG->dirroot.'/local/sharedresources/classes/searchwidgets/*');
@@ -557,40 +569,17 @@ function sharedresources_setup_widgets(&$visiblewidgets, $context) {
 
     $config = get_config('sharedresource');
 
-    /*
-    // TODO : complete the code when setting up new capabilities related to widgets usage (read).
-
-    // Setup the catalog view separating providers with tabs.
-    $plugins = sharedresource_get_plugins();
-    $pluginname = $plugins[$config->schema]->pluginname;
-
-    if (has_capability('repository/sharedresources:systemmetadata', $context)) {
-        $capability = 'system';
-    } else if (has_capability('repository/sharedresources:indexermetadata', $context)) {
-        $capability = 'indexer';
-    } else if (has_capability('repository/sharedresources:authormetadata', $context)) {
-        $capability = 'author';
-    } else {
-        print_error(get_string('noaccessform', 'sharedresource'));
-    }
-    */
-
     if ($activewidgets = unserialize(@$config->activewidgets)) {
         $count = 0;
         foreach ($activewidgets as $key => $widget) {
 
-        /*
-        // TODO : complete the code when setting up new capabilities related to widgets usage (read).
-            if ($DB->record_exists_select('config_plugins', "name LIKE 'config_{$pluginname}_{$capability}_{$widget->id}'")) {
-        */
-                $count++;
-                $visiblewidgets[$key] = $widget;
-        /*
-            }
-        */
+            $count++;
+            $visiblewidgets[$key] = $widget;
         }
     } else {
-        debug_trace('Failed deserializing');
+        if (function_exists('debug_trace')) {
+            debug_trace('Failed deserializing');
+        }
     }
 }
 
@@ -604,6 +593,7 @@ function sharedresources_remote_widgets($repo, $context) {
 
     // Load all widget classes.
     $widgetclasses = glob($CFG->dirroot.'/local/sharedresources/classes/searchwidgets/*');
+
     foreach ($widgetclasses as $classfile) {
         include_once($classfile);
     }
@@ -612,6 +602,7 @@ function sharedresources_remote_widgets($repo, $context) {
     if (!$remotepeer = new mnet_peer()) {
         print_error('errormnetpeer', 'local_sharedresources');
     }
+
     if (!$remotehost = $DB->get_record('mnet_host', array('id' => $repo))) {
         if (debugging()) {
             print_error("No such host $repo in the neighborghood");
@@ -627,7 +618,7 @@ function sharedresources_remote_widgets($repo, $context) {
     // Set remoteuser and remoteuserhost parameters.
     if (!empty($USER->username)) {
         $mnetrequest->add_param($USER->username, 'string');
-        $userremoteuserhost = $DB->get_record('mnet_host', array('id'=> $USER->mnethostid));
+        $userremoteuserhost = $DB->get_record('mnet_host', array('id' => $USER->mnethostid));
         $mnetrequest->add_param($userremoteuserhost->wwwroot, 'string');
     } else {
         $mnetrequest->add_param('anonymous', 'string');
@@ -666,7 +657,6 @@ function sharedresources_remote_widgets($repo, $context) {
  * @param arrayref &$searchfields an array of input search fields  for widget filters.
  */
 function sharedresources_process_search_widgets(&$visiblewidgets, &$searchfields) {
-    global $CFG;
 
     $result = false;
     $config = get_config('sharedresource');
@@ -710,12 +700,12 @@ function sharedresources_get_string($identifier, $subplugin, $a = '', $lang = ''
 
     if (array_key_exists($identifier, $plugstring[$plug])) {
         $result = $plugstring[$plug][$identifier];
-        if ($a !== NULL) {
+        if ($a !== null) {
             if (is_object($a) or is_array($a)) {
                 $a = (array)$a;
                 $search = array();
                 $replace = array();
-                foreach ($a as $key=>$value) {
+                foreach ($a as $key => $value) {
                     if (is_int($key)) {
                         // We do not support numeric keys - sorry!
                         continue;
@@ -751,8 +741,6 @@ function sharedresources_get_string($identifier, $subplugin, $a = '', $lang = ''
  * @param object $resource a sharedresource descriptor
  */
 function sharedresource_is_lti($resource) {
-    global $CFG;
-
     return(preg_match('/LTI/', $resource->keywords) || @$resource->islti);
 }
 
@@ -815,7 +803,7 @@ function sharedresource_is_scorm($resource) {
                     return false;
                 }
 
-                if ($zip->locateName('imsmanifest.xml', ZipArchive::FL_NOCASE|ZIPARCHIVE::FL_NODIR)) {
+                if ($zip->locateName('imsmanifest.xml', ZipArchive::FL_NOCASE | ZIPARCHIVE::FL_NODIR)) {
                     return true;
                 }
             }
@@ -855,9 +843,9 @@ function sharedresource_is_moodle_activity($resource) {
 
     $fs = get_file_storage();
 
-    if ($stored_file = $fs->get_file_by_id($resource->file)) {
-        $archivename = $stored_file->get_filename();
-        if ('application/vnd.moodle.backup' == $stored_file->get_mimetype()) {
+    if ($storedfile = $fs->get_file_by_id($resource->file)) {
+        $archivename = $storedfile->get_filename();
+        if ('application/vnd.moodle.backup' == $storedfile->get_mimetype()) {
             return true;
         }
     }
@@ -884,7 +872,7 @@ function sharedresource_get_top_keywords($courseid) {
     $kwelement = $mtdstandard->getKeywordElement();
 
     if (!$kwelement) {
-        // Some metadata standard have no keywords. (DC)
+        // Some metadata standard have no keywords (DC).
         return '';
     }
 
@@ -963,22 +951,22 @@ function sharedresources_scan_importpath($upath, &$importlines, &$metadatadefine
     }
 
     // Process an optional alias file for taxonomy tokens.
-    $ALIASES = array();
+    $aliasescache = array();
     if (file_exists($importpath.'/taxonomy_aliases.txt')) {
-        $aliases = file($_importpath.'/taxonomy_aliases.txt');
+        $aliases = file($importpath.'/taxonomy_aliases.txt');
         foreach ($aliases as $aliasline) {
             // Taxonomy aliases should share the same encoding than the metadata.csv.
             if ($data->encoding != 'UTF-8') {
                 $aliasline = utf8_encode($aliasline);
             }
             list($from, $to) = explode('=', chop($aliasline));
-            $ALIASES[rtrim($from)] = ltrim($to);
+            $aliasescache[rtrim($from)] = ltrim($to);
         }
     }
 
     // Apply overriding aliases to taxonomy.
     if (!function_exists('alias_taxon_tokens')) {
-        function alias_taxon_tokens(&$item, $k, $aliases) {
+        function alias_taxon_tokens(&$item, $unused, $aliases) {
             if (array_key_exists($item, $aliases)) {
                 $item = $aliases[$item];
             }
@@ -1000,7 +988,7 @@ function sharedresources_scan_importpath($upath, &$importlines, &$metadatadefine
             $taxonparts = explode('/', $cleanedpath);
 
             // Eventually translate using an aliasing table.
-            array_walk($taxonparts, 'alias_taxon_tokens', $ALIASES);
+            array_walk($taxonparts, 'alias_taxon_tokens', $aliasescache);
         }
     }
 
@@ -1087,7 +1075,6 @@ function sharedresources_scan_importpath($upath, &$importlines, &$metadatadefine
  * @param array $options some operation options comming from from context such as encoding.
  */
 function sharedresources_parse_metadata(&$metadata, &$metadatadefines, $upath, $options) {
-    global $CFG;
 
     static $sortorder = 0; // An absolute counter for ordering file in inputlist, based on metadata analysis.
 

@@ -1,5 +1,5 @@
 {
     "plugintypes": {
-        "sharedresourceprovider" => "local\/sharedresources\/plugins"
+        "sharedresourceprovider": "local\/sharedresources\/plugins"
     }
 }

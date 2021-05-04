@@ -37,9 +37,11 @@ if (!$course = $DB->get_record('course', array('id' => $courseid))) {
     print_error('coursemisconf');
 }
 
+$systemcontext = context_system::instance();
+
 $strtitle = get_string('search', 'local_sharedresources');
 $PAGE->set_pagelayout('standard');
-$PAGE->set_context($system_context);
+$PAGE->set_context($systemcontext);
 $PAGE->set_title($strtitle);
 $PAGE->set_heading($SITE->fullname);
 $PAGE->navbar->add( $course->shortname, new moodle_url('/course/view.php', array('id' => $courseid)));
@@ -59,8 +61,8 @@ echo $OUTPUT->header();
 
 resources_search_print_tabs($repo, $course);
 
-// Get repo and get search page.
 
-include($CFG->dirroot."/resources/plugins/{$repo}/remotesearch.php");
+// Get repo and get search page.
+require($CFG->dirroot."/resources/plugins/{$repo}/remotesearch.php");
 
 echo $OUTPUT->footer();
