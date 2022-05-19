@@ -15,22 +15,16 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version details.
- *
- * @package     local_sharedresources
- * @category    local
- * @author      Valery Fremaux <valery.fremaux@gmail.com>
- * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL
+ * @package   local_courseindex
+ * @category  local
+ * @copyright 2006 Valery Fremaux
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version  = 2021102100;   // The (date) version of this plugin.
-$plugin->requires = 2020060900;   // Requires this Moodle version.
-$plugin->component = 'local_sharedresources';
-$plugin->release = '3.9.0 (Build 2021102100)';
-$plugin->maturity = MATURITY_RC;
-$plugin->dependencies = array('local_staticguitexts' => 2013121900);
-
-// Non moodle attributes.
-$plugin->codeincrement = '3.9.0004';
-$plugin->privacy = 'dualrelease';
+$definitions = array(
+    'pro' => array(
+        'mode' => cache_store::MODE_APPLICATION
+    )
+);

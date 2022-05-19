@@ -498,7 +498,7 @@ class local_sharedresources_renderer extends plugin_renderer_base {
             $str .= $this->output->render_from_template('local_sharedresources/'.$bodytplname.'end', null);
         } else {
             if ($CFG->debug == DEBUG_DEVELOPER) {
-                $str .= $CFG->debug.$OUTPUT->notification(get_string('noresourceshere', 'local_sharedresources'));
+                $str .= $OUTPUT->notification(get_string('noresourceshere', 'local_sharedresources'));
             }
         }
 

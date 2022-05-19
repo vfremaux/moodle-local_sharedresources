@@ -1,3 +1,8 @@
+#page-local-sharedresources-explore .header h2,
+#page-local-sharedresources-browse  .header h2 {
+    font-size: 1rem;
+}
+
 .resourceitem {
     background-color: #f8f8f8;
     border: 1px solid #e8e8e8;
