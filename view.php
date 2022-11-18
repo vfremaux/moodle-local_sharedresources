@@ -83,7 +83,7 @@ if (!empty($resourceid)) {
     $idvalue = $identifier;
 } else {
     print_error('errorinvalidresourceid', 'local_sharedresources');
-    exit;
+    exit 1;
 }
 
 if (!$resource = $DB->get_record('sharedresource_entry', array($idfield => $idvalue))) {
