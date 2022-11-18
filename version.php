@@ -25,12 +25,13 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->version  = 2021102100;   // The (date) version of this plugin.
-$plugin->requires = 2020060900;   // Requires this Moodle version.
+$plugin->requires = 2022041900;   // Requires this Moodle version.
 $plugin->component = 'local_sharedresources';
-$plugin->release = '3.9.0 (Build 2021102100)';
+$plugin->release = '4.0.0 (Build 2021102100)';
 $plugin->maturity = MATURITY_RC;
+$plugin->supported = [40, 40];
 $plugin->dependencies = array('local_staticguitexts' => 2013121900);
 
 // Non moodle attributes.
-$plugin->codeincrement = '3.9.0004';
+$plugin->codeincrement = '4.0.0004';
 $plugin->privacy = 'dualrelease';
