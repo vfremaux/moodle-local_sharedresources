@@ -41,7 +41,7 @@ jobs:
             TAGNAME="${GITHUB_REF##*/}"
           fi
           if [[ -z "${TAGNAME}" ]]; then
-            echo "Github Ref : ${GITHUB_REF}";
+            echo "Github Ref : ${GITHUB_REF}"
             echo "No tag name has been provided!"
             exit 1
           fi
