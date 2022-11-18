@@ -28,9 +28,9 @@
  * entries in the current view, after a contextual query has been fired to remote connected
  * resource sets.
  *
- * The index will provide a "top viewed" resources side tray, and a "top used" side tray, 
- * that will count local AND remote inttegration of the resource. The remote query to 
- * bound catalogs will also get information about local catalog resource used by remote courses. 
+ * The index will provide a "top viewed" resources side tray, and a "top used" side tray,
+ * that will count local AND remote inttegration of the resource. The remote query to
+ * bound catalogs will also get information about local catalog resource used by remote courses.
  *
  * The index is public access. Browsing the catalog should although be done through a Guest identity,
  * having as a default the repository/sharedresources:view capability.
@@ -55,6 +55,7 @@ if ($courseid) {
     $context = context_system::instance();
 }
 
+require_login();
 require_capability('repository/sharedresources:view', $context);
 
 // Prepare the page.

@@ -21,7 +21,7 @@
     * none
 
 }}
-<!-- searchform -->
+<!-- local_sharedresources/searchform -->
 {{^haswidgets))
 <br/>
 <center>{{strnowidgets}}</center>
@@ -34,7 +34,12 @@
 
 {{#courseid}}
 <input type="hidden" name="course" value="{{courseid}}">
-{{/courseid}}
+{{/courseid}}{{#section}}
+<input type="hidden" name="section" value="{{section}}">
+{{/section}}
+{{#return}}
+<input type="hidden" name="return" value="{{return}}">
+{{/return}}
 
 <input type="hidden" name="repo" value="{{repo}}">
 <input type="hidden" name="offset" value="{{offset}}">
@@ -59,4 +64,4 @@
 </form>
 
 {{/haswidgets}}
-<!-- /searchform -->
+<!-- /local_sharedresources/searchform -->

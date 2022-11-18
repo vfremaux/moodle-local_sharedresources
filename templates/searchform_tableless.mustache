@@ -23,7 +23,7 @@
     * none
 
 }}
-<!-- searchform_tableless -->
+<!-- local_sharedresources/searchform_tableless -->
 {{^haswidgets}}
 <div class="inner-block">
     <div class="content">
@@ -39,6 +39,12 @@
 {{#courseid}}
 <input type="hidden" name="course" value="{{courseid}}">
 {{/courseid}}
+{{#section}}
+<input type="hidden" name="section" value="{{section}}">
+{{/section}}
+{{#return}}
+<input type="hidden" name="return" value="{{return}}">
+{{/return}}
 
 <input type="hidden" name="repo" value="{{repo}}">
 <input type="hidden" name="offset" value="{{offset}}">
@@ -69,4 +75,4 @@
 </form>
 </div>
 {{/haswidgets}}
-<!-- /searchform_tableless -->
+<!-- /local_sharedresources/searchform_tableless -->

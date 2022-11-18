@@ -23,7 +23,7 @@
     * mod/sharedresource/amd/view.js
 
 }}
-<!-- resourcecommands -->
+<!-- local_sharedresources/resourcecommands -->
 {{#isremote}}
     <form name="add{{i}}" action="{{{formurl}}}" style="display:inline">
 {{/isremote}}
@@ -49,27 +49,27 @@
 </form>
 
 {{#isresource}}
-- <a id="id-shared-{{i}}" class="sharedresource-actionlink">{{#str}}addtocourse, local_sharedresources{{/str}}</a>
+<a id="id-shared-{{i}}" class="sharedresource-actionlink btn btn-secondary">{{#str}}addtocourse, local_sharedresources{{/str}}</a>
 {{/isresource}}
 
 {{#islocalizable}}
- - <a id="id-local-{{i}}" class="sharedresource-actionlink">{{#str}}localizetocourse, local_sharedresources{{/str}}</a>
+ <a id="id-local-{{i}}" class="sharedresource-actionlink btn btn-secondary">{{#str}}localizetocourse, local_sharedresources{{/str}}</a>
 {{/islocalizable}}
 
 {{#isltitool}}
- - <a id="id-ltiinstall-{{i}}" class="sharedresource-actionlink">{{#str}}installltitool, local_sharedresources{{/str}}</a>
+ <a id="id-ltiinstall-{{i}}" class="sharedresource-actionlink btn btn-secondary">{{#str}}installltitool, local_sharedresources{{/str}}</a>
 {{/isltitool}}
 
 {{#isscorm}}
- - <a id="id-scorm-{{i}}" class="sharedresource-actionlink">{{#str}}deployincourse, local_sharedresources{{/str}}</a>
+ <a id="id-scorm-{{i}}" class="sharedresource-actionlink btn btn-secondary">{{#str}}deployincourse, local_sharedresources{{/str}}</a>
 {{/isscorm}}
 
 {{#isdeployable}}
- - <a id="id-deploy-{{i}}" class="sharedresource-actionlink">{{#str}}deployincourse, local_sharedresources{{/str}}</a>
+ <a id="id-deploy-{{i}}" class="sharedresource-actionlink btn btn-secondary">{{#str}}deployincourse, local_sharedresources{{/str}}</a>
 {{/isdeployable}}
 
 {{#isplayable}}
- - <a id="id-mplayerdeploy-{{i}}" class="sharedresource-actionlink">{{#str}}deployinmplayer, local_sharedresources{{/str}}</a>
+ <a id="id-mplayerdeploy-{{i}}" class="sharedresource-actionlink btn btn-secondary">{{#str}}deployinmplayer, local_sharedresources{{/str}}</a>
 {{/isplayable}}
 
-<!-- /resourcecommands -->
+<!-- /local_sharedresources/resourcecommands -->
