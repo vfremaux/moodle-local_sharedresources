@@ -17,7 +17,7 @@
 /**
  * @package    local_sharedresources
  * @category   local
- * @author Valery Fremaux <valery.fremaux@club-internet.fr>
+ * @author Valery Fremaux <valery.fremaux@gmail.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
  * @copyright  (C) 1999 onwards Martin Dougiamas  http://dougiamas.com
  *
@@ -25,11 +25,11 @@
  */
 defined('MOODLE_INTERNAL') || die();
 
-/**
+/*
  * get the query parts, recompose the complete LRE SQI query and shoots a SQI SOAP call.
  */
 
-require_once($CFG->dirroot.'/local/sharedresources/plugin/lre/sqilib.php');
+require_once($CFG->dirroot.'/local/sharedresources/plugin/lre/extlib/sqilib.php');
 require_once($CFG->dirroot.'/local/sharedresources/plugin/lre/locallib.php');
 require_once($CFG->dirroot.'/local/sharedresources/plugin/lre/form_remote_search.class.php');
 

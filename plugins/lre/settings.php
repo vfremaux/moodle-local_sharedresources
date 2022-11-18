@@ -17,18 +17,16 @@
 /**
  * @package    local_sharedresources
  * @category   local
- * @author Valery Fremaux <valery.fremaux@club-internet.fr>
+ * @author Valery Fremaux <valery.fremaux@gmail.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
  * @copyright  (C) 1999 onwards Martin Dougiamas  http://dougiamas.com
  */
 defined('MOODLE_INTERNAL') || die();
 
-/*$temp = new admin_settingpage('lre', get_string('lresettings', 'lre', '', $CFG->dirroot.'/local/sharedresources/plugins/lre/lang/'));
-*/
 if ($ADMIN->fulltree) {
 
     $key = 'lre_settings';
-    $settings->add(new admin_setting_heading($key, sharedresources_get_string('lre_settings', 'sharedresourceprovider_lre'),''));
+    $settings->add(new admin_setting_heading($key, sharedresources_get_string('lre_settings', 'sharedresourceprovider_lre'), ''));
 
     $key = 'sharedresourceprovider_lre/session_service_url';
     $label = get_string('sessionserviceurl', 'sharedresourceprovider_lre');

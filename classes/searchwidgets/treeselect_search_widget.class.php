@@ -31,7 +31,7 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/mod/sharedresource/metadatalib.php');
 require_once($CFG->dirroot.'/local/sharedresources/classes/search_widget.class.php');
-require_once $CFG->dirroot.'/mod/sharedresource/classificationlib.php';
+require_once($CFG->dirroot.'/mod/sharedresource/classificationlib.php');
 
 /**
  * search_widget defines a widget element for the search engine of metadata.

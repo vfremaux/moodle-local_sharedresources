@@ -23,8 +23,14 @@
     * local/sharedresource/amd/boxview.js
 
 }}
-<!-- boxresourcebody -->
+<!-- local_sharedresources/boxresourcebody -->
 <div class="sharedresource-item-container">
+
+    {{#haseditioncommands}}
+    <div class="sharedresource-librarian-controls">
+        {{{editioncommands}}}<br/>
+    </div>
+    {{/haseditioncommands}}
 
     <div class="sharedresource-picture {{ishiddenbyrule}}">
         <img class="box-resource-images" id="sharedresource-image-{{identifier}}" src="{{{largepixurl}}}" />
@@ -36,7 +42,6 @@
         </div>
 
         <div class="sharedresource-user-controls">
-
             {{#url}}
             <a href="{{{url}}}" target="_blank" title="{{#str}}download, local_sharedresources{{/str}}"><img src="{{{boxdownloadpixurl}}}" /></a>
             {{/url}}
@@ -44,12 +49,6 @@
             <img src="{{{boxdownloadpixurl}}}" class="is-hidden-by-rule" alt="{{#str}}ishiddenbyrule, local_sharedresources{{/str}}" />
             {{/url}}
             {{#shownotice}}{{{boxnoticepopupactionlink}}}{{/shownotice}}
-
-            {{#haseditioncommands}}
-            <!-- div class="sharedresource-librarian-controls" -->
-                {{{editioncommands}}}
-            <!-- /div -->
-            {{/haseditioncommands}}
         </div>
 
         <div class="resource-likes">
@@ -88,4 +87,4 @@
 
     </div>
 </div>
-<!-- /boxresourcebody -->
+<!-- /local_sharedresources/boxresourcebody -->

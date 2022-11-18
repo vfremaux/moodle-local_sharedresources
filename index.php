@@ -28,9 +28,9 @@
  * entries in the current view, after a contextual query has been fired to remote connected
  * resource sets.
  *
- * The index will provide a "top viewed" resources side tray, and a "top used" side tray, 
- * that will count local AND remote inttegration of the resource. The remote query to 
- * bound catalogs will also get information about local catalog resource used by remote courses. 
+ * The index will provide a "top viewed" resources side tray, and a "top used" side tray,
+ * that will count local AND remote inttegration of the resource. The remote query to
+ * bound catalogs will also get information about local catalog resource used by remote courses.
  *
  * The index is public access. Browsing the catalog should although be done through a Guest identity,
  * having as a default the repository/sharedresources:view capability.
@@ -40,11 +40,13 @@ require('../../config.php');
 $config = get_config('local_sharedresource');
 
 $courseid = optional_param('course', SITEID, PARAM_INT);
+$section = optional_param('section', 0, PARAM_INT);
+$return = optional_param('return', 0, PARAM_INT);
 
 if (empty($config->defaultlibraryindexpage) || $config->defaultlibraryindexpage == 'explore') {
-    $serviceurl = new moodle_url('/local/sharedresources/explore.php', array('course' => $courseid));
+    $serviceurl = new moodle_url('/local/sharedresources/explore.php', ['course' => $courseid, 'section' => $section, 'return' => $return]);
 } else {
-    $serviceurl = new moodle_url('/local/sharedresources/browse.php', array('course' => $courseid));
+    $serviceurl = new moodle_url('/local/sharedresources/browse.php', ['course' => $courseid, 'section' => $section, 'return' => $return]);
 }
 redirect($serviceurl);
 

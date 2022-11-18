@@ -25,6 +25,9 @@
  */
 defined('MOODLE_INTERNAL') || die();
 
+/**
+ * SQI special query object.
+ */
 class SQI {
 
     /**
@@ -142,8 +145,8 @@ class SQI {
     }
 
     /**
-    *
-    */
+     *
+     */
     public static function results_count() {
         global $CFG, $SESSION;
 

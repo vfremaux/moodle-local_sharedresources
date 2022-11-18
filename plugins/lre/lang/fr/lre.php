@@ -103,5 +103,3 @@ $string['sl'] = 'Slovène';
 $string['sv'] = 'Suédois';
 $string['cs'] = 'Tchèque';
 $string['uk'] = 'Ukrainien';
-
-?>
