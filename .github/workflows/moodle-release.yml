@@ -39,7 +39,7 @@ jobs:
             TAGNAME="${{ github.event.inputs.tag }}"
           elif [[ $GITHUB_REF = refs/tags/* ]]; then
             TAGNAME="${GITHUB_REF##*/}"
-          elif [[ $GITHUB_REF = refs/head/* ]]; then
+          elif [[ $GITHUB_REF = refs/heads/* ]]; then
             TAGNAME="${GITHUB_REF##*/}"
           fi
           if [[ -z "${TAGNAME}" ]]; then
