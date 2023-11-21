@@ -41,13 +41,12 @@ define(['jquery', 'core/log', 'core/config'], function($, log, cfg) {
             var payload = productkey.substr(0, 14);
             var crc = productkey.substr(14, 2);
 
-            var calculated = localsharedresourcepro.checksum(payload);
+            var calculated = localsharedresourcespro.checksum(payload);
 
             var validicon = ' <img src="' + cfg.wwwroot + '/pix/i/valid.png' + '">';
             var cautionicon = ' <img src="' + cfg.wwwroot + '/pix/i/warning.png' + '">';
             var invalidicon = ' <img src="' + cfg.wwwroot + '/pix/i/invalid.png' + '">';
             var waiticon = ' <img src="' + cfg.wwwroot + '/pix/i/ajaxloader.gif' + '">';
-            var found;
 
             if (crc === calculated) {
                 var url = cfg.wwwroot + '/' + localsharedresourcespro.componentpath + '/pro/ajax/services.php?';
@@ -60,8 +59,8 @@ define(['jquery', 'core/log', 'core/config'], function($, log, cfg) {
                 $(licensekeyid).after(waiticon);
 
                 $.get(url, function(data) {
-                    if (data.match(/SET OK/)) {
-                        if (found = data.match(/-\d+.*$/)) {
+                    if (data.match(/(CHECK|SET) OK/)) {
+                        if (data.match(/-\d+.*$/)) {
                             $(licensekeyid + ' + img').remove();
                             $(licensekeyid).after(cautionicon);
                         } else {
@@ -81,6 +80,7 @@ define(['jquery', 'core/log', 'core/config'], function($, log, cfg) {
 
         /**
          * Calculates a checksum on 2 chars.
+         * @param {string} keypayload the key content string
          */
         checksum: function(keypayload) {
 

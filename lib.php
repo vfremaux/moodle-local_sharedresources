@@ -116,6 +116,22 @@ function local_sharedresources_supports_feature($feature = null, $getsupported =
     return $versionkey;
 }
 
+// Moodle 4.0
+function local_sharedresources_extend_navigation(global_navigation $nav) {
+    global $USER, $COURSE, $PAGE;
+
+    if ($COURSE->id == SITEID) {
+        $context = context_system::instance();
+    } else {
+        $context = context_course::instance($COURSE->id);
+    }
+
+    if (has_capability('repository/sharedresources:view', $context)) {
+        $librarynode = $PAGE->navigation->create(get_string('library', 'local_sharedresources'), new moodle_url('/local/sharedresources/index.php'), navigation_node::TYPE_CONTAINER);
+        $nav->add_node($librarynode);
+    }
+}
+
 /**
  * a call back function for autoloading classes when unserializing the widgets
  *

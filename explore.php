@@ -40,7 +40,9 @@ require_once($CFG->libdir.'/blocklib.php');
 require_once($CFG->dirroot.'/course/lib.php');
 require_once($CFG->dirroot.'/mod/sharedresource/rpclib.php');
 require_once($CFG->dirroot.'/local/sharedresources/classes/search_widget.class.php');
-require_once($CFG->dirroot.'/local/staticguitexts/lib.php');
+if (is_dir($CFG->dirroot.'/local/staticguitexts')) {
+    require_once($CFG->dirroot.'/local/staticguitexts/lib.php');
+}
 
 // DO not rely on moodle classloader.
 if ($searchplugins = glob($CFG->dirroot.'/local/sharedresources/classes/searchwidgets/*')) {
