@@ -50,6 +50,14 @@
 <input type="hidden" name="offset" value="{{offset}}">
 
 <div class="inner-block">
+    {{#usemodes}}
+    <div id="sharedresource-search-mode-select">
+    <center>
+        <a href="{{{simplemodeurl}}}">{{#str}}simplemode, local_sharedresources{{/str}}</a> - 
+        <a href="{{{fullmodeurl}}}">{{#str}}fullmode, local_sharedresources{{/str}}</a>
+    </center>
+    </div>
+    {{/usemodes}}
     <div id="sharedresource-search-button content">
         <center>
         <input type="submit" name="go" value="{{searchstr}}" />
@@ -68,14 +76,6 @@
         <center>
         <input type="submit" name="go" value="{{searchstr}}" />
         <input type="button" name="reset" value="{{resetstr}}" id="sharedresources-search-reset-btn"/>
-        </center>
-    </div>
-</div>
-
-<div class="inner-block" id="sharedresource-search-simple">
-    <div class="content">
-        <center>
-        <a href="{{{browseurl}}}">{{#str}}simplesearch, local_sharedresources{{/str}}</a>
         </center>
     </div>
 </div>

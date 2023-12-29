@@ -36,6 +36,10 @@ require_once($CFG->dirroot.'/local/sharedresources/classes/search_widget.class.p
  */
 class freetext_widget extends search_widget {
 
+    public function __construct($id, $label) {
+        parent::__construct($id, $label, 'freetext');
+    }
+
     /**
      * Fonction used to display the widget. The parameter $display determines if plugins are displayed on a row or on a column
      */
@@ -45,7 +49,7 @@ class freetext_widget extends search_widget {
         $template = new StdClass;
 
         $lowername = strtolower($this->label);
-        $template->widgetname = get_string(str_replace(' ', '', $lowername), 'sharedmetadata_'.$this->schema);
+        $template->widgetname = get_string(clean_string_key($lowername), 'sharedmetadata_'.$this->schema);
 
         if (!empty($value)) {
             preg_match('/^([^:]+):(.*)/', $value, $matches);

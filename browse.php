@@ -131,7 +131,19 @@ $bc->attributes['id'] = 'local_sharedresource_searchblock';
 $bc->attributes['role'] = 'search';
 $bc->attributes['aria-labelledby'] = 'local_sharedresouces_search_title';
 $bc->title = html_writer::span(get_string('searchinlibrary', 'local_sharedresources'), '', array('id' => 'local_sharedresources_search_title'));
-$bc->content = $renderer->search_widgets_tableless($courseid, $repo, $offset, $context, $visiblewidgets, $searchfields);
+$mode = optional_param('mode', 'full', PARAM_TEXT);
+$layout = 'tableless';
+switch ($mode) {
+    case 'simple' : {
+        $layout = 'simplefield';
+        break;
+    }
+    case 'full' : {
+        $layout = 'tableless';
+        break;
+    }
+}
+$bc->content = $renderer->search_block($courseid, $repo, $offset, $context, $visiblewidgets, $searchfields, $layout);
 $PAGE->blocks->add_fake_block($bc, $config->searchblocksposition);
 
 /* Fltering */

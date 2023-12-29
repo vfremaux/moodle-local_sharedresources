@@ -37,6 +37,10 @@ require_once($CFG->dirroot.'/local/sharedresources/classes/search_widget.class.p
  */
 class select_widget extends search_widget {
 
+    public function __construct($id, $label) {
+        parent::__construct($id, $label, 'select');
+    }
+
     /**
      * Fonction used to display the widget. The parameter $display determines if plugins are displayed on a row or on a column
      */
@@ -51,13 +55,12 @@ class select_widget extends search_widget {
         include_once($CFG->dirroot.'/mod/sharedresource/plugins/'.$this->schema.'/plugin.class.php');
         $mtdclass = '\\mod_sharedresource\\plugin_'.$this->schema;
         $mtdstandard = new $mtdclass();
-        $template->widgetname = $widgetname;
         $template->label = $this->label;
         $template->selectsearchhelpicon = $OUTPUT->help_icon('selectsearch', 'sharedresource', false);
         $options = '';
         foreach ($mtdstandard->METADATATREE[$this->id]['values'] as $optvalue) {
             $selected = ($value == $optvalue) ? 'selected="selected"' : '';
-            $str = get_string(clean_string_key($optvalue), 'sharedmetadata_'.$this->schema);
+            $str = get_string(clean_string_key(strtolower($optvalue)), 'sharedmetadata_'.$this->schema);
             $options .= "<option value=\"$optvalue\" $selected >".$str.'</option>';
         }
         $template->options = $options;

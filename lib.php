@@ -573,6 +573,7 @@ function sharedresources_repo($wwwroot) {
  * user quality
  * @param array ref $visiblewidgets an array to be filled by the function with objets reprensenting visible widgets
  * @param object $context course or site context
+ * @return void fills the $visiblewidgets
  */
 function sharedresources_setup_widgets(&$visiblewidgets, $context) {
     global $CFG;

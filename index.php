@@ -43,7 +43,7 @@ $courseid = optional_param('course', SITEID, PARAM_INT);
 $section = optional_param('section', 0, PARAM_INT);
 $return = optional_param('return', 0, PARAM_INT);
 
-if (empty($config->defaultlibraryindexpage) || $config->defaultlibraryindexpage == 'explore') {
+if (($return == 2) || (($return == 0) && (empty($config->defaultlibraryindexpage) || $config->defaultlibraryindexpage == 'explore'))) {
     $serviceurl = new moodle_url('/local/sharedresources/explore.php', ['course' => $courseid, 'section' => $section, 'return' => $return]);
 } else {
     $serviceurl = new moodle_url('/local/sharedresources/browse.php', ['course' => $courseid, 'section' => $section, 'return' => $return]);

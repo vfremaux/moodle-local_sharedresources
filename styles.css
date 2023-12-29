@@ -275,3 +275,7 @@ img.icon32 {
     height: 32px;
     width: 32px;
 }
+
+#sharedresource-search-mode-select {
+    margin-bottom: 1em;
+}

@@ -37,6 +37,10 @@ require_once($CFG->dirroot.'/local/sharedresources/classes/search_widget.class.p
  */
 class selectmultiple_widget extends search_widget {
 
+    public function __construct($id, $label) {
+        parent::__construct($id, $label, 'selectmultiple');
+    }
+
     /**
      * Fonction used to display the widget. The parameter $display determines if plugins are displayed on a row or on a column
      * @param string $layout
@@ -70,7 +74,7 @@ class selectmultiple_widget extends search_widget {
             if (is_numeric($optvalue)) {
                 $valuetpl->optlabel = $optvalue;
             } else {
-                $valuetpl->optlabel = get_string(clean_string_key($optvalue), 'sharedmetadata_'.$this->schema);
+                $valuetpl->optlabel = get_string(clean_string_key(strtolower($optvalue)), 'sharedmetadata_'.$this->schema);
             }
             $template->values[] = $valuetpl;
         }
