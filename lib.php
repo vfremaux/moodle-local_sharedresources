@@ -280,14 +280,14 @@ function sharedresources_get_remote_repo_resources($repo, &$fullresults, $metada
     global $CFG, $USER, $DB;
 
     if ($repo == 'local') {
-        print_error('errorrepoprogramming');
+        throw new moodle_exception(get_string('errorrepoprogramming'));
     }
 
     $remotehost = $DB->get_record('mnet_host', array('id' => $repo));
 
     // Get the originating (ID provider) host info.
     if (!$remotepeer = new mnet_peer()) {
-        print_error('errormnetpeer', 'local_sharedresources');
+        throw new moodle_exception(get_string('errormnetpeer', 'local_sharedresources'));
     }
     $remotepeer->set_wwwroot($remotehost->wwwroot);
 
@@ -317,7 +317,7 @@ function sharedresources_get_remote_repo_resources($repo, &$fullresults, $metada
         if ($res->status == RPC_SUCCESS) {
             $fullresults = (array)$res->resources;
         } else {
-            print_error($res->error);
+            throw new moodle_exception($res->error);
         }
     } else {
         $fullresults['entries'] = array();
@@ -326,7 +326,7 @@ function sharedresources_get_remote_repo_resources($repo, &$fullresults, $metada
             list($code, $message) = array_map('trim', explode(':', $errormessage, 2));
             $message .= "ERROR $code:<br/>$errormessage<br/>";
         }
-        print_error("RPC mod/sharedresource/get_list:<br/>$message");
+        throw new moodle_exception("RPC mod/sharedresource/get_list:<br/>$message");
     }
     unset($mnetrequest);
 
@@ -539,14 +539,14 @@ function sharedresource_submit($repo, &$resourceentry) {
                 unlink($filename);
             }
         } else {
-            print_error('rpcsharedresourcesubmiterror', '');
+            throw new moodle_exception(get_string('rpcsharedresourcesubmiterror'));
         }
     } else {
         foreach ($mnetrequest->error as $errormessage) {
             list($code, $message) = array_map('trim', explode(':', $errormessage, 2));
             $message .= "ERROR $code:<br/>$errormessage<br/>";
         }
-        print_error('rpcsharedresourceerror', 'local_sharedresources', $message);
+        throw new moodle_excpetion(get_string('rpcsharedresourceerror', 'local_sharedresources', $message));
     }
     unset($mnetrequest);
 
@@ -617,12 +617,12 @@ function sharedresources_remote_widgets($repo, $context) {
 
     // Get the originating (ID provider) host info.
     if (!$remotepeer = new mnet_peer()) {
-        print_error('errormnetpeer', 'local_sharedresources');
+        throw new moodle_exception(get_string('errormnetpeer', 'local_sharedresources'));
     }
 
     if (!$remotehost = $DB->get_record('mnet_host', array('id' => $repo))) {
         if (debugging()) {
-            print_error("No such host $repo in the neighborghood");
+            throw new moodle_exception("No such host $repo in the neighborghood");
         }
         return;
     }
@@ -659,7 +659,7 @@ function sharedresources_remote_widgets($repo, $context) {
                 $widgets[$ix] = $reclassed;
             }
         } else {
-            print_error($res->error);
+            throw new moodle_exception($res->error);
         }
     } else {
         $widgets = array();
@@ -880,7 +880,7 @@ function sharedresource_get_top_keywords($courseid) {
     $config = get_config('sharedresource');
 
     if (empty($config->schema)) {
-        print_error('nometadataplugin', 'sharedresource');
+        thrown new moodle_exception(get_string('nometadataplugin', 'sharedresource'));
     }
 
     $mtdclass = '\\mod_sharedresource\\plugin_'.$config->schema;

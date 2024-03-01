@@ -903,7 +903,7 @@ class local_sharedresources_renderer extends plugin_renderer_base {
         }
 
         if (empty($enabledtaxonomies)) {
-            print_error('notaxonomiesenabled', 'local_sharedresources');
+            throw new moodle_exception(get_string('notaxonomiesenabled', 'local_sharedresources'));
         }
 
         $taxonomyids = array_keys($enabledtaxonomies);

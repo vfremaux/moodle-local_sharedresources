@@ -49,7 +49,7 @@ $catpath = optional_param('catpath', '', PARAM_RAW);
 
 if ($courseid) {
     if (!$course = $DB->get_record('course', array('id' => $courseid))) {
-        print_error('coursemisconf');
+        throw new moodle_exception(get_string('coursemisconf'));
     }
 } else {
     // Site level browsing.
@@ -70,7 +70,7 @@ if (!empty($config->privatecatalog)) {
         require_login();
     }
     if (!sharedresources_has_capability_somewhere('repository/sharedresources:view', false, false, false, CONTEXT_COURSECAT.','.CONTEXT_COURSE)) {
-        print_error('noaccess', 'local_sharedresource');
+        throw new moodle_exception(get_string('noaccess', 'local_sharedresource'));
     }
 }
 

@@ -84,7 +84,7 @@ if (!empty($config->privatecatalog)) {
     }
 
     if (!sharedresources_has_capability_somewhere('repository/sharedresources:view', false, false, false, CONTEXT_COURSECAT.','.CONTEXT_COURSE)) {
-        print_error('noaccess', 'local_sharedresource');
+        throw new moodle_exception(get_string('noaccess', 'local_sharedresource'));
     }
 }
 
