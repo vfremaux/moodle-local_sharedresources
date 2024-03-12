@@ -20,11 +20,23 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 // jshint unused: true, undef:true
-define(['jquery', 'core/log'], function ($, log) {
+define(['jquery', 'core/log', 'core/str'], function ($, log, str) {
 
     var sharedresourcessearch = {
 
+        strs: [],
+
         init: function() {
+
+            var stringdefs = [
+                {key: 'moreoptions', component: 'local_sharedresources'}, // 0
+                {key: 'lessoptions', component: 'local_sharedresources'}, // 1
+            ];
+
+            str.get_strings(stringdefs).done(function(s) {
+                sharedresourcessearch.strs = s;
+            });
+
             $('.selectmultiple-selectall').bind('click', this.selectall);
             $('.selectmultiple-unselectall').bind('click', this.unselectall);
             $('#sharedresources-search-reset-btn').bind('click', this.hardreset);
@@ -80,6 +92,15 @@ define(['jquery', 'core/log'], function ($, log) {
             var that = $(this);
             var id = that.attr('id').replace('shr-search-toggle-more-', '');
             $('#selectall-morevalues-' + id).toggleClass('hidden');
+            if ($('#selectall-morevalues-' + id).hasClass('hidden')) {
+                that.addClass('more');
+                that.removeClass('less');
+                $('#shr-search-toggle-more-' + id + ' span').html(sharedresourcessearch.strs[0]);
+            } else {
+                that.removeClass('more');
+                that.addClass('less');
+                $('#shr-search-toggle-more-' + id + ' span').html(sharedresourcessearch.strs[1]);
+            }
         }
     };
 

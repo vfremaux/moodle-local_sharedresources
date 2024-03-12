@@ -282,11 +282,17 @@ img.icon32 {
 
 .shr-search-toggle-more {
     margin-top: 10px;
+    padding-left: 10px;
     text-align: center;
     font-weight: 600;
 }
 
-.shr-search-toggle-more span:before {
+.shr-search-toggle-more.less span:before {
+    font-family: 'Fontawesome';
+    content: "\f068";
+}
+
+.shr-search-toggle-more.more span:before {
     font-family: 'Fontawesome';
     content: "\f067";
 }
