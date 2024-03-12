@@ -163,7 +163,7 @@ if ($hassiteconfig) {
     $layoutregions = $themeconfig->layouts['course']['regions'];
     $options = array();
     foreach ($layoutregions as $region) {
-        $options[$region] = get_string('region-'.$region, 'theme_'.$CFG->theme);
+        $options[$region] = get_string(preg_replace('/-/', '', 'region-'.$region), 'theme_'.$CFG->theme);
     }
 
     $key = 'local_sharedresources/searchblocksposition';

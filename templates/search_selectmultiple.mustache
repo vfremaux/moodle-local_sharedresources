@@ -8,9 +8,22 @@
 <div class="content">
     <a id="selectall-{{id}}" class="selectmultiple-selectall smalltext">{{selectallstr}}</a> / <a class="selectmultiple-unselectall smalltext" id="unselectall-{{id}}">{{unselectallstr}}</a><br/>
 
+    <div id="selectall-values-{{id}}">
     {{#values}}
         <input type="checkbox" class="selectmultiple-{{id}}" name="{{label}}[]" value="{{optvalue}}" {{checked}} /> {{optlabel}}<br/>
     {{/values}}
+    </div>
+    <div id="selectall-morevalues-{{id}}" class="hidden">
+    {{#morevalues}}
+        <input type="checkbox" class="selectmultiple-{{id}}" name="{{label}}[]" value="{{optvalue}}" {{checked}} /> {{optlabel}}<br/>
+    {{/morevalues}}
+    </div>
+
+    {{#hasmoreoptions}}
+    <div id="shr-search-toggle-more-{{id}}" class="shr-search-toggle-more">
+        <span>{{#str}}moreoptions, local_sharedresources{{/str}}</span>
+    </div>
+    {{/hasmoreoptions}}
 
 </div>
 <!-- /local_sharedresources/search_selectmultiple -->

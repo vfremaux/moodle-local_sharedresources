@@ -40,7 +40,9 @@ require_once($CFG->libdir.'/blocklib.php');
 require_once($CFG->dirroot.'/course/lib.php');
 require_once($CFG->dirroot.'/mod/sharedresource/rpclib.php');
 require_once($CFG->dirroot.'/local/sharedresources/classes/search_widget.class.php');
-require_once($CFG->dirroot.'/local/staticguitexts/lib.php');
+if (is_dir($CFG->dirroot.'/local/staticguitexts')) {
+    require_once($CFG->dirroot.'/local/staticguitexts/lib.php');
+}
 
 // DO not rely on moodle classloader.
 if ($searchplugins = glob($CFG->dirroot.'/local/sharedresources/classes/searchwidgets/*')) {
@@ -82,7 +84,7 @@ if (!empty($config->privatecatalog)) {
     }
 
     if (!sharedresources_has_capability_somewhere('repository/sharedresources:view', false, false, false, CONTEXT_COURSECAT.','.CONTEXT_COURSE)) {
-        print_error('noaccess', 'local_sharedresource');
+        throw new moodle_exception(get_string('noaccess', 'local_sharedresource'));
     }
 }
 
@@ -147,13 +149,28 @@ if (sharedresources_process_search_widgets($visiblewidgets, $searchfields)) {
     $offset = 0;
 }
 
+$mode = optional_param('mode', 'full', PARAM_TEXT);
+
+$layout = 'tableless';
+switch ($mode) {
+    case 'simple' : {
+        $layout = 'simplefield';
+        break;
+    }
+    case 'full' : {
+        $layout = 'tableless';
+        break;
+    }
+}
+
 $bc = new block_contents();
 $bc->attributes['id'] = 'local_sharedresource_searchblock';
 $bc->attributes['role'] = 'search';
 $bc->attributes['aria-labelledby'] = 'local_sharedresouces_search_title';
 $args = array('id' => 'local_sharedresources_search_title');
 $bc->title = html_writer::span(get_string('searchinlibrary', 'local_sharedresources'), '', $args);
-$bc->content = $renderer->search_widgets_tableless($courseid, $repo, $offset, $context, $visiblewidgets, $searchfields);
+// $bc->content = $renderer->search_widgets_tableless($courseid, $repo, $offset, $context, $visiblewidgets, $searchfields);
+$bc->content = $renderer->search_block($courseid, $repo, $offset, $context, $visiblewidgets, $searchfields, $layout);
 $PAGE->blocks->add_fake_block($bc, $config->searchblocksposition);
 
 $topkeywords = $renderer->top_keywords($courseid);
