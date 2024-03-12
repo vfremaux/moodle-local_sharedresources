@@ -279,3 +279,14 @@ img.icon32 {
 #sharedresource-search-mode-select {
     margin-bottom: 1em;
 }
+
+.shr-search-toggle-more {
+    margin-top: 10px;
+    text-align: center;
+    font-weight: 600;
+}
+
+.shr-search-toggle-more span:before {
+    font-family: 'Fontawesome';
+    content: "\f067";
+}

@@ -85,7 +85,7 @@ if (!empty($resourceid)) {
 }
 
 if (!$resource = $DB->get_record('sharedresource_entry', array($idfield => $idvalue))) {
-    thrown new moodle_exception(get_string('errorinvalidresource', 'local_sharedresources'));
+    throw new moodle_exception(get_string('errorinvalidresource', 'local_sharedresources'));
 }
 
 // Is resource valid for public delivery ?

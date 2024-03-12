@@ -37,16 +37,29 @@
  */
 require('../../config.php');
 
-$config = get_config('local_sharedresource');
+$config = get_config('local_sharedresources');
 
 $courseid = optional_param('course', SITEID, PARAM_INT);
 $section = optional_param('section', 0, PARAM_INT);
-$return = optional_param('return', 0, PARAM_INT);
+$return = optional_param('return', '', PARAM_ALPHA);
+$catid = optional_param('catid', '', PARAM_INT);
+$catpath = optional_param('catpath', '', PARAM_TEXT);
 
-if (($return == 2) || (($return == 0) && (empty($config->defaultlibraryindexpage) || $config->defaultlibraryindexpage == 'explore'))) {
-    $serviceurl = new moodle_url('/local/sharedresources/explore.php', ['course' => $courseid, 'section' => $section, 'return' => $return]);
-} else {
-    $serviceurl = new moodle_url('/local/sharedresources/browse.php', ['course' => $courseid, 'section' => $section, 'return' => $return]);
+if (empty($return)) {
+    if (!empty($config->defaultlibraryindexpage)) {
+        $return = $config->defaultlibraryindexpage;
+    } else {
+        $return = 'browse'; // default's default.
+    }
 }
+
+if ($return == 'explore') {
+    $params = ['course' => $courseid, 'section' => $section];
+    $serviceurl = new moodle_url('/local/sharedresources/explore.php', $params);
+} else {
+    $params = ['course' => $courseid, 'section' => $section, 'catid' => $catid, 'catpath' => $catpath];
+    $serviceurl = new moodle_url('/local/sharedresources/browse.php', $params);
+}
+
 redirect($serviceurl);
 

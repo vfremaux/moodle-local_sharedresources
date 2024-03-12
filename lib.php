@@ -243,6 +243,14 @@ function sharedresources_get_local_resources($repo, &$fullresults, $metadatafilt
             $entryclass = \mod_sharedresource\entry_factory::get_entry_class();
             $rentry = new $entryclass($r);
 
+            // Discard resources that have next version (not last version of)
+            if ($rentry->get_next() != $rentry->id) {
+                // we have a next version, so do not output in results.
+                $fullresults['maxobjects']--;
+                unset($fullresults['entries'][$id]);
+                continue;
+            }
+
             if (sharedresource_supports_feature('entry/accessctl')) {
                 if (function_exists('debug_trace')) {
                     debug_trace('local sharedresources: applying access control to result '.$id);
@@ -880,7 +888,7 @@ function sharedresource_get_top_keywords($courseid) {
     $config = get_config('sharedresource');
 
     if (empty($config->schema)) {
-        thrown new moodle_exception(get_string('nometadataplugin', 'sharedresource'));
+        throw new moodle_exception(get_string('nometadataplugin', 'sharedresource'));
     }
 
     $mtdclass = '\\mod_sharedresource\\plugin_'.$config->schema;

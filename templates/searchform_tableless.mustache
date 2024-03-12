@@ -48,6 +48,7 @@
 
 <input type="hidden" name="repo" value="{{repo}}">
 <input type="hidden" name="offset" value="{{offset}}">
+<input type="hidden" name="mode" value="{{mode}}">
 
 <div class="inner-block">
     {{#usemodes}}
@@ -71,6 +72,7 @@
 </div>
 {{/widgets}}
 
+{{#islongform}}
 <div class="inner-block" id="sharedresource-search-button">
     <div class="content">
         <center>
@@ -79,6 +81,7 @@
         </center>
     </div>
 </div>
+{{/islongform}}
 
 </form>
 </div>

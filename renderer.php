@@ -76,21 +76,31 @@ class local_sharedresources_renderer extends plugin_renderer_base {
 
     /**
      * generic entry point to render the search block.
+     * @param int $courseid
+     * @param string $repo
+     * @param int $offset
+     * @param object $context
+     * @param array $visiblewidgets
+     * @param array $searchvalues
+     * @param string $layout
      */
     public function search_block($courseid, $repo, $offset, $context, $visiblewidgets, $searchvalues, $layout = 'tableless') {
-        if ($layout == 'tableless') {
-            return $this->search_widgets($courseid, $repo, $offset, $context, $visiblewidgets, $searchvalues, 'tableless');
-        }
-        else if ($layout == 'singlefield') {
-            /* One single text field that searches in all metainformation. */
-            return $this->search_single_widget($courseid, $repo, $offset, $context, $visiblewidgets, $searchvalues);
-        }
-        else if ($layout == 'routedfield') {
-            /* One single text field that searches in a selected routed field. */
-            return $this->search_routed_widget($courseid, $repo, $offset, $context, $visiblewidgets, $searchvalues);
-        }
-        else if ($layout == 'tableless') {
-            return $this->search_widgets($courseid, $repo, $offset, $context, $visiblewidgets, $searchvalues, '');
+
+        switch ($layout) {
+            case 'tableless': {
+                return $this->search_widgets($courseid, $repo, $offset, $context, $visiblewidgets, $searchvalues, 'tableless');
+            }
+            case 'singlefield' : {
+                /* One single text field that searches in all metainformation. */
+                return $this->search_single_widget($courseid, $repo, $offset, $context, $visiblewidgets, $searchvalues);
+            }
+            case 'routedfield': {
+                /* One single text field that searches in a selected routed field. */
+                return $this->search_routed_widget($courseid, $repo, $offset, $context, $visiblewidgets, $searchvalues);
+            }
+            default : {
+                throw new coding_exception('Unknown search layout '.$layout);
+            }
         }
     }
 
@@ -128,6 +138,8 @@ class local_sharedresources_renderer extends plugin_renderer_base {
         $template->searchstr = get_string('search');
         $template->resetstr = get_string('reset', 'local_sharedresources');
         $template->usemodes = true; // Switch to configu boolean
+        $template->mode = 'full';
+        $template->islongform = true;
 
         $template->widgets = array();
         $n = 0;
@@ -156,9 +168,9 @@ class local_sharedresources_renderer extends plugin_renderer_base {
      * @param object &$visiblewidgets widget list for the form.
      * @param object &$searchvalues list of actual values.
      */
-    public function print_single_widget($courseid, $repo, $offset, $context, &$visiblewidgets, &$searchvalues) {
+    public function search_single_widget($courseid, $repo, $offset, $context, &$visiblewidgets, &$searchvalues) {
 
-        $widget = new \local_sharedresources\search\freetext_widget('simple-0', get_string('simplesearch', 'local_sharedresource'));
+        $widget = new \local_sharedresources\search\freetext_widget('simple-0', 'simplesearch');
 
         $template = new StdClass;
         $template->haswidgets = true;
@@ -176,6 +188,9 @@ class local_sharedresources_renderer extends plugin_renderer_base {
         $template->usemodes = true; // Switch to configu boolean
         $template->repo = $repo;
         $template->offset = $offset;
+        $template->searchstr = get_string('search');
+        $template->mode = 'simple';
+        $template->islongform = false;
 
         $widgettpl = new StdClass;
         $widgettpl->key = 'simplesearch';
@@ -307,13 +322,18 @@ class local_sharedresources_renderer extends plugin_renderer_base {
                 if ($isediting) {
                     $catid = optional_param('catid', '', PARAM_INT);
                     $catpath = optional_param('catpath', '', PARAM_TEXT);
+
+                    // Defined by page format
                     if (!defined('RETURN_PAGE')) {
                         define('RETURN_PAGE', 0);
                     }
+
                     $params = array('course' => 1,
                                     'type' => 'file',
                                     'add' => 'sharedresource',
-                                    'return' => RETURN_PAGE,
+                                    'fromlibrary' => true,
+                                    'returnpage' => RETURN_PAGE,
+                                    'return' => 0, /* not significant here as not comming from course workflow */
                                     'mode' => 'update',
                                     'entryid' => $resource->id,
                                     'catid' => $catid,
@@ -603,8 +623,9 @@ class local_sharedresources_renderer extends plugin_renderer_base {
             $catpath = optional_param('catpath', '', PARAM_TEXT);
             $params = array('course' => $course->id,
                             'type' => 'file',
-                            'add' => 'sharedresource',
-                            'return' => RETURN_PAGE,
+                            'fromlibrary' => true,
+                            'returnpage' => RETURN_PAGE,
+                            'return' => 0, /* non significative here as not comming from course workflow */
                             'mode' => 'add',
                             'catid' => $catid,
                             'catpath' => $catpath);
