@@ -28,6 +28,7 @@ namespace local_sharedresources\search;
 use \Stdclass;
 
 defined('MOODLE_INTERNAL') || die();
+define('MOREOPTIONS_THRESHOLD', 8);
 
 require_once($CFG->dirroot.'/mod/sharedresource/metadatalib.php');
 require_once($CFG->dirroot.'/local/sharedresources/classes/search_widget.class.php');
@@ -36,6 +37,10 @@ require_once($CFG->dirroot.'/local/sharedresources/classes/search_widget.class.p
  * search_widget defines a widget element for the search engine of metadata.
  */
 class selectmultiple_widget extends search_widget {
+
+    public function __construct($id, $label) {
+        parent::__construct($id, $label, 'selectmultiple');
+    }
 
     /**
      * Fonction used to display the widget. The parameter $display determines if plugins are displayed on a row or on a column
@@ -61,7 +66,12 @@ class selectmultiple_widget extends search_widget {
         $template->selectallstr = get_string('selectall', 'sharedresource');
         $template->unselectallstr = get_string('unselectall', 'sharedresource');
         $template->id = $this->id;
+        $template->values = [];
+        $template->morevalues = [];
 
+        $i = 0;
+
+        $template->hasmoreoptions = false;
         foreach ($mtdstandard->METADATATREE[$this->id]['values'] as $optvalue) {
             $valuetpl = new StdClass;
             $valuetpl->checked = ($this->checkvalue($optvalue, $value)) ? ' checked ' : '';
@@ -70,9 +80,15 @@ class selectmultiple_widget extends search_widget {
             if (is_numeric($optvalue)) {
                 $valuetpl->optlabel = $optvalue;
             } else {
-                $valuetpl->optlabel = get_string(clean_string_key($optvalue), 'sharedmetadata_'.$this->schema);
+                $valuetpl->optlabel = get_string(clean_string_key(strtolower($optvalue)), 'sharedmetadata_'.$this->schema);
             }
-            $template->values[] = $valuetpl;
+            if ($i < MOREOPTIONS_THRESHOLD) {
+                $template->values[] = $valuetpl;
+            } else {
+                $template->hasmoreoptions = true;
+                $template->morevalues[] = $valuetpl;
+            }
+            $i++;
         }
 
         return $OUTPUT->render_from_template('local_sharedresources/search_selectmultiple', $template);

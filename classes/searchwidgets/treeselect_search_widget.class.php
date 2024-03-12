@@ -38,6 +38,10 @@ require_once($CFG->dirroot.'/mod/sharedresource/classificationlib.php');
  */
 class treeselect_widget extends search_widget {
 
+    public function __construct($id, $label) {
+        parent::__construct($id, $label, 'treeselect');
+    }
+
     /**
      * Fonction used to display the widget. The parameter $display determines if plugins are displayed on a row or on a column
      */

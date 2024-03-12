@@ -75,6 +75,36 @@ class local_sharedresources_renderer extends plugin_renderer_base {
     }
 
     /**
+     * generic entry point to render the search block.
+     * @param int $courseid
+     * @param string $repo
+     * @param int $offset
+     * @param object $context
+     * @param array $visiblewidgets
+     * @param array $searchvalues
+     * @param string $layout
+     */
+    public function search_block($courseid, $repo, $offset, $context, $visiblewidgets, $searchvalues, $layout = 'tableless') {
+
+        switch ($layout) {
+            case 'tableless': {
+                return $this->search_widgets($courseid, $repo, $offset, $context, $visiblewidgets, $searchvalues, 'tableless');
+            }
+            case 'singlefield' : {
+                /* One single text field that searches in all metainformation. */
+                return $this->search_single_widget($courseid, $repo, $offset, $context, $visiblewidgets, $searchvalues);
+            }
+            case 'routedfield': {
+                /* One single text field that searches in a selected routed field. */
+                return $this->search_routed_widget($courseid, $repo, $offset, $context, $visiblewidgets, $searchvalues);
+            }
+            default : {
+                throw new coding_exception('Unknown search layout '.$layout);
+            }
+        }
+    }
+
+    /**
      * print widgets calling the adequate widget class instance
      * @param int $courseid
      * @param int $repo
@@ -91,16 +121,25 @@ class local_sharedresources_renderer extends plugin_renderer_base {
             return;
         }
 
-        $template->haswidgets = true;
+        $section = optional_param('section', 0, PARAM_INT);
+        $return = optional_param('return', 0, PARAM_INT);
 
+        $template->haswidgets = true;
+        $params = ['course' => $courseid, 'section' => $section, 'return' => $return, 'mode' => 'simple'];
+        $template->simplemodeurl = new moodle_url('/local/sharedresources/explore.php', $params);
+        $params = ['course' => $courseid, 'section' => $section, 'return' => $return, 'mode' => 'full'];
+        $template->fullmodeurl = new moodle_url('/local/sharedresources/explore.php', $params);
         $template->formurl = new moodle_url('/local/sharedresources/explore.php');
         $template->courseid = $courseid;
-        $template->section = optional_param('section', 0, PARAM_INT);
-        $template->return = optional_param('return', 0, PARAM_INT);
+        $template->section = $section;
+        $template->return = $return;
         $template->repo = $repo;
         $template->offset = $offset;
         $template->searchstr = get_string('search');
         $template->resetstr = get_string('reset', 'local_sharedresources');
+        $template->usemodes = true; // Switch to configu boolean
+        $template->mode = 'full';
+        $template->islongform = true;
 
         $template->widgets = array();
         $n = 0;
@@ -121,12 +160,56 @@ class local_sharedresources_renderer extends plugin_renderer_base {
     }
 
     /**
+     * Prints a unique textual widget that will search into all metadata consistant textual values.
+     * @param int $courseid
+     * @param int $repo
+     * @param int $offset
+     * @param object $context
+     * @param object &$visiblewidgets widget list for the form.
+     * @param object &$searchvalues list of actual values.
+     */
+    public function search_single_widget($courseid, $repo, $offset, $context, &$visiblewidgets, &$searchvalues) {
+
+        $widget = new \local_sharedresources\search\freetext_widget('simple-0', 'simplesearch');
+
+        $template = new StdClass;
+        $template->haswidgets = true;
+
+        $section = optional_param('section', 0, PARAM_INT);
+        $return = optional_param('return', 0, PARAM_INT);
+
+        $params = ['course' => $courseid, 'section' => $section, 'return' => $return, 'mode' => 'simple'];
+        $template->simplemodeurl = new moodle_url('/local/sharedresources/explore.php', $params);
+        $params = ['course' => $courseid, 'section' => $section, 'return' => $return, 'mode' => 'full'];
+        $template->fullmodeurl = new moodle_url('/local/sharedresources/explore.php', $params);
+        $template->courseid = $courseid;
+        $template->section = $section;
+        $template->return = $return;
+        $template->usemodes = true; // Switch to configu boolean
+        $template->repo = $repo;
+        $template->offset = $offset;
+        $template->searchstr = get_string('search');
+        $template->mode = 'simple';
+        $template->islongform = false;
+
+        $widgettpl = new StdClass;
+        $widgettpl->key = 'simplesearch';
+        $widgettpl->widget = $widget->print_search_widget('column', @$searchvalues[$widget->id]);
+        $template->widgets[] = $widgettpl;
+
+        return $this->output->render_from_template('local_sharedresources/searchform_tableless', $template);
+
+    }
+
+    /**
      * print widgets calling the adequate widget class instance
      * @param int $courseid
      * @param int $repo
      * @param int $offset the record count offset of the current page
      * @param object $context the current course or site context
      * @param array ref $visiblewidgets an array of widgets to print
+     * @param array ref $searchvalues an array of actual values
+     * DEPRECATED
      */
     public function search_widgets_tableless($courseid, $repo, $offset, $context, &$visiblewidgets, &$searchvalues) {
         return $this->search_widgets($courseid, $repo, $offset, $context, $visiblewidgets, $searchvalues, 'tableless');
@@ -174,6 +257,11 @@ class local_sharedresources_renderer extends plugin_renderer_base {
 
     /**
      * print list of the selected resources
+     * @param arrayref &$resources the selection of resources to print
+     * @param objectref &$course the course being used as origin
+     * @param int $section the section to return to to keep course context
+     * @param bool $isediting do the user have editing capabilities ?
+     * @param string $repo the current repository
      */
     public function resources_list(&$resources, &$course, $section, $isediting = false, $repo = 'local') {
         global $CFG, $USER, $OUTPUT, $DB, $FULLME;
@@ -234,13 +322,18 @@ class local_sharedresources_renderer extends plugin_renderer_base {
                 if ($isediting) {
                     $catid = optional_param('catid', '', PARAM_INT);
                     $catpath = optional_param('catpath', '', PARAM_TEXT);
+
+                    // Defined by page format
                     if (!defined('RETURN_PAGE')) {
                         define('RETURN_PAGE', 0);
                     }
+
                     $params = array('course' => 1,
                                     'type' => 'file',
                                     'add' => 'sharedresource',
-                                    'return' => RETURN_PAGE,
+                                    'fromlibrary' => true,
+                                    'returnpage' => RETURN_PAGE,
+                                    'return' => 0, /* not significant here as not comming from course workflow */
                                     'mode' => 'update',
                                     'entryid' => $resource->id,
                                     'catid' => $catid,
@@ -530,8 +623,9 @@ class local_sharedresources_renderer extends plugin_renderer_base {
             $catpath = optional_param('catpath', '', PARAM_TEXT);
             $params = array('course' => $course->id,
                             'type' => 'file',
-                            'add' => 'sharedresource',
-                            'return' => RETURN_PAGE,
+                            'fromlibrary' => true,
+                            'returnpage' => RETURN_PAGE,
+                            'return' => 0, /* non significative here as not comming from course workflow */
                             'mode' => 'add',
                             'catid' => $catid,
                             'catpath' => $catpath);
@@ -556,7 +650,7 @@ class local_sharedresources_renderer extends plugin_renderer_base {
      *
      * @see local/sharedresources/pro/lib.php.
      *
-     * @param string $repo
+     * @param string $repo the current repo
      * @param object $course
      */
     public function browse_tabs($repo, $course) {
@@ -566,9 +660,15 @@ class local_sharedresources_renderer extends plugin_renderer_base {
     /**
      * Print resource repository tabs
      * @param string $repo the current repo
-     * @param int $course the course context
+     * @param mixed $courseorid the course context, id or object.
      */
-    public function search_tabs($repo, $course) {
+    public function search_tabs($repo, $courseorid) {
+
+        if (is_int($courseorid)) {
+            $courseid = $courseorid;
+        } else {
+            $courseid = $courseorid->id;
+        }
 
         $str = '';
 
@@ -579,7 +679,7 @@ class local_sharedresources_renderer extends plugin_renderer_base {
         }
 
         foreach ($repos as $arepo) {
-            $repourl = new moodle_url('/local/sharedresources/search.php', array('id' => $course->id, 'repo' => $arepo));
+            $repourl = new moodle_url('/local/sharedresources/search.php', array('id' => $courseid, 'repo' => $arepo));
             $rows[0][] = new tabobject($arepo, $repourl, get_string($arepo.'_reponame', 'local_sharedresources'));
         }
 
@@ -588,6 +688,9 @@ class local_sharedresources_renderer extends plugin_renderer_base {
         return $str;
     }
 
+    /**
+     * @param int $courseid the origin course id
+     */
     public function top_keywords($courseid) {
         global $OUTPUT;
 
@@ -821,7 +924,7 @@ class local_sharedresources_renderer extends plugin_renderer_base {
         }
 
         if (empty($enabledtaxonomies)) {
-            print_error('notaxonomiesenabled', 'local_sharedresources');
+            throw new moodle_exception(get_string('notaxonomiesenabled', 'local_sharedresources'));
         }
 
         $taxonomyids = array_keys($enabledtaxonomies);

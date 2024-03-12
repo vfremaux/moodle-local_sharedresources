@@ -116,6 +116,22 @@ function local_sharedresources_supports_feature($feature = null, $getsupported =
     return $versionkey;
 }
 
+// Moodle 4.0
+function local_sharedresources_extend_navigation(global_navigation $nav) {
+    global $USER, $COURSE, $PAGE;
+
+    if ($COURSE->id == SITEID) {
+        $context = context_system::instance();
+    } else {
+        $context = context_course::instance($COURSE->id);
+    }
+
+    if (has_capability('repository/sharedresources:view', $context)) {
+        $librarynode = $PAGE->navigation->create(get_string('library', 'local_sharedresources'), new moodle_url('/local/sharedresources/index.php'), navigation_node::TYPE_CONTAINER);
+        $nav->add_node($librarynode);
+    }
+}
+
 /**
  * a call back function for autoloading classes when unserializing the widgets
  *
@@ -227,6 +243,14 @@ function sharedresources_get_local_resources($repo, &$fullresults, $metadatafilt
             $entryclass = \mod_sharedresource\entry_factory::get_entry_class();
             $rentry = new $entryclass($r);
 
+            // Discard resources that have next version (not last version of)
+            if ($rentry->get_next() != $rentry->id) {
+                // we have a next version, so do not output in results.
+                $fullresults['maxobjects']--;
+                unset($fullresults['entries'][$id]);
+                continue;
+            }
+
             if (sharedresource_supports_feature('entry/accessctl')) {
                 if (function_exists('debug_trace')) {
                     debug_trace('local sharedresources: applying access control to result '.$id);
@@ -264,14 +288,14 @@ function sharedresources_get_remote_repo_resources($repo, &$fullresults, $metada
     global $CFG, $USER, $DB;
 
     if ($repo == 'local') {
-        print_error('errorrepoprogramming');
+        throw new moodle_exception(get_string('errorrepoprogramming'));
     }
 
     $remotehost = $DB->get_record('mnet_host', array('id' => $repo));
 
     // Get the originating (ID provider) host info.
     if (!$remotepeer = new mnet_peer()) {
-        print_error('errormnetpeer', 'local_sharedresources');
+        throw new moodle_exception(get_string('errormnetpeer', 'local_sharedresources'));
     }
     $remotepeer->set_wwwroot($remotehost->wwwroot);
 
@@ -301,7 +325,7 @@ function sharedresources_get_remote_repo_resources($repo, &$fullresults, $metada
         if ($res->status == RPC_SUCCESS) {
             $fullresults = (array)$res->resources;
         } else {
-            print_error($res->error);
+            throw new moodle_exception($res->error);
         }
     } else {
         $fullresults['entries'] = array();
@@ -310,7 +334,7 @@ function sharedresources_get_remote_repo_resources($repo, &$fullresults, $metada
             list($code, $message) = array_map('trim', explode(':', $errormessage, 2));
             $message .= "ERROR $code:<br/>$errormessage<br/>";
         }
-        print_error("RPC mod/sharedresource/get_list:<br/>$message");
+        throw new moodle_exception("RPC mod/sharedresource/get_list:<br/>$message");
     }
     unset($mnetrequest);
 
@@ -523,14 +547,14 @@ function sharedresource_submit($repo, &$resourceentry) {
                 unlink($filename);
             }
         } else {
-            print_error('rpcsharedresourcesubmiterror', '');
+            throw new moodle_exception(get_string('rpcsharedresourcesubmiterror'));
         }
     } else {
         foreach ($mnetrequest->error as $errormessage) {
             list($code, $message) = array_map('trim', explode(':', $errormessage, 2));
             $message .= "ERROR $code:<br/>$errormessage<br/>";
         }
-        print_error('rpcsharedresourceerror', 'local_sharedresources', $message);
+        throw new moodle_excpetion(get_string('rpcsharedresourceerror', 'local_sharedresources', $message));
     }
     unset($mnetrequest);
 
@@ -557,6 +581,7 @@ function sharedresources_repo($wwwroot) {
  * user quality
  * @param array ref $visiblewidgets an array to be filled by the function with objets reprensenting visible widgets
  * @param object $context course or site context
+ * @return void fills the $visiblewidgets
  */
 function sharedresources_setup_widgets(&$visiblewidgets, $context) {
     global $CFG;
@@ -600,12 +625,12 @@ function sharedresources_remote_widgets($repo, $context) {
 
     // Get the originating (ID provider) host info.
     if (!$remotepeer = new mnet_peer()) {
-        print_error('errormnetpeer', 'local_sharedresources');
+        throw new moodle_exception(get_string('errormnetpeer', 'local_sharedresources'));
     }
 
     if (!$remotehost = $DB->get_record('mnet_host', array('id' => $repo))) {
         if (debugging()) {
-            print_error("No such host $repo in the neighborghood");
+            throw new moodle_exception("No such host $repo in the neighborghood");
         }
         return;
     }
@@ -642,7 +667,7 @@ function sharedresources_remote_widgets($repo, $context) {
                 $widgets[$ix] = $reclassed;
             }
         } else {
-            print_error($res->error);
+            throw new moodle_exception($res->error);
         }
     } else {
         $widgets = array();
@@ -863,7 +888,7 @@ function sharedresource_get_top_keywords($courseid) {
     $config = get_config('sharedresource');
 
     if (empty($config->schema)) {
-        print_error('nometadataplugin', 'sharedresource');
+        throw new moodle_exception(get_string('nometadataplugin', 'sharedresource'));
     }
 
     $mtdclass = '\\mod_sharedresource\\plugin_'.$config->schema;

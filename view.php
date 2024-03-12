@@ -50,8 +50,7 @@ if (!empty($config->privatecatalog)) {
         include_once($CFG->dirroot.'/auth/ticket/lib.php');
         if ($ticket = ticket_decode($token, 'internal')) {
             if (!$tokenchecked = ticket_accept($ticket)) {
-                print_error('errorinvalidticket', 'local_sharedresources');
-                exit;
+                throw new moodle_exception(get_string('errorinvalidticket', 'local_sharedresources'));
             }
         }
     }
@@ -82,12 +81,11 @@ if (!empty($resourceid)) {
     }
     $idvalue = $identifier;
 } else {
-    print_error('errorinvalidresourceid', 'local_sharedresources');
-    exit;
+    throw new moodle_exception(get_string('errorinvalidresourceid', 'local_sharedresources'));
 }
 
 if (!$resource = $DB->get_record('sharedresource_entry', array($idfield => $idvalue))) {
-    print_error('errorinvalidresource', 'local_sharedresources');
+    throw new moodle_exception(get_string('errorinvalidresource', 'local_sharedresources'));
 }
 
 // Is resource valid for public delivery ?
@@ -114,7 +112,7 @@ if ($resource->context > 1) {
 
 if (empty($resource->file) && !empty($resource->url)) {
     if ($resource->url == $FULLME) {
-        print_error('Resource seems be a looping url on the library');
+        throw new moodle_exception('Resource seems be a looping url on the library');
     }
     redirect($resource->url);
 } else {

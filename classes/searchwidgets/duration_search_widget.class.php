@@ -36,6 +36,10 @@ require_once($CFG->dirroot.'/local/sharedresources/classes/search_widget.class.p
  */
 class duration_widget extends search_widget {
 
+    public function __construct($id, $label) {
+        parent::__construct($id, $label, 'duration');
+    }
+
     /**
      * Fonction used to display the widget. The parameter $display determines if plugins are displayed on a row or on a column
      */

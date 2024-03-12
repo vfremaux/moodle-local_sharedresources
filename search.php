@@ -34,7 +34,7 @@ $courseid = optional_param('id', SITEID, PARAM_INT);
 $searchquerystr = get_string('remotesearchquery', 'local_sharedresources');
 
 if (!$course = $DB->get_record('course', array('id' => $courseid))) {
-    print_error('coursemisconf');
+    throw new moodle_exception(get_string('coursemisconf'));
 }
 
 $systemcontext = context_system::instance();

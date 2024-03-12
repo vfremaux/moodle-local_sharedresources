@@ -23,16 +23,7 @@
     * none
 
 }}
-<!-- local_sharedresources/searchform_tableless -->
-{{^haswidgets}}
-<div class="inner-block">
-    <div class="content">
-        <center>{{nowidgetsstr}}</center><br/>
-    </div>
-</div>
-{{/haswidgets}}
-
-{{#haswidgets}}
+<!-- local_sharedresources/searchform_simple -->
 
 <div id="search-form">
 <form name="cat" action="{{formurl}}" style="display:inline">
@@ -48,42 +39,27 @@
 
 <input type="hidden" name="repo" value="{{repo}}">
 <input type="hidden" name="offset" value="{{offset}}">
-<input type="hidden" name="mode" value="{{mode}}">
 
-<div class="inner-block">
-    {{#usemodes}}
-    <div id="sharedresource-search-mode-select">
-    <center>
-        <a href="{{{simplemodeurl}}}">{{#str}}simplemode, local_sharedresources{{/str}}</a> - 
-        <a href="{{{fullmodeurl}}}">{{#str}}fullmode, local_sharedresources{{/str}}</a>
-    </center>
-    </div>
-    {{/usemodes}}
-    <div id="sharedresource-search-button content">
-        <center>
-        <input type="submit" name="go" value="{{searchstr}}" />
-        </center>
-    </div>
-</div>
-
-{{#widgets}}
-<div class="inner-block" id="widget-{{key}}" >
-    {{{widget}}}
-</div>
-{{/widgets}}
-
-{{#islongform}}
 <div class="inner-block" id="sharedresource-search-button">
     <div class="content">
         <center>
         <input type="submit" name="go" value="{{searchstr}}" />
-        <input type="button" name="reset" value="{{resetstr}}" id="sharedresources-search-reset-btn"/>
         </center>
     </div>
 </div>
-{{/islongform}}
+
+<div class="inner-block" >
+    <input name="simplesearch" type="text" />
+</div>
+
+<div class="inner-block" id="sharedresource-search-advanced">
+    <div class="content">
+        <center>
+        <a href="{{{browseurl}}}">{{#str}}advancedsearch, local_sharedresources{{/str}}</a>
+        </center>
+    </div>
+</div>
 
 </form>
 </div>
-{{/haswidgets}}
-<!-- /local_sharedresources/searchform_tableless -->
+<!-- /local_sharedresources/searchform_simple -->
