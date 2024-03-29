@@ -108,9 +108,11 @@ class selectmultiple_widget extends search_widget {
         if (isset($_GET[$paramkey])) {
             $valueset = array();
             if (is_array($_GET[$paramkey])) {
-                $selectvalue = implode(',', array_values($_GET[$paramkey]));
+                $paramarrayval = clean_param_array($_GET[$paramkey], PARAM_TEXT);
+                $selectvalue = implode(',', array_values($paramarrayval));
             } else {
-                $selectvalue = $_GET[$paramkey];
+                $paramval = clean_param($_GET[$paramkey], PARAM_TEXT);
+                $selectvalue = $paramval;
             }
             if ($selectvalue != '') {
                 $searchfields[$this->id] = $selectvalue;

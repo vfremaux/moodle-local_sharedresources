@@ -15,28 +15,28 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template local_sharedresources/resourcebody
+    @template local_sharedresources/resourcebodyinner
 
     Used when a resource is setup as popuped but accessed directly
 
     Classes required for JS:
     * local/sharedresource/amd/boxview.js
+    * local/sharedresource/amd/library.js
 
 }}
-<!-- local_sharedresources/boxresourcebody -->
-<div class="sharedresource-item-container" id="shr-container-{{repoid}}-{{identifier}}">
+<!-- local_sharedresources/boxresourcebodyinner -->
 
     <div class="sharedresource-headline">
     {{#hasversions}}
     {{#hasprevious}}
-        <i class="shr-version previous fa fa-angle-left" title="{{#str}}previous, local_sharedresources{{/str}}" data-version="{{previous}}" data-container="{{repoid}}-{{identifier}}"></i>
+        <i class="shr-version previous fa fa-angle-left" title="{{#str}}previous, local_sharedresources{{/str}}" data-version="{{previous}}" data-container="{{id}}"></i>
     {{/hasprevious}}
     {{^hasprevious}}
         <i class="shr-version previous  fa fa-angle-left dimmed"></i>
     {{/hasprevious}}
     &nbsp;&nbsp;
     {{#hasnext}}
-        <i class="shr-version next fa fa-angle-right" title="{{#str}}next, local_sharedresources{{/str}}" data-version="{{next}}" data-container="{{repoid}}-{{identifier}}"></i>
+        <i class="shr-version next fa fa-angle-right" title="{{#str}}next, local_sharedresources{{/str}}" data-version="{{next}}" data-container="{{id}}"></i>
     {{/hasnext}}
     {{^hasnext}}
         <i class="shr-version next  fa fa-angle-right dimmed"></i>
@@ -103,5 +103,4 @@
         <div class="resource-views"><b>{{#str}}viewed, local_sharedresources{{/str}}:</b> {{{views}}}</div>
 
     </div>
-</div>
-<!-- /local_sharedresources/boxresourcebody -->
+<!-- /local_sharedresources/boxresourcebodyinner -->

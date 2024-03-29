@@ -66,8 +66,9 @@ $section = optional_param('section', '', PARAM_INT); // Optional course section 
 $repo = optional_param('repo', 'local', PARAM_TEXT);
 $offset = optional_param('offset', 0, PARAM_INT);
 $action = optional_param('what', '', PARAM_TEXT);
+$mode = optional_param('mode', 'full', PARAM_TEXT);
 
-$PAGE->requires->js_call_amd('local_sharedresources/library', 'init', array('repo' => $repo));
+$PAGE->requires->js_call_amd('local_sharedresources/library', 'init', ['courseid' => $courseid]);
 $PAGE->requires->js_call_amd('local_sharedresources/search', 'init');
 $PAGE->requires->js_call_amd('local_sharedresources/boxview', 'init');
 
@@ -101,6 +102,7 @@ $params = array('edit' => $edit,
                 'course' => $courseid,
                 'repo' => $repo,
                 'offset' => $offset,
+                'mode' => $mode,
                 'what' => $action);
 $PAGE->set_url('/local/sharedresources/explore.php', $params);
 
@@ -137,24 +139,25 @@ if (file_exists($CFG->dirroot.'/blocks/search') && get_config('local_search', 'e
 
 /* Search in sharedresources */
 
-$visiblewidgets = array();
+$visiblewidgets = [];
 if ($repo == 'local') {
     sharedresources_setup_widgets($visiblewidgets, $context);
 } else {
     $visiblewidgets = sharedresources_remote_widgets($repo, $context);
 }
-$searchfields = array();
-if (sharedresources_process_search_widgets($visiblewidgets, $searchfields)) {
+
+// find search fields, values, and eventual changes in filtering request.
+// If mode is single, will build relevant searchfield to search text in.
+$searchfields = [];
+if (sharedresources_process_search_widgets($mtdplugin, $visiblewidgets, $searchfields, $mode)) {
     // If something has changed in filtering conditions, we might not have same resultset. Keep offset to 0.
     $offset = 0;
 }
 
-$mode = optional_param('mode', 'full', PARAM_TEXT);
-
 $layout = 'tableless';
 switch ($mode) {
     case 'simple' : {
-        $layout = 'simplefield';
+        $layout = 'singlefield';
         break;
     }
     case 'full' : {
@@ -198,21 +201,12 @@ if (($repo == 'local') || empty($repo)) {
 $levels = CONTEXT_COURSECAT.','.CONTEXT_COURSE;
 $isediting = sharedresources_has_capability_somewhere('repository/sharedresources:create', false, false, false, $levels);
 
-$fullresults = array();
-
-$metadatafilters = array();
-if (!empty($searchfields)) {
-    foreach ($searchfields as $element => $search) {
-        if (!empty($search)) {
-            $metadatafilters[$element] = $search;
-        }
-    }
-}
+$fullresults = [];
 
 if ($repo == 'local' || !local_sharedresources_supports_feature('repo/remote')) {
-    $resources = sharedresources_get_local_resources($repo, $fullresults, $metadatafilters, $offset, $page);
+    $resources = sharedresources_get_local_resources($repo, $fullresults, $searchfields, $offset, $page);
 } else {
-    $resources = sharedresources_get_remote_repo_resources($repo, $fullresults, $metadatafilters, $offset, $page);
+    $resources = sharedresources_get_remote_repo_resources($repo, $fullresults, $searchfields, $offset, $page);
 }
 
 $SESSION->resourceresult = $resources;
@@ -225,7 +219,9 @@ if (is_object($mtdplugin) && $mtdplugin->getTaxonomyValueElement()) {
     echo '</center>';
 }
 
-echo '<div id="resources">';
+$shrclass = ($isediting) ? 'is-editing' : '';
+echo '<div id="resources" class="'.$shrclass.'">';
+
 if (empty($resources)) {
     echo $OUTPUT->notification(get_string('noresources', 'local_sharedresources'));
 } else {

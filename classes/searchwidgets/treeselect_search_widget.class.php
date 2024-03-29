@@ -89,7 +89,6 @@ class treeselect_widget extends search_widget {
 
         $subskey = $paramkey.'_subs';
         $withsubs = optional_param($subskey, false, PARAM_BOOL);
-
         $input = optional_param($paramkey, '', PARAM_TEXT);
 
         $searchinput = $input;
