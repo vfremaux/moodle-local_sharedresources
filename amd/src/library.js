@@ -147,13 +147,15 @@ define(['jquery', 'core/config', 'core/log', 'core/str'], function ($, cfg, log,
             var arr = containerid.split('-'); // Has repo-resid form.
             var repoid = arr[0];
             var residentifier = arr[1];
+            var waiter = '<div class="shr-waiter"><img src="' + cfg.wwwroot + '/pix/i/ajaxloader.gif"></div>';
 
             // Fetch and replace resource box content.
-            var url = cfg.wwwroot.'/local/sharedresources/ajax/get_version.php';
+            var url = cfg.wwwroot + '/local/sharedresources/ajax/get_version.php';
             url += 'resid=' + versionid;
             url += 'repo=' + repoid;
             url += 'courseid=' + sharedresourceslibrary.courseid;
             url += 'isediting=' + $('#resources').hasClass('is-editing');
+            $('#id-shr-container-' + containerid).html(waiter);
             $.get(url, function(data) {
                 $('#id-shr-container-' + containerid).html(data);
             }, 'html');
