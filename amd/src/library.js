@@ -151,7 +151,7 @@ define(['jquery', 'core/config', 'core/log', 'core/str'], function ($, cfg, log,
 
             // Fetch and replace resource box content.
             var url = cfg.wwwroot + '/local/sharedresources/ajax/get_version.php';
-            url += 'resid=' + versionid;
+            url += '?resid=' + versionid;
             url += 'repo=' + repoid;
             url += 'courseid=' + sharedresourceslibrary.courseid;
             url += 'isediting=' + $('#resources').hasClass('is-editing');
