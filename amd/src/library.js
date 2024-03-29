@@ -38,6 +38,7 @@ define(['jquery', 'core/config', 'core/log', 'core/str'], function ($, cfg, log,
             });
 
             var that = $(this);
+            log.debug(JSON.stringify(args));
             sharedresourceslibrary.courseid = args[0];
 
             // Resourceitem hover effect.

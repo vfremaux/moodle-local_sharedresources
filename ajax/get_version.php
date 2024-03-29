@@ -53,8 +53,8 @@ if ($repo == 'local' || $repo = $CFG->mnet_localhost_id) {
 if ($repohostroot == $CFG->wwwroot) {
 
     $renderer = $PAGE->get_renderer('local_sharedresources');
-    $version = $DB->get_record('sharedresource_entry', ['id' => $resid], '*', MUST_EXIST);
-    $course = $DB->get_record('sharedresource_entry', ['id' => $courseid], '*', MUST_EXIST);
+    $version = $DB->get_record('sharedresource_entry', ['identifier' => $resid], '*', MUST_EXIST);
+    $course = $DB->get_record('course', ['id' => $courseid], '*', MUST_EXIST);
     $gui = $renderer->get_gui();
     $gui->bodytplname = $shrtemplate; // Will have to resolve dynamically the template.
     $resourcedesc = $renderer->print_resource($version, $course, $repo, $isediting, $gui);
