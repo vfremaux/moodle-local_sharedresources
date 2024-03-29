@@ -51,7 +51,7 @@ define(['jquery', 'core/config', 'core/log', 'core/str'], function ($, cfg, log,
             );
 
             // Delegated handlers so reloading version gets bound too.
-            $('#resources').on('click', 'sharedresource-toggle-handle', this.toggle_info_panel);
+            $('#resources').on('click', '.sharedresource-toggle-handle', this.toggle_info_panel);
             $('#resources').on('click', '.sharedresource-mark-like', this.ajax_mark_like);
             $('#resources').on('click', '.sharedresource-actionlink', this.integrate);
             $('#resources').on('click', '.sharedresource.delete', this.confirm);
