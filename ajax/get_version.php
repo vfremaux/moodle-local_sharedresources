@@ -21,6 +21,7 @@
  * Get a resource version description.
  */
 require('../../../config.php');
+require_once($CFG->dirroot.'/local/sharedresources/lib.php');
 
 $resid = required_param('resid', PARAM_TEXT);
 $courseid = required_param('courseid', PARAM_INT);
@@ -28,7 +29,13 @@ $isediting = optional_param('isediting', '', PARAM_BOOL);
 $shrtemplate = optional_param('template', 'boxresourcebodyinner', PARAM_TEXT);
 $repo = optional_param('repo', $CFG->mnet_localhost_id, PARAM_INT); // Repo is given as mnethostid.
 
+// Defined by page format
+if (!defined('RETURN_PAGE')) {
+    define('RETURN_PAGE', 0);
+}
+
 $context = context_system::instance();
+$PAGE->set_context($context);
 if (!empty($config->privatecatalog)) {
     if ($courseid) {
         $context = context_course::instance($courseid);

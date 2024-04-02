@@ -352,7 +352,7 @@ class local_sharedresources_renderer extends plugin_renderer_base {
         }
 
         // TODO : needs to be reworked.
-        if ($repo == 'local') {
+        if ($repo == 'local' || $repo == $CFG->mnet_localhost_id) {
             // Get local once.
             $resource->uses = sharedresource_get_usages($resource, $response, null);
             $reswwwroot = $CFG->wwwroot;
@@ -387,7 +387,7 @@ class local_sharedresources_renderer extends plugin_renderer_base {
                 $commands .= '&nbsp;<a href="'.$aclsurl.'" title="'.$gui->aclsstr.'">'.$gui->aclspix.'</a>';
             }
 
-            if ($resource->uses == 0) {
+            if (@$resource->uses == 0) {
                 $params = array('what' => 'delete', 'course' => $course->id, 'id' => $resource->id);
                 $deleteurl = new moodle_url($FULLME, $params);
                 $commands .= '&nbsp;<a href="'.$deleteurl.'" title="'.$gui->deletestr.'" class="sharedresource delete">'.$gui->deletepix.'</a>';
@@ -457,7 +457,7 @@ class local_sharedresources_renderer extends plugin_renderer_base {
         } else {
             $resource->filename = @$resource->file_filename;
             $resource->filepath = @$resource->file_filepath;
-            $template->largepixurl = $resource->file_iconurl;
+            $template->largepixurl = @$resource->file_iconurl;
             $template->mimetype = @$resource->file_mimetype;
         }
 
@@ -499,7 +499,7 @@ class local_sharedresources_renderer extends plugin_renderer_base {
         // Content toggler.
         $template->handlepixurl = $this->output->image_url('rightarrow', 'local_sharedresources');
 
-        $template->uses = $resource->uses;
+        $template->uses = $resource->uses ?? '';
         if (!empty($resource->uses)) {
             $params = array('courseid' => @$course->id, 'entryid' => $resource->id);
             $template->courselisturl = new moodle_url('/local/sharedresources/courses.php', $params);
@@ -529,7 +529,7 @@ class local_sharedresources_renderer extends plugin_renderer_base {
             $resourceurl = $resource->url;
         }
 
-        if ($repo == 'local') {
+        if ($repo == 'local' || ($repo == $CFG->mnet_localhost_id)) {
             if ($resource->context > 1) {
                 $viewcap = 'repository/sharedresources:view';
                 try {
