@@ -159,6 +159,8 @@ define(['jquery', 'core/config', 'core/log', 'core/str'], function ($, cfg, log,
             $('#shr-container-' + containerid).html(waiter);
             $.get(url, function(data) {
                 $('#shr-container-' + containerid).html(data);
+                // Resource id has changed, so change container id also.
+                $('#shr-container-' + containerid).attr('id', 'shr-container-' + repoid + '-' + versionid);
             }, 'html');
         }
 
