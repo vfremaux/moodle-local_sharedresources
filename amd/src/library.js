@@ -156,9 +156,9 @@ define(['jquery', 'core/config', 'core/log', 'core/str'], function ($, cfg, log,
             url += '&repo=' + repoid;
             url += '&courseid=' + sharedresourceslibrary.courseid;
             url += '&isediting=' + $('#resources').hasClass('is-editing');
-            $('#shr-container-' + repoid + '-' + containerid).html(waiter);
+            $('#shr-container-' + containerid).html(waiter);
             $.get(url, function(data) {
-                $('#shr-container-' + repoid + '-' + containerid).html(data);
+                $('#shr-container-' + containerid).html(data);
             }, 'html');
         }
 
