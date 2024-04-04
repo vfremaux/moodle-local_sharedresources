@@ -287,6 +287,20 @@ img.icon32 {
 }
 
 .shr-search-toggle-more span:before {
+    padding-right: 1rem;
+}
+
+.shr-search-toggle-more.less span:before {
+    font-family: 'Fontawesome';
+    content: "\f068";
+}
+
+.shr-search-toggle-more.more span:before {
     font-family: 'Fontawesome';
     content: "\f067";
+}
+
+.shr-version {
+    font-size: 110% !important;
+    font-weight: bolder !important;
 }

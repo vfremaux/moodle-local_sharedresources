@@ -69,8 +69,11 @@ class numeric_widget extends search_widget {
         $paramkey = str_replace(' ', '_', $this->label);
         $searchfields[$this->id] = @$SESSION->searchbag->$paramkey;
         if (!empty($_GET[$paramkey])) {
-            $searchfields[$this->id] = $_GET[$paramkey.'_symbol'].':'.$_GET[$paramkey];
-            $SESSION->searchbag->$paramkey = $_GET[$paramkey.'_symbol'].':'.$_GET[$paramkey];
+            $paramval = clean_param($_GET[$paramkey], PARAM_NUMBER);
+            $paramsymbolval = clean_param($_GET[$paramkey.'_symbol'], PARAM_TEXT);
+            $searchstring = $paramsymbolval.':'.$paramval;
+            $searchfields[$this->id] = $searchstring;
+            $SESSION->searchbag->$paramkey = $searchstring;
         }
     }
 }

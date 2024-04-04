@@ -14,7 +14,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- *
+ * A general JS library for library display.
  * @module     local_sharedresource/library
  * @package    local
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -38,6 +38,8 @@ define(['jquery', 'core/config', 'core/log', 'core/str'], function ($, cfg, log,
             });
 
             var that = $(this);
+            // log.debug(JSON.stringify(args));
+            sharedresourceslibrary.courseid = args;
 
             // Resourceitem hover effect.
             $('.resourceitem').hover(
@@ -49,11 +51,13 @@ define(['jquery', 'core/config', 'core/log', 'core/str'], function ($, cfg, log,
                 }
             );
 
-            $('.sharedresource-toggle-handle').bind('click', this.toggle_info_panel);
-            $('.sharedresource-mark-like').on('click', '', args, this.ajax_mark_like);
-            $('.sharedresource-actionlink').bind('click', this.integrate);
-            $('.sharedresource.delete').bind('click', this.confirm);
-            $('.sharedresource.force-delete').bind('click', this.confirm);
+            // Delegated handlers so reloading version gets bound too.
+            $('#resources').on('click', '.sharedresource-toggle-handle', this.toggle_info_panel);
+            $('#resources').on('click', '.sharedresource-mark-like', this.ajax_mark_like);
+            $('#resources').on('click', '.sharedresource-actionlink', this.integrate);
+            $('#resources').on('click', '.sharedresource.delete', this.confirm);
+            $('#resources').on('click', '.sharedresource.force-delete', this.confirm);
+            $('#resources').on('click', '.shr-version', this.toversion);
 
             log.debug('ADM Shared resource Library JS initialized');
         },
@@ -133,6 +137,31 @@ define(['jquery', 'core/config', 'core/log', 'core/str'], function ($, cfg, log,
                 e.stopImmediatePropagation();
                 return false;
             }
+        },
+
+        toversion: function(e) {
+            var that = $(this);
+
+            var versionid = that.attr('data-version');
+            var containerid = that.attr('data-container');
+            var courseid = that.attr('data-container');
+            var arr = containerid.split('-'); // Has repo-resid form.
+            var repoid = arr[0];
+            var residentifier = arr[1];
+            var waiter = '<div class="shr-waiter"><img src="' + cfg.wwwroot + '/pix/i/ajaxloader.gif"></div>';
+
+            // Fetch and replace resource box content.
+            var url = cfg.wwwroot + '/local/sharedresources/ajax/get_version.php';
+            url += '?resid=' + versionid;
+            url += '&repo=' + repoid;
+            url += '&courseid=' + sharedresourceslibrary.courseid;
+            url += '&isediting=' + $('#resources').hasClass('is-editing');
+            $('#shr-container-' + containerid).html(waiter);
+            $.get(url, function(data) {
+                $('#shr-container-' + containerid).html(data);
+                // Resource id has changed, so change container id also.
+                $('#shr-container-' + containerid).attr('id', 'shr-container-' + repoid + '-' + versionid);
+            }, 'html');
         }
 
     };

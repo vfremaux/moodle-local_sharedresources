@@ -36,9 +36,6 @@ if ($searchplugins = glob($CFG->dirroot.'/local/sharedresources/classes/searchwi
 
 define('RETURN_PAGE', 1);
 
-$PAGE->requires->js_call_amd('local_sharedresources/boxview', 'init');
-$PAGE->requires->js_call_amd('local_sharedresources/library', 'init');
-
 $config = get_config('local_sharedresources');
 
 $courseid = optional_param('course', false, PARAM_INT);
@@ -46,6 +43,9 @@ $section = optional_param('section', 0, PARAM_INT);
 $action = optional_param('what', '', PARAM_TEXT);
 $catid = optional_param('catid', '', PARAM_INT);
 $catpath = optional_param('catpath', '', PARAM_RAW);
+
+$PAGE->requires->js_call_amd('local_sharedresources/boxview', 'init');
+$PAGE->requires->js_call_amd('local_sharedresources/library', 'init');
 
 if ($courseid) {
     if (!$course = $DB->get_record('course', array('id' => $courseid))) {

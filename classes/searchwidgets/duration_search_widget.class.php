@@ -115,20 +115,25 @@ class duration_widget extends search_widget {
 
                 // Find number of seconds of the duration.
                 if (isset($_GET[$paramkey.'_day'])) {
-                    $searchduration += $_GET[$paramkey.'_day'] * DAYSECS;
+                    $paramval = clean_param($_GET[$paramkey.'_day'], PARAM_INT);
+                    $searchduration += $paramval * DAYSECS;
                 }
                 if (isset($_GET[$paramkey.'_hour'])) {
-                    $searchduration += $_GET[$paramkey.'_hour'] * HOURSECS;
+                    $paramval = clean_param($_GET[$paramkey.'_hour'], PARAM_INT);
+                    $searchduration += $paramval * HOURSECS;
                 }
                 if (isset($_GET[$paramkey.'_min'])) {
-                    $searchduration += $_GET[$paramkey.'_min'] * 60;
+                    $paramval = clean_param($_GET[$paramkey.'_min'], PARAM_INT);
+                    $searchduration += $paramval * 60;
                 }
                 if (isset($_GET[$paramkey.'_sec'])) {
-                    $searchduration += $_GET[$paramkey.'_sec'];
+                    $paramval = clean_param($_GET[$paramkey.'_sec'], PARAM_INT);
+                    $searchduration += $paramval;
                 }
 
-                $searchfields[$this->id] = $_GET[$paramkey.'_symbol'].':'.$searchduration;
-                $SESSION->searchbag->$paramkey = $_GET[$paramkey.'_symbol'].':'.$searchduration;
+                $paramval = clean_param($_GET[$paramkey.'_symbol'], PARAM_TEXT);
+                $searchfields[$this->id] = $paramval.':'.$searchduration;
+                $SESSION->searchbag->$paramkey = $paramval.':'.$searchduration;
             }
         }
         if (isset($_GET[$paramkey.'_symbol']) &&

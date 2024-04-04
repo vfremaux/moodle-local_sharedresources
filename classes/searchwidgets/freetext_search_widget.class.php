@@ -51,8 +51,7 @@ class freetext_widget extends search_widget {
         $lowername = strtolower($this->label);
         $template->widgetname = get_string(clean_string_key($lowername), 'sharedmetadata_'.$this->schema);
 
-        if (!empty($value)) {
-            preg_match('/^([^:]+):(.*)/', $value, $matches);
+        if (!empty($value) && preg_match('/^([^:]+):(.*)/', $value, $matches)) {
             $operator = $matches[1];
             $template->value = $matches[2];
         } else {
@@ -90,9 +89,12 @@ class freetext_widget extends search_widget {
         $paramkey = str_replace(' ', '_', $this->label);
         $searchfields[$this->id] = @$SESSION->searchbag->$paramkey;
         if (isset($_GET[$paramkey])) {
+            $paramval = clean_param($_GET[$paramkey], PARAM_TEXT);
+            $paramoptionval = clean_param($_GET[$paramkey.'_option'], PARAM_TEXT);
+            $searchstring = $paramoptionval.':'.$paramval;
             if ($_GET[$paramkey] != '') {
-                $searchfields[$this->id] = $_GET[$paramkey.'_option'].':'.$_GET[$paramkey];
-                $SESSION->searchbag->$paramkey = $_GET[$paramkey.'_option'].':'.$_GET[$paramkey];
+                $searchfields[$this->id] = $searchstring;
+                $SESSION->searchbag->$paramkey = $searchstring;
             } else {
                 $searchfields[$this->id] = '';
                 $SESSION->searchbag->$paramkey = '';

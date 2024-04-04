@@ -15,16 +15,16 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template local_sharedresources/resourcebody
+    @template local_sharedresources/resourcebodyinner
 
     Used when a resource is setup as popuped but accessed directly
 
     Classes required for JS:
     * local/sharedresource/amd/boxview.js
+    * local/sharedresource/amd/library.js
 
 }}
-<!-- local_sharedresources/boxresourcebody -->
-<div class="sharedresource-item-container" id="shr-container-{{repoid}}-{{identifier}}">
+<!-- local_sharedresources/boxresourcebodyinner -->
 
     <div class="sharedresource-headline d-flex justify-content-between">
     {{#hasversions}}
@@ -32,7 +32,8 @@
     {{#hasprevious}}
         <i class="shr-version previous fa fa-angle-left" title="{{#str}}previous, local_sharedresources{{/str}}" data-version="{{previous}}" data-container="{{repoid}}-{{identifier}}"></i>
     {{/hasprevious}}
-    {{^hasprevious}}
+    {{^hasprevious}} 
+    
         <i class="shr-version previous  fa fa-angle-left dimmed"></i>
     {{/hasprevious}}
     &nbsp;&nbsp;
@@ -105,5 +106,4 @@
         <div class="resource-views"><b>{{#str}}viewed, local_sharedresources{{/str}}:</b> {{{views}}}</div>
 
     </div>
-</div>
-<!-- /local_sharedresources/boxresourcebody -->
+<!-- /local_sharedresources/boxresourcebodyinner -->
