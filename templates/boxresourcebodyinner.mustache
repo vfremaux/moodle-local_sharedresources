@@ -26,21 +26,24 @@
 }}
 <!-- local_sharedresources/boxresourcebodyinner -->
 
-    <div class="sharedresource-headline">
+    <div class="sharedresource-headline d-flex justify-content-between">
     {{#hasversions}}
+    <div class="versions">
     {{#hasprevious}}
-        <i class="shr-version previous fa fa-angle-left" title="{{#str}}previous, local_sharedresources{{/str}}" data-version="{{previous}}" data-container="{{id}}"></i>
+        <i class="shr-version previous fa fa-angle-left" title="{{#str}}previous, local_sharedresources{{/str}}" data-version="{{previous}}" data-container="{{repoid}}-{{identifier}}"></i>
     {{/hasprevious}}
-    {{^hasprevious}}
+    {{^hasprevious}} 
+    
         <i class="shr-version previous  fa fa-angle-left dimmed"></i>
     {{/hasprevious}}
     &nbsp;&nbsp;
     {{#hasnext}}
-        <i class="shr-version next fa fa-angle-right" title="{{#str}}next, local_sharedresources{{/str}}" data-version="{{next}}" data-container="{{id}}"></i>
+        <i class="shr-version next fa fa-angle-right" title="{{#str}}next, local_sharedresources{{/str}}" data-version="{{next}}" data-container="{{repoid}}-{{identifier}}"></i>
     {{/hasnext}}
     {{^hasnext}}
         <i class="shr-version next  fa fa-angle-right dimmed"></i>
     {{/hasnext}}
+    </div>
     {{/hasversions}}
     {{#haseditioncommands}}
     <div class="sharedresource-librarian-controls">

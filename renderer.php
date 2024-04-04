@@ -420,7 +420,7 @@ class local_sharedresources_renderer extends plugin_renderer_base {
         $area = 'thumbnail';
         $itemid = $resource->id;
 
-        if ($repo == 'local') {
+        if (($repo == 'local') || ($repo == $CFG->mnet_localhost_id)) {
             $mainfile = false;
             if (!empty($resource->file)) {
                 if ($mainfile = $fs->get_file_by_id($resource->file)) {
