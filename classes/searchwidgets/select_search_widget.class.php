@@ -79,8 +79,9 @@ class select_widget extends search_widget {
         $paramkey = str_replace(' ', '_', $this->label);
         $searchfields[$this->id] = @$SESSION->searchbag->$paramkey;
         if (isset($_GET[$paramkey]) && $_GET[$paramkey] != 'defaultvalue') {
-            $searchfields[$this->id] = $_GET[$paramkey];
-            $SESSION->searchbag->$paramkey = $_GET[$paramkey];
+            $paramval = clean_param($_GET[$paramkey], PARAM_TEXT);
+            $searchfields[$this->id] = $paramval;
+            $SESSION->searchbag->$paramkey = $paramval;
         }
     }
 }

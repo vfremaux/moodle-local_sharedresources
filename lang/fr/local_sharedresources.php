@@ -89,6 +89,7 @@ $string['moodleupgradelocks'] = 'La configuration de la librairie ne peut être 
 $string['moreoptions'] = 'Plus d\'options';
 $string['lessoptions'] = 'Moins d\'options';
 $string['newresource'] = 'Ajouter une ressource';
+$string['next'] = 'Version suivante';
 $string['noclassificationenabled'] = 'Aucune taxonomie de ressources n\'a été activée sur ce site. L\'administrateur des ressources devrait définir ou importer des taxonomies, ou désactiver l\'usage du navigateur de taxonomies.';
 $string['noentries'] = '<p>Aucune ressource dans cette librairie</p>';
 $string['noaccess'] = 'vous n\'avez pas les permissions requises pour utiliser ce service.';
@@ -100,6 +101,10 @@ $string['pluginname'] = 'Librairie de ressources';
 =======
 $string['notaxonomiesenabled'] = 'Aucune taxonomie définie dans la librairie. Vous ne pouvez pas utiliser le navigateur "taxonomique".';
 $string['pluginname'] = 'Librairie de ressources mutualisées';
+<<<<<<< HEAD
+>>>>>>> MOODLE_401_STABLE
+=======
+$string['previous'] = 'Version précédente';
 >>>>>>> MOODLE_401_STABLE
 $string['purposediscriminator'] = 'Objectif spécifique de la taxonomie';
 $string['reinitialized'] = '{$a} fichiers rétablis';

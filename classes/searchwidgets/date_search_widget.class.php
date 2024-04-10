@@ -68,7 +68,9 @@ class date_widget extends search_widget {
                 $_GET[$paramkey.'_startdate'] != 'Begin') ||
                         (isset($_GET[$paramkey.'_enddate']) &&
                                 $_GET[$paramkey.'_enddate'] != 'End')) {
-            $searchfields[$this->id] = $_GET[$paramkey.'_startdate'].':'.$_GET[$paramkey.'_enddate'];
+            $paramstartval = clean_param($_GET[$paramkey.'_enddate'], PARAM_TEXT);
+            $paramendval = clean_param($_GET[$paramkey.'_enddate'], PARAM_TEXT);
+            $searchfields[$this->id] = $paramstartval.':'.$paramendval;
         }
     }
 }

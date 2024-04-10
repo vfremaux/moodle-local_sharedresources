@@ -167,8 +167,13 @@ function cmp($a, $b) {
 
 /**
  * get a stub of local resources
+ * @param string $repo
+ * @param arrayref &$fullresults
+ * @param array $searchfields and array of fields to search in keyed by metadata node identifier. Empty values will be ignored.
+ * @param intref &$offset paged offset. May be changed (reset) while seeking for resources in some cases.
+ * @param int $page the paging size.
  */
-function sharedresources_get_local_resources($repo, &$fullresults, $metadatafilters = '', &$offset = 0, $page = 20) {
+function sharedresources_get_local_resources($repo, &$fullresults, $searchfields = [], &$offset = 0, $page = 20) {
     global $DB;
 
     $config = get_config('sharedresource');
@@ -180,11 +185,9 @@ function sharedresources_get_local_resources($repo, &$fullresults, $metadatafilt
     // Check if we have some filters.
     $sqlclauses = array();
     $hasfilter = false;
-    $tabresources = array(); // Array with keys = id of a resource and value = number of criteria matched in research.
+    $tabresources = []; // Array with keys = id of a resource and value = number of criteria matched in research.
 
-    $mtdfiltersarr = (array)$metadatafilters;
-
-    foreach ($mtdfiltersarr as $filterkey => $filtervalue) {
+    foreach ($searchfields as $filterkey => $filtervalue) {
         if (!empty($filtervalue)) {
             $entrysets = sharedresource_get_by_metadata($filterkey, $plugin->pluginname, 'entries', $filtervalue);
             foreach ($entrysets as $key => $id) {
@@ -266,7 +269,7 @@ function sharedresources_get_local_resources($repo, &$fullresults, $metadatafilt
                 }
             }
 
-            $select = array('entryid' => $id, 'namespace' => $config->schema);
+            $select = ['entryid' => $id, 'namespace' => $config->schema];
             if ($metadata = $DB->get_records('sharedresource_metadata', $select, 'element', 'id, element, namespace, value')) {
                 $fullresults['entries'][$id]->metadata = $metadata;
             }
@@ -284,7 +287,7 @@ function sharedresources_get_local_resources($repo, &$fullresults, $metadatafilt
  * @uses $CFG
  * @param string $repo the repo identifier
  */
-function sharedresources_get_remote_repo_resources($repo, &$fullresults, $metadatafilters = '', $offset = 0, $page = 20) {
+function sharedresources_get_remote_repo_resources($repo, &$fullresults, $searchfields = [], $offset = 0, $page = 20) {
     global $CFG, $USER, $DB;
 
     if ($repo == 'local') {
@@ -315,7 +318,7 @@ function sharedresources_get_remote_repo_resources($repo, &$fullresults, $metada
     $mnetrequest->add_param($CFG->wwwroot, 'string'); // Calling host.
 
     // Set filters and offset ad page parameters.
-    $mnetrequest->add_param((array)$metadatafilters, 'struct');
+    $mnetrequest->add_param($searchfields, 'struct');
     $mnetrequest->add_param($offset, 'int');
     $mnetrequest->add_param($page, 'int');
 
@@ -328,7 +331,7 @@ function sharedresources_get_remote_repo_resources($repo, &$fullresults, $metada
             throw new moodle_exception($res->error);
         }
     } else {
-        $fullresults['entries'] = array();
+        $fullresults['entries'] = [];
         $fullresults['maxobjects'] = 0;
         foreach ($mnetrequest->error as $errormessage) {
             list($code, $message) = array_map('trim', explode(':', $errormessage, 2));
@@ -677,17 +680,39 @@ function sharedresources_remote_widgets($repo, $context) {
 }
 
 /**
- * Get search clauses from session and udate from incomming changes
- * @param arrayref &$visiblewidgets an array of widgets to check.
- * @param arrayref &$searchfields an array of input search fields  for widget filters.
+ * Get search clauses from session and udate from incomming changes.
+ * Additionally react to an eventual "simplesearch" query
+ * @param object $mtdplugin the active metadata plugin
+ * @param array $visiblewidgets an array of widgets to check, built from confguration.
+ * @param arrayref &$searchfields an array of input search fields  for widget filters. This array is given to catch_value()
+ * of each widget for adding search query inputs.
  */
-function sharedresources_process_search_widgets(&$visiblewidgets, &$searchfields) {
+function sharedresources_process_search_widgets($mtdplugin, $visiblewidgets, &$searchfields, $mode) {
+    global $SESSION;
+
+    if ($mode == 'simple') {
+        // Erase all searches
+        unset($SESSION->searchbag);
+
+        $fieldsforsingle = $mtdplugin->getSimpleSearchElements();
+        $searchvalue = optional_param('simplesearch', '', PARAM_TEXT);
+        $searchoption = optional_param('simplesearch_option', '', PARAM_TEXT);
+        // Fakes a full search, based on what the metadata plugin tells as relevant fields to search text in.
+        if (!empty($searchvalue)) {
+            foreach ($fieldsforsingle as $f) {
+                $searchfields[$f] = "$searchoption:$searchvalue";
+            }
+        }
+
+        return;
+    }
 
     $result = false;
     $config = get_config('sharedresource');
 
     if (!empty($_GET) && !empty($config->activewidgets)) {
         foreach ($visiblewidgets as $key => $widget) {
+            // The widget catches the value in $_GET, cleans it and self registers in $searchfields.
             $result = $result or $widget->catch_value($searchfields);
         }
     }
