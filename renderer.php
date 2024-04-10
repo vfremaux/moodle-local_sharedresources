@@ -609,8 +609,8 @@ class local_sharedresources_renderer extends plugin_renderer_base {
                 has_capability('repository/sharedresources:use', $context)) {
                 $template->hascommands = true;
 
-                $template->isremote = $isremote;
-                if (!$isremote) {
+                $template->isremote = !($repo == 'local' || ($repo == $CFG->mnet_localhost_id));
+                if (!$template->isremote) {
                     // If is local or already proxied.
                     $template->formurl = new moodle_url('/mod/sharedresource/addlocaltocourse.php');
                 } else {
@@ -619,7 +619,7 @@ class local_sharedresources_renderer extends plugin_renderer_base {
                     $template->islocalizable = false; // a remote resource cannot be localized.
                 }
                 $template->courseid = $course->id;
-                $template->section = $section;
+                $template->section = optional_param('section', 0, PARAM_INT);
                 $template->identifier = $resource->identifier;
                 $template->quoteddesc = htmlentities($resource->description, ENT_QUOTES, 'UTF-8');
                 $template->quotedtitle = htmlentities($resource->title, ENT_QUOTES, 'UTF-8');
