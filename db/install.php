@@ -15,10 +15,10 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Post-install code for the customlabel module.
+ * Post-install code for the sharedresource local plugin.
  *
- * @package     mod_sharedresource
- * @category    mod
+ * @package     local_sharedresource
+ * @category    local
  * @copyright   2013 Valery Fremaux
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
