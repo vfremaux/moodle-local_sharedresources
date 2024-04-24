@@ -199,7 +199,7 @@ if (($repo == 'local') || empty($repo)) {
 }
 
 $levels = CONTEXT_COURSECAT.','.CONTEXT_COURSE;
-$isediting = sharedresources_has_capability_somewhere('repository/sharedresources:create', false, false, false, $levels);
+$isediting = sharedresources_has_capability_somewhere('repository/sharedresources:create', false, false, true, $levels);
 
 $fullresults = [];
 
