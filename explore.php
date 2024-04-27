@@ -53,7 +53,7 @@ if ($searchplugins = glob($CFG->dirroot.'/local/sharedresources/classes/searchwi
 
 require_once($CFG->dirroot.'/local/sharedresources/lib.php');
 
-define('RETURN_PAGE', 2);
+define('RETURN_PAGE', 'explore');
 
 $config = get_config('local_sharedresources');
 $shrconfig = get_config('sharedresource');
@@ -85,7 +85,7 @@ if (!empty($config->privatecatalog)) {
     }
 
     if (!sharedresources_has_capability_somewhere('repository/sharedresources:view', false, false, false, CONTEXT_COURSECAT.','.CONTEXT_COURSE)) {
-        throw new moodle_exception(get_string('noaccess', 'local_sharedresource'));
+        throw new moodle_exception(get_string('noaccess', 'local_sharedresources'));
     }
 }
 

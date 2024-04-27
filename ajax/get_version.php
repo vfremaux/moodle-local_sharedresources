@@ -31,7 +31,7 @@ $repo = optional_param('repo', $CFG->mnet_localhost_id, PARAM_INT); // Repo is g
 
 // Defined by page format
 if (!defined('RETURN_PAGE')) {
-    define('RETURN_PAGE', 0);
+    define('RETURN_PAGE', get_config('local_sharedresources', 'defaultlibraryindexpage'));
 }
 
 $context = context_system::instance();

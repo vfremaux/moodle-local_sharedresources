@@ -41,19 +41,19 @@ $config = get_config('local_sharedresources');
 
 $courseid = optional_param('course', SITEID, PARAM_INT);
 $section = optional_param('section', 0, PARAM_INT);
-$return = optional_param('return', '', PARAM_ALPHA);
+$returnpage = optional_param('returnpage', '', PARAM_TEXT);
 $catid = optional_param('catid', '', PARAM_INT);
 $catpath = optional_param('catpath', '', PARAM_TEXT);
 
-if (empty($return)) {
+if (empty($returnpage)) {
     if (!empty($config->defaultlibraryindexpage)) {
-        $return = $config->defaultlibraryindexpage;
+        $returnpage = $config->defaultlibraryindexpage;
     } else {
-        $return = 'browse'; // default's default.
+        $returnpage = 'browse'; // default's default.
     }
 }
 
-if ($return == 'explore') {
+if ($returnpage == 'explore') {
     $params = ['course' => $courseid, 'section' => $section];
     $serviceurl = new moodle_url('/local/sharedresources/explore.php', $params);
 } else {
