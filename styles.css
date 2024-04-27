@@ -134,6 +134,10 @@ a.sharedresource-actionlink {
     vertical-align: top;
 }
 
+.sharedresource-picture {
+    text-align: center;
+}
+
 .sharedresource-picture img {
     margin-bottom: 10px;
     margin-left: auto;
@@ -246,6 +250,11 @@ a.sharedresource-actionlink {
 .sharedresource-user-controls {
     padding-left: 0;
     text-align: center;
+}
+
+.sharedresource-user-controls img {
+    width: 69px !important;
+    height: 20px;
 }
 
 #sharedresources-link-to-browser {

@@ -287,9 +287,8 @@ class local_sharedresources_renderer extends plugin_renderer_base {
             $gui->bodytplname = $CFG->resourcebodytplname;
         };
 
-        // Defined by page format
         if (!defined('RETURN_PAGE')) {
-            define('RETURN_PAGE', 0);
+            define('RETURN_PAGE', get_config('local_sharedresources', 'defaultlibraryindexpage'));
         }
 
         if (!empty($resources)) {
@@ -370,7 +369,6 @@ class local_sharedresources_renderer extends plugin_renderer_base {
 
             $params = array('course' => 1,
                             'type' => 'file',
-                            'add' => 'sharedresource',
                             'fromlibrary' => true,
                             'returnpage' => RETURN_PAGE,
                             'return' => 0, /* not significant here as not comming from course workflow */
@@ -683,7 +681,6 @@ class local_sharedresources_renderer extends plugin_renderer_base {
                             'type' => 'file',
                             'fromlibrary' => true,
                             'returnpage' => RETURN_PAGE,
-                            'return' => 0, /* non significative here as not comming from course workflow */
                             'mode' => 'add',
                             'catid' => $catid,
                             'catpath' => $catpath);
