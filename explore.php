@@ -211,7 +211,8 @@ if ($repo == 'local' || !local_sharedresources_supports_feature('repo/remote')) 
 
 $SESSION->resourceresult = $resources;
 
-if (is_object($mtdplugin) && $mtdplugin->getTaxonomyValueElement()) {
+$hastaxonomy = $DB->count_records('sharedresource_classif');
+if (is_object($mtdplugin) && $mtdplugin->getTaxonomyValueElement() && $hastaxonomy) {
     // Only browse if there is a taxonomy in the metadata schema.
     echo '<center>';
     echo '<br/>';
