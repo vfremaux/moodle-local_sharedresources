@@ -34,7 +34,7 @@ function xmldb_local_sharedresources_uninstall() {
     $result = true;
 
     // Remove the teacherowner role if absent.
-    if ($oldrole = $DB->get_record('role', array('shortname' => 'librarian'))) {
+    if ($oldrole = $DB->get_record('role', ['shortname' => 'librarian'])) {
         delete_role($oldrole->id);
     }
 

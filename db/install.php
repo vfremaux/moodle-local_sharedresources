@@ -34,11 +34,11 @@ function xmldb_local_sharedresources_install() {
     $result = true;
 
     // Create the teacherowner role if absent.
-    if (!$oldrole = $DB->get_record('role', array('shortname' => 'librarian'))) {
+    if (!$oldrole = $DB->get_record('role', ['shortname' => 'librarian'])) {
         $rolestr = get_string('librarian', 'local_sharedresources');
         $roledesc = get_string('librarian_desc', 'local_sharedresources');
         $librarianid = create_role($rolestr, 'librarian', str_replace("'", "\\'", $roledesc), null);
-        set_role_contextlevels($librarianid, array(CONTEXT_SYSTEM, CONTEXT_COURSECAT));
+        set_role_contextlevels($librarianid, [CONTEXT_SYSTEM, CONTEXT_COURSECAT]);
 
         // We cannot setup permissions from the access.php files for custom roles.
         $context = context_system::instance();
