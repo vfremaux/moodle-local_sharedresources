@@ -238,7 +238,7 @@ if (empty($resources)) {
 }
 echo '</div>';
 
-if (is_object($mtdplugin) && $mtdplugin->getTaxonomyValueElement()) {
+if (is_object($mtdplugin) && $mtdplugin->getTaxonomyValueElement() && $hastaxonomy) {
     // Only browse if there is a taxonomy in the metadata schema.
     echo '<center>';
     echo '<br/>';

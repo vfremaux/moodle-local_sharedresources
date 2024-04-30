@@ -76,7 +76,7 @@ define(['jquery', 'core/log', 'core/str'], function ($, log, str) {
             var that = $(this);
 
             var id = that.attr('id').replace('unselectall-', '');
-            $('.selectmultiple-' + id).attr('checked', true);
+            $('.selectmultiple-' + id).attr('checked', null);
         },
 
         hardreset: function () {
