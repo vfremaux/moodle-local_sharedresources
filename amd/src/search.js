@@ -85,6 +85,8 @@ define(['jquery', 'core/log', 'core/str'], function ($, log, str) {
 
             that.closest('form').find(':input').not(':button, :submit, :reset, :hidden, :checkbox, :radio').val('');
             that.closest('form').find(':checkbox, :radio').prop('checked', false);
+            // Add query harderest signal to cleat the multiselect lists.
+            that.closest('form').find(':input[name="hardreset"]').prop('value', 1);
             that.closest('form').submit();
         },
 
