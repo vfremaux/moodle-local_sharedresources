@@ -43,11 +43,7 @@ jobs:
             TAGNAME="${GITHUB_REF##*/}"
           fi
           if [[ -z "${TAGNAME}" ]]; then
-<<<<<<< HEAD
             echo "Github Ref : ${GITHUB_REF}"
-=======
-            echo "Github ref : ${GITHUB_REF}"
->>>>>>> MOODLE_40_STABLE
             echo "No tag name has been provided!"
             exit 1
           fi
