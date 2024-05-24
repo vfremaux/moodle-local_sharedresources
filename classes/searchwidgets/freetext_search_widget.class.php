@@ -90,7 +90,7 @@ class freetext_widget extends search_widget {
         $searchfields[$this->id] = @$SESSION->searchbag->$paramkey;
         if (isset($_GET[$paramkey])) {
             $paramval = clean_param($_GET[$paramkey], PARAM_TEXT);
-            $paramoptionval = clean_param($_GET[$paramkey.'_option'], PARAM_TEXT);
+            $paramoptionval = clean_param($_GET[$paramkey.'_option'] ?? '', PARAM_TEXT);
             $searchstring = $paramoptionval.':'.$paramval;
             if ($_GET[$paramkey] != '') {
                 $searchfields[$this->id] = $searchstring;
