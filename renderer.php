@@ -279,6 +279,7 @@ class local_sharedresources_renderer extends plugin_renderer_base {
         $courseid = (empty($course->id)) ? '' : $course->id;
 
         $gui = $this->get_gui();
+        $gui->hasproviders = count($providers = sharedresources_get_providers());
 
         if (!empty($listviewthreshold) && (!empty($resources)) && (count($resources) < $listviewthreshold)) {
             $gui->bodytplname = 'boxresourcebody';
@@ -394,9 +395,11 @@ class local_sharedresources_renderer extends plugin_renderer_base {
                 $deleteurl = new moodle_url($FULLME, $params);
                 $commands .= '&nbsp;<a href="'.$deleteurl.'" title="'.$gui->forcedeletestr.'" class="sharedresource force-delete">'.$gui->forcedeletepix.'</a>';
             }
-            $params = array('course' => $course->id, 'resourceid' => $resource->id);
-            $pushurl = new moodle_url('/local/sharedresources/pushout.php', $params);
-            $commands .= '&nbsp;<a href="'.$pushurl.'" title="'.$gui->exportstr.'">'.$gui->exportpix.'</a>';
+            if (!empty($gui->hasprovider)) {
+                $params = array('course' => $course->id, 'resourceid' => $resource->id);
+                $pushurl = new moodle_url('/local/sharedresources/pushout.php', $params);
+                $commands .= '&nbsp;<a href="'.$pushurl.'" title="'.$gui->exportstr.'">'.$gui->exportpix.'</a>';
+            }
         }
 
         $template = new StdClass;

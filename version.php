@@ -24,10 +24,10 @@
  */
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version  = 2021102100;   // The (date) version of this plugin.
+$plugin->version  = 2024052400;   // The (date) version of this plugin.
 $plugin->requires = 2022112801;   // Requires this Moodle version.
 $plugin->component = 'local_sharedresources';
-$plugin->release = '4.1.0 (Build 2021102100)';
+$plugin->release = '4.1.0 (Build 2024052400)';
 $plugin->maturity = MATURITY_STABLE;
 $plugin->supported = [401, 402];
 // Do not depend harldy on this component. Sharedresource use it
@@ -35,5 +35,5 @@ $plugin->supported = [401, 402];
 // $plugin->dependencies = array('local_staticguitexts' => 2013121900);
 
 // Non moodle attributes.
-$plugin->codeincrement = '4.1.0005';
+$plugin->codeincrement = '4.1.0006';
 $plugin->privacy = 'dualrelease';
