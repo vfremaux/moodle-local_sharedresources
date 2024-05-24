@@ -409,6 +409,7 @@ class local_sharedresources_renderer extends plugin_renderer_base {
 
         // Resource heading.
         $icon = ($repo != 'local') ? 'remoteicon' : 'icon';
+        $template->community = !empty($config->community);
         $template->ishiddenbyrule = (!empty($resource->hidden)) ? "is-hidden-by-rule" : '';
         $template->pixurl = $this->output->image_url($icon, 'sharedresource');
 
@@ -688,7 +689,7 @@ class local_sharedresources_renderer extends plugin_renderer_base {
         }
 
         if (local_sharedresources_supports_feature('import/mass')) {
-            if (has_capability('repository/sharedresources:manage', $systemcontext)) {
+            if (has_capability('repository/sharedresources:massimport', $systemcontext)) {
                 // Only librarians in a "pro" version can mass import.
                 $template->massimportstr = get_string('massimport', 'local_sharedresources');
                 $template->importurl = new moodle_url('/local/sharedresources/pro/admin/admin_mass_import.php', array('course' => $course->id));
