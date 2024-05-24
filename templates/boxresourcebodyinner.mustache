@@ -71,12 +71,14 @@
             {{#shownotice}}{{{boxnoticepopupactionlink}}}{{/shownotice}}
         </div>
 
+        {{^hidesocial}}
         <div class="resource-likes">
            <span id="sharedresource-likes-{{identifier}}">
            {{{stars}}}
            </span>
             <a class="sharedresource-mark-like" id="sharedresource-{{repoid}}-{{identifier}}">{{#str}}markliked, local_sharedresources{{/str}}</a>
         </div>
+        {{/hidesocial}}
 
         {{#hascommands}}
         <div class="resource-user-commands">
