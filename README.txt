@@ -23,4 +23,8 @@ will come as 4 complementary parts :
 - Shared resource repository : A Repository view of the shared resource storage area, so shared resource can also be used and picked
 as standard resource instances, or in other publication contexts
 - Shared Resource Local Component (this package) : provides a front-end to librarian to search, browse and get some site level services around shared resources.
- 
+
+4.1.0006
+==============================
+
+Adding more control on community features. Remove "export" link when no providers. Control "mass import" button by capability.
