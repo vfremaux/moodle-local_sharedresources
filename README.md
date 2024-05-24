@@ -15,3 +15,8 @@ Moodle 2 : This component works with Moodle Sharedresource module, and will have
 Moodle 2 resource and repository paradigm.
 
 Moodle 1.9 : Use git branch MOODLE_19_STABLE 
+
+4.1.0006
+==============================
+
+Adding more control on community features. Remove "export" link when no providers. Control "mass import" button by capability.
