@@ -102,6 +102,8 @@ class selectmultiple_widget extends search_widget {
             $SESSION->searchbag = new StdClass();
         }
 
+        $paramkey = str_replace(' ', '_', $this->label);
+
         if (optional_param('go', false, PARAM_TEXT) || optional_param('hardreset', false, PARAM_BOOL)) {
             // Real search query, or form hard reset, so delete session recording of choices. they will be rebuilt from query.
             if (isset($SESSION->searchbag->$paramkey)) {
@@ -109,7 +111,6 @@ class selectmultiple_widget extends search_widget {
             }
         }
 
-        $paramkey = str_replace(' ', '_', $this->label);
         $searchfields[$this->id] = @$SESSION->searchbag->$paramkey;
 
         if (isset($_GET[$paramkey])) {
