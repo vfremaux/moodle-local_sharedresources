@@ -26,14 +26,13 @@
 }}
 <!-- local_sharedresources/boxresourcebodyinner -->
 
-    <div class="sharedresource-headline d-flex justify-content-between">
+<div class="sharedresource-headline d-flex justify-content-between">
     {{#hasversions}}
     <div class="versions">
     {{#hasprevious}}
         <i class="shr-version previous fa fa-angle-left" title="{{#str}}previous, local_sharedresources{{/str}}" data-version="{{previous}}" data-container="{{repoid}}-{{identifier}}"></i>
     {{/hasprevious}}
-    {{^hasprevious}} 
-    
+    {{^hasprevious}}
         <i class="shr-version previous  fa fa-angle-left dimmed"></i>
     {{/hasprevious}}
     &nbsp;&nbsp;
@@ -50,62 +49,59 @@
         {{{editioncommands}}}<br/>
     </div>
     {{/haseditioncommands}}
+</div>
+
+<div class="sharedresource-picture {{ishiddenbyrule}}">
+    <img class="box-resource-images" id="sharedresource-image-{{identifier}}" src="{{{largepixurl}}}" />
+</div>
+
+<div class="sharedresource-heading {{ishiddenbyrule}}">
+    <div class="resource-title-container">
+        <div class="box-resource-titles" id="sharedresource-title-{{identifier}}">{{title}} </div>
     </div>
 
-    <div class="sharedresource-picture {{ishiddenbyrule}}">
-        <img class="box-resource-images" id="sharedresource-image-{{identifier}}" src="{{{largepixurl}}}" />
+    <div class="sharedresource-user-controls">
+        {{#url}}
+        <a href="{{{url}}}" target="_blank" title="{{#str}}download, local_sharedresources{{/str}}"><img src="{{{boxdownloadpixurl}}}" alt="" /></a>
+        {{/url}}
+        {{^url}}
+        <img src="{{{boxdownloadpixurl}}}" class="is-hidden-by-rule" alt="{{#str}}ishiddenbyrule, local_sharedresources{{/str}}" />
+        {{/url}}
+        {{#shownotice}}{{{boxnoticepopupactionlink}}}{{/shownotice}}
     </div>
 
-    <div class="sharedresource-heading {{ishiddenbyrule}}">
-        <div class="resource-title-container">
-            <div class="box-resource-titles" id="sharedresource-title-{{identifier}}">{{title}} </div>
-        </div>
-
-        <div class="sharedresource-user-controls">
-            {{#url}}
-            <a href="{{{url}}}" target="_blank" title="{{#str}}download, local_sharedresources{{/str}}"><img src="{{{boxdownloadpixurl}}}" /></a>
-            {{/url}}
-            {{^url}}
-            <img src="{{{boxdownloadpixurl}}}" class="is-hidden-by-rule" alt="{{#str}}ishiddenbyrule, local_sharedresources{{/str}}" />
-            {{/url}}
-            {{#shownotice}}{{{boxnoticepopupactionlink}}}{{/shownotice}}
-        </div>
-
-        {{^hidesocial}}
-        <div class="resource-likes">
-           <span id="sharedresource-likes-{{identifier}}">
-           {{{stars}}}
-           </span>
-            <a class="sharedresource-mark-like" id="sharedresource-{{repoid}}-{{identifier}}">{{#str}}markliked, local_sharedresources{{/str}}</a>
-        </div>
-        {{/hidesocial}}
-
-        {{#hascommands}}
-        <div class="resource-user-commands">
-            {{> local_sharedresources/resourcecommands}}
-        </div>
-        {{/hascommands}}
+    {{^hidesocial}}
+    <div class="resource-likes">
+       <span id="sharedresource-likes-{{identifier}}">
+       {{{stars}}}
+       </span>
+        <a class="sharedresource-mark-like" id="sharedresource-{{repoid}}-{{identifier}}">{{#str}}markliked, local_sharedresources{{/str}}</a>
     </div>
+    {{/hidesocial}}
 
-    <br/>
-
-    <div class="generalbox sharedresource-info-box" id="sharedresource-info-{{identifier}}" style="display:none">
-        {{#description}}
-        <div class="sharedresources-description">
-            <div class="resource-description">{{{description}}}</div>
-
-            <div class="smalltext resource-keywords"><b>{{#str}}keywords, local_sharedresources{{/str}}:</b> <span class="normaltext">{{keywords}}</span></div>
-        </div>
-        {{/description}}
-
-        {{^uses}}
-        <div class="resource-usage">{{#str}}notused, local_sharedresources{{/str}}</div>
-        {{/uses}}
-        {{#uses}}
-        <div class="resource-usage"><a href="{{{courselisturl}}}"><b>{{#str}}used, local_sharedresources{{/str}}</b> {{uses}}</a></div>
-        {{/uses}}
-        <div class="resource-mimetype"><b>{{#str}}mimetype, local_sharedresources{{/str}}:</b> {{{mimetype}}}</div>
-        <div class="resource-views"><b>{{#str}}viewed, local_sharedresources{{/str}}:</b> {{{views}}}</div>
-
+    {{#hascommands}}
+    <div class="resource-user-commands">
+        {{> local_sharedresources/resourcecommands}}
     </div>
+    {{/hascommands}}
+</div>
+<br/>
+<div class="generalbox sharedresource-info-box" id="sharedresource-info-{{identifier}}" style="display:none">
+    {{#description}}
+    <div class="sharedresources-description">
+        <div class="resource-description">{{{description}}}</div>
+
+        <div class="smalltext resource-keywords"><b>{{#str}}keywords, local_sharedresources{{/str}}:</b> <span class="normaltext">{{keywords}}</span></div>
+    </div>
+    {{/description}}
+
+    {{^uses}}
+    <div class="resource-usage">{{#str}}notused, local_sharedresources{{/str}}</div>
+    {{/uses}}
+    {{#uses}}
+    <div class="resource-usage"><a href="{{{courselisturl}}}"><b>{{#str}}used, local_sharedresources{{/str}}</b> {{uses}}</a></div>
+    {{/uses}}
+    <div class="resource-mimetype"><b>{{#str}}mimetype, local_sharedresources{{/str}}:</b> {{{mimetype}}}</div>
+    <div class="resource-views"><b>{{#str}}viewed, local_sharedresources{{/str}}:</b> {{{views}}}</div>
+</div>
 <!-- /local_sharedresources/boxresourcebodyinner -->
