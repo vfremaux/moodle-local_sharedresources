@@ -15,13 +15,12 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * A navigator provides data exploration services for a browser. An instance represents
- * one available taxonomy tree.
+ * A navigator provides data exploration services for a browser. An instance represents one available taxonomy tree.
  *
  * @package    local_sharedresources
  * @author     Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright  Valery Fremaux (activeprolearn.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
- * @copyright  (C) 1999 onwards Martin Dougiamas  http://dougiamas.com
  */
 namespace local_sharedresources\browser;
 
@@ -32,31 +31,37 @@ if (sharedresource_supports_feature('taxonomy/accessctl')) {
     include_once($CFG->dirroot.'/mod/sharedresource/pro/classes/sharedresource_access_control.class.php');
 }
 
-use \StdClass;
-use \coding_exception;
+use StdClass;
+use coding_exception;
 
-defined('MOODLE_INTERNAL') or die();
+defined('MOODLE_INTERNAL') || die();
 
+/**
+ * Master library navigation function.
+ */
 class navigation {
 
-    // Sharedresouce configuration.
+    /** @var Sharedresouce configuration. */
     protected $config;
 
-    // The metadata active plugin.
+    /** @var The metadata active plugin. */
     protected $plugin;
 
-    /**
-     * The active taxonomy (object). Contains all references to the underlying classification storage model.
-     */
+    /** @var The active taxonomy (object). Contains all references to the underlying classification storage model. */
     protected $taxonomy;
 
+    /**
+     * Constructor
+     * @param mixed $taxonomyorid a taxon object or its id
+     * @todo examine to protect this function to match singleton pattern.
+     */
     public function __construct($taxonomyorid) {
         global $DB;
 
         if (is_object($taxonomyorid)) {
             $taxonomy = $taxonomyorid;
         } else {
-            $taxonomy = $DB->get_record('sharedresource_classif', array('id' => $taxonomyorid));
+            $taxonomy = $DB->get_record('sharedresource_classif', ['id' => $taxonomyorid]);
         }
 
         $this->taxonomy = $taxonomy;
@@ -64,6 +69,10 @@ class navigation {
         $this->plugin = sharedresource_get_plugin($this->config->schema);
     }
 
+    /**
+     * Magic getter
+     * @param string $field
+     */
     public function __get($field) {
         if (!isset($this->taxonomy->$field)) {
             throw new \coding_exception("Bad taxonomy attribute $field");
@@ -71,14 +80,18 @@ class navigation {
         return $this->taxonomy->$field;
     }
 
+    /**
+     * Static instanciator
+     * @param int|string $id by id or shortname
+     */
     public static function instance_by_id($id) {
         global $DB;
 
         if (!is_numeric($id)) {
             // Some old recorded records may have table name as source id.
-            $taxonomyrec = $DB->get_record('sharedresource_classif', array('shortname' => $id));
+            $taxonomyrec = $DB->get_record('sharedresource_classif', ['shortname' => $id]);
         } else {
-            $taxonomyrec = $DB->get_record('sharedresource_classif', array('id' => $id));
+            $taxonomyrec = $DB->get_record('sharedresource_classif', ['id' => $id]);
         }
 
         if (empty($taxonomyrec)) {
@@ -88,24 +101,33 @@ class navigation {
         return new navigation($taxonomyrec);
     }
 
+    /**
+     * Get category filters. This is an empty version
+     * The fully featured version resides in "Pro" section.
+     */
     public function get_category_filters() {
-        return array();
+        return [];
     }
 
+    /**
+     * Get filter modal values. This is an empty version.
+     * The fully featured version resides in "Pro" section.
+     * @param string $filter.
+     */
     public function get_filter_modalities($filter) {
-        return array();
+        return [];
     }
 
     /**
      * Get the available taxonomies.
      * Taxonomies are dynamically detected from distinct instances of the sharedresource_classif descriptor.
-     * @param boolean $enabled
+     * @param bool $enabled
      * @return array of classif records.
      */
     public static function get_taxonomies($enabled = true) {
         global $DB;
 
-        return $DB->get_records('sharedresource_classif', array('enabled' => $enabled));
+        return $DB->get_records('sharedresource_classif', ['enabled' => $enabled]);
     }
 
     /**
@@ -117,9 +139,9 @@ class navigation {
     public static function get_taxonomies_menu($enabled = true, $internal = false) {
         global $DB;
 
-        $params = array();
+        $params = [];
         if ($enabled) {
-            $params = array('enabled' => $enabled);
+            $params = ['enabled' => $enabled];
         }
 
         if ($internal) {
@@ -135,7 +157,7 @@ class navigation {
      * @param $catpath slash separated (and terminated) id list of the cat path from root.
      * @param $filters (for future use)
      */
-    public function get_category($catid, $catpath = null, $filters = array()) {
+    public function get_category($catid, $catpath = null, $filters = []) {
         global $DB;
 
         if (empty($this->taxonomy)) {
@@ -143,9 +165,9 @@ class navigation {
         }
 
         $fields = "{$this->taxonomy->sqlid} as id, {$this->taxonomy->sqllabel} as name, {$this->taxonomy->sqlparent} as parent ";
-        $category = $DB->get_record($this->taxonomy->tablename, array($this->taxonomy->sqlid => $catid), $fields);
+        $category = $DB->get_record($this->taxonomy->tablename, [$this->taxonomy->sqlid => $catid], $fields);
 
-        $category->hassubs = $DB->count_records($this->taxonomy->tablename, array($this->taxonomy->sqlparent => $category->id));
+        $category->hassubs = $DB->count_records($this->taxonomy->tablename, [$this->taxonomy->sqlparent => $category->id]);
 
         if (!is_null($catpath)) {
             $category->entries = $this->get_entries($catpath);
@@ -155,18 +177,18 @@ class navigation {
     }
 
     /**
-     *
+     * Count taxons
      */
     public function count_taxons() {
         global $DB;
 
-        $whereclauses = array();
+        $whereclauses = [];
 
         if (!empty($this->taxonomy->sqlrestriction)) {
             $whereclauses[] = $this->taxonomy->sqlrestriction;
         }
 
-        $params = array();
+        $params = [];
         if (!empty($this->taxonomy->taxonselection)) {
             list($insql, $inparams) = $DB->get_in_or_equal(explode(',', $this->taxonomy->taxonselection));
             $whereclauses[] = " id $insql";
@@ -192,13 +214,13 @@ class navigation {
     public function get_full_tree($outputlayout = 'flat', $short = true) {
         global $DB;
 
-        $whereclauses = array("{$this->taxonomy->sqlparent} = 0");
+        $whereclauses = ["{$this->taxonomy->sqlparent} = 0"];
 
         if (!empty($this->taxonomy->sqlrestriction)) {
             $whereclauses[] = $this->taxonomy->sqlrestriction;
         }
 
-        $params = array();
+        $params = [];
         if (!empty($this->taxonomy->taxonselection)) {
             list($insql, $inparams) = $DB->get_in_or_equal(explode(',', $this->taxonomy->taxonselection));
             $whereclauses[] = " id $insql";
@@ -214,7 +236,7 @@ class navigation {
 
         $roots = $DB->get_records_select($this->taxonomy->tablename, $select, $params);
 
-        $flatoptions = array();
+        $flatoptions = [];
 
         if (!empty($roots)) {
             foreach ($roots as $r) {
@@ -258,9 +280,9 @@ class navigation {
     public function get_full_tree_rec($parentid, $idpath, $namepath, $outputlayout, $short = true) {
         global $DB;
 
-        $whereclauses = array(" {$this->taxonomy->sqlparent} = ? ");
+        $whereclauses = [" {$this->taxonomy->sqlparent} = ? "];
 
-        $params = array($parentid);
+        $params = [$parentid];
 
         if (!empty($this->taxonomy->taxonselection)) {
             list($insql, $inparams) = $DB->get_in_or_equal(explode(',', $this->taxonomy->taxonselection));
@@ -274,7 +296,7 @@ class navigation {
 
         $select = implode(' AND ', $whereclauses);
 
-        $flatoptions = array();
+        $flatoptions = [];
 
         $childs = $DB->get_records_select($this->taxonomy->tablename, $select, $params);
         if (!empty($childs)) {
@@ -323,9 +345,9 @@ class navigation {
 
         $plugins = \sharedresource_get_plugins();
         $plugin = $plugins[$shrconfig->schema];
-        $elementnode = $plugin->getTaxumpath()['id'];
+        $elementnode = $plugin->get_taxum_path()['id'];
 
-        $params = array('element' => $elementnode.':%', 'namespace' => $shrconfig->schema, 'value' => $catpath);
+        $params = ['element' => $elementnode.':%', 'namespace' => $shrconfig->schema, 'value' => $catpath];
         $select = ' element LIKE ? AND namespace = ? AND value = ? AND entryid != 0 ';
         $count = $DB->count_records_select('sharedresource_metadata', $select, $params);
 
@@ -354,7 +376,7 @@ class navigation {
 
         $plugins = sharedresource_get_plugins();
         $plugin = $plugins[$shrconfig->schema];
-        $elementnode = $plugin->getTaxumpath()['id'];
+        $elementnode = $plugin->get_taxum_path()['id'];
 
         $sql = "
             SELECT
@@ -369,7 +391,7 @@ class navigation {
                 shm.value = ?
         ";
 
-        $resources = $DB->get_records_sql($sql, array($elementnode.':%', $shrconfig->schema, $catid));
+        $resources = $DB->get_records_sql($sql, [$elementnode.':%', $shrconfig->schema, $catid]);
 
         return $resources;
     }
@@ -381,7 +403,7 @@ class navigation {
      */
     public function get_children(&$categoryorid) {
         global $DB;
-        static $childrensets = array();
+        static $childrensets = [];
 
         $config = get_config('sharedresource');
 
@@ -402,7 +424,7 @@ class navigation {
         $fields .= "{$this->taxonomy->sqlparent} as parent, ";
         $fields .= "{$this->taxonomy->sqlsortorder} as sortorder";
 
-        $params = array($this->taxonomy->sqlparent => $catid);
+        $params = [$this->taxonomy->sqlparent => $catid];
 
         if ($this->taxonomy->tablename == 'sharedresource_taxonomy') {
             $params['classificationid'] = $this->taxonomy->id;
@@ -410,7 +432,7 @@ class navigation {
 
         if ($children = $DB->get_records($this->taxonomy->tablename, $params, $this->taxonomy->sqlsortorder, $fields)) {
             foreach ($children as &$child) {
-                $params = array($this->taxonomy->sqlparent => $child->id);
+                $params = [$this->taxonomy->sqlparent => $child->id];
                 $child->hassubs = $DB->count_records($this->taxonomy->tablename, $params);
                 $child->value = $child->name; // For caller compatibiity.
             }
@@ -437,9 +459,9 @@ class navigation {
         if (!is_numeric($taxonvalue)) {
             $taxonvalue = preg_replace('/\/$/', '', $taxonvalue);
             $taxonids = explode('/', $taxonvalue);
-            $taxonpathelms = array();
+            $taxonpathelms = [];
             foreach ($taxonids as $tid) {
-                if ($taxon = $DB->get_record($this->taxonomy->tablename, array('id' => $tid))) {
+                if ($taxon = $DB->get_record($this->taxonomy->tablename, ['id' => $tid])) {
                     $labelfield = $this->taxonomy->sqllabel;
                     $taxonpathelms[] = $taxon->$labelfield;
                 } else {
@@ -449,12 +471,12 @@ class navigation {
             return implode(' / ', $taxonpathelms);
         } else {
 
-            if ($taxon = $DB->get_record($this->taxonomy->tablename, array('id' => $taxonvalue))) {
+            if ($taxon = $DB->get_record($this->taxonomy->tablename, ['id' => $taxonvalue])) {
                 $labelfield = $this->taxonomy->sqllabel;
                 $parentfield = $this->taxonomy->sqlparent;
                 $taxonpathelms[] = $taxon->$labelfield;
                 while ($taxon->$parentfield) {
-                    $taxon = $DB->get_record($this->taxonomy->tablename, array('id' => $taxon->$parentfield));
+                    $taxon = $DB->get_record($this->taxonomy->tablename, ['id' => $taxon->$parentfield]);
                     $taxonpathelms[] = $taxon->$labelfield;
                 }
 
@@ -496,7 +518,7 @@ class navigation {
 
         $table = $this->taxonomy->tablename;
 
-        $tokenrecord = $DB->get_record($table, array('id' => $tokenid));
+        $tokenrecord = $DB->get_record($table, ['id' => $tokenid]);
         if ($tokenrecord) {
             $tokenrecord->taxonomyid = $this->taxonomy->id;
         }
@@ -512,12 +534,12 @@ class navigation {
     public function delete_token($tokenid) {
         global $DB;
 
-        $token = $DB->get_record('sharedresource_taxonomy', array('id' => $tokenid));
+        $token = $DB->get_record('sharedresource_taxonomy', ['id' => $tokenid]);
         if (!$token) {
             return;
         }
 
-        $children = $DB->get_records($this->taxonomy->tablename, array($this->taxonomy->sqlparent => $tokenid));
+        $children = $DB->get_records($this->taxonomy->tablename, [$this->taxonomy->sqlparent => $tokenid]);
         if (!empty($children)) {
             foreach ($children as $ch) {
                 $this->delete_token($ch->id);
@@ -528,6 +550,6 @@ class navigation {
         $this->plugin->unbind_taxon($token->classificationid, $token->id);
 
         // Finally delete the token.
-        $DB->delete_records($this->taxonomy->tablename, array('id' => $tokenid));
+        $DB->delete_records($this->taxonomy->tablename, ['id' => $tokenid]);
     }
 }

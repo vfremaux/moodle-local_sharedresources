@@ -15,9 +15,12 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package     local_sharedresource
- * @category    local
- * @author      Valery Fremaux (valery.fremaux@gmail.com)
+ * Main entry point.
+ *
+ * @package    local_sharedresources
+ * @author Valery Fremaux <valery@gmail.com>
+ * @copyright Valery Fremaux (activeprolearn.com)
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
  *
  * This file provides access to a master shared resources index, intending
  * to allow a public browsing of resources.
@@ -35,6 +38,21 @@
  * The index is public access. Browsing the catalog should although be done through a Guest identity,
  * having as a default the repository/sharedresources:view capability.
  */
+
+/**
+ * Main entry point of the central library.
+ *
+ * @package    local_sharedresources
+ * @author Valery Fremaux <valery@gmail.com>
+ * @copyright Valery Fremaux (activeprolearn.com)
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
+ */
+
+/**
+ * phpcs:disable moodle.Files.RequireLogin.Missing
+ *
+ * Library access may be public, without connection.
+ */
 require('../../config.php');
 
 $config = get_config('local_sharedresources');
@@ -49,7 +67,7 @@ if (empty($returnpage)) {
     if (!empty($config->defaultlibraryindexpage)) {
         $returnpage = $config->defaultlibraryindexpage;
     } else {
-        $returnpage = 'browse'; // default's default.
+        $returnpage = 'browse'; // Default's default.
     }
 }
 

@@ -15,25 +15,48 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * General renderer of the resource library
+ *
  * @package     local_sharedresources
- * @category    local
- * @author      Valery Fremaux (valery.fremaux@gmail.com)
+ * @author Valery Fremaux <valery@gmail.com>
+ * @copyright Valery Fremaux (activeprolearn.com)
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
  */
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/local/sharedresources/classes/navigator.class.php');
 require_once($CFG->dirroot.'/mod/sharedresource/classes/sharedresource_entry.class.php');
 
+use local_sharedresources\browser\navigation;
+
+/**
+ * General renderer.
+ *
+ * phpcs:disable moodle.Commenting.ValidTags.Invalid
+ * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+ * @SuppressWarnings(PHPMD.NPathComplexity)
+ * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
+ * @SuppressWarnings(PHPMD.ExcessiveClassLength)
+ * @SuppressWarnings(PHPMD.ExcessivePublicCount)
+ * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
+ * @SuppressWarnings(PHPMD.TooManyMethods)
+ * @SuppressWarnings(PHPMD.TooManyFields)
+ * @SuppressWarnings(PHPMD.TooManyPublicMethods)
+ * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ */
 class local_sharedresources_renderer extends plugin_renderer_base {
 
+    /** @var navigation object */
     private $navigator;
 
-    public function __construct() {
-        global $SESSION, $OUTPUT;
+    /**
+     * Constructor
+     */
+    public function __construct(moodle_page $page, $target) {
+        global $SESSION;
 
-        if (!isset($this->output)) {
-            $this->output = $OUTPUT;
-        }
+        parent::__construct($page, $target);
 
         $requiredtaxonomy = optional_param('taxonomy', false, PARAM_INT);
         if (!empty($SESSION->sharedresource->taxonomy) || $requiredtaxonomy) {
@@ -61,15 +84,16 @@ class local_sharedresources_renderer extends plugin_renderer_base {
 
     /**
      * Prints the "like" stars
+     * @param int $stars
+     * @param int $maxstars
      */
     public function stars($stars, $maxstars) {
-        global $OUTPUT;
 
         $str = '';
 
         for ($i = 0; $i < $maxstars; $i++) {
             $icon = ($i < $stars) ? 'star' : 'star_shadow';
-            $str .= $OUTPUT->pix_icon($icon, '', 'local_sharedresources');
+            $str .= $this->output->pix_icon($icon, '', 'local_sharedresources');
         }
 
         return $str;
@@ -85,19 +109,15 @@ class local_sharedresources_renderer extends plugin_renderer_base {
      * @param array $searchvalues
      * @param string $layout
      */
-    public function search_block($courseid, $repo, $offset, $context, $visiblewidgets, $searchvalues, $layout = 'tableless') {
+    public function search_block($courseid, $repo, $offset, $visiblewidgets, $searchvalues, $layout = 'tableless') {
 
         switch ($layout) {
             case 'tableless': {
-                return $this->search_widgets($courseid, $repo, $offset, $context, $visiblewidgets, $searchvalues, 'tableless');
+                return $this->search_widgets($courseid, $repo, $offset, $visiblewidgets, $searchvalues, 'tableless');
             }
             case 'singlefield' : {
                 /* One single text field that searches in all metainformation. */
-                return $this->search_single_widget($courseid, $repo, $offset, $context, $visiblewidgets, $searchvalues);
-            }
-            case 'routedfield': {
-                /* One single text field that searches in a selected routed field. */
-                return $this->search_routed_widget($courseid, $repo, $offset, $context, $visiblewidgets, $searchvalues);
+                return $this->search_single_widget($courseid, $repo, $offset, $searchvalues);
             }
             default : {
                 throw new coding_exception('Unknown search layout '.$layout);
@@ -110,12 +130,13 @@ class local_sharedresources_renderer extends plugin_renderer_base {
      * @param int $courseid
      * @param int $repo
      * @param int $offset the record count offset of the current page
-     * @param object $context the current course or site context
-     * @param array ref $visiblewidgets an array of widgets to print
+     * @param array $visiblewidgets an array of widgets to print
+     * @param array $searchvalues
+     * @param string $layout
      */
-    public function search_widgets($courseid, $repo, $offset, $context, &$visiblewidgets, &$searchvalues, $layout = '') {
+    public function search_widgets($courseid, $repo, $offset, $visiblewidgets, $searchvalues, $layout = '') {
 
-        $template = new StdClass;
+        $template = new StdClass();
         $template->strnowidgets = get_string('nowidget', 'sharedresource');
 
         if (empty($visiblewidgets)) {
@@ -138,14 +159,14 @@ class local_sharedresources_renderer extends plugin_renderer_base {
         $template->offset = $offset;
         $template->searchstr = get_string('search');
         $template->resetstr = get_string('reset', 'local_sharedresources');
-        $template->usemodes = true; // Switch to configu boolean
+        $template->usemodes = true; // Switch to configu boolean.
         $template->mode = 'full';
         $template->islongform = true;
 
-        $template->widgets = array();
+        $template->widgets = [];
         $n = 0;
         foreach ($visiblewidgets as $key => $searchwidget) {
-            $widgettpl = new StdClass;
+            $widgettpl = new StdClass();
             $widgettpl->key = $key;
             $widgettpl->widget = $searchwidget->print_search_widget('column', @$searchvalues[$searchwidget->id]);
             $template->widgets[] = $widgettpl;
@@ -165,15 +186,14 @@ class local_sharedresources_renderer extends plugin_renderer_base {
      * @param int $courseid
      * @param int $repo
      * @param int $offset
-     * @param object $context
-     * @param object &$visiblewidgets widget list for the form.
-     * @param object &$searchvalues list of actual values.
+     * @param array $visiblewidgets widget list for the form.
+     * @param array $searchvalues list of actual values.
      */
-    public function search_single_widget($courseid, $repo, $offset, $context, &$visiblewidgets, &$searchvalues) {
+    public function search_single_widget($courseid, $repo, $offset, $searchvalues) {
 
         $widget = new \local_sharedresources\search\freetext_widget('simple-0', 'simplesearch');
 
-        $template = new StdClass;
+        $template = new StdClass();
         $template->haswidgets = true;
 
         $section = optional_param('section', 0, PARAM_INT);
@@ -186,7 +206,7 @@ class local_sharedresources_renderer extends plugin_renderer_base {
         $template->courseid = $courseid;
         $template->section = $section;
         $template->return = $return;
-        $template->usemodes = true; // Switch to configu boolean
+        $template->usemodes = true; // Switch to configu boolean.
         $template->repo = $repo;
         $template->offset = $offset;
         $template->searchstr = get_string('search');
@@ -208,13 +228,12 @@ class local_sharedresources_renderer extends plugin_renderer_base {
      * @param int $courseid
      * @param int $repo
      * @param int $offset the record count offset of the current page
-     * @param object $context the current course or site context
-     * @param array ref $visiblewidgets an array of widgets to print
-     * @param array ref $searchvalues an array of actual values
+     * @param array $visiblewidgets an array of widgets to print
+     * @param array $searchvalues an array of actual values
      * DEPRECATED
      */
-    public function search_widgets_tableless($courseid, $repo, $offset, $context, &$visiblewidgets, &$searchvalues) {
-        return $this->search_widgets($courseid, $repo, $offset, $context, $visiblewidgets, $searchvalues, 'tableless');
+    public function search_widgets_tableless($courseid, $repo, $offset, $visiblewidgets, $searchvalues) {
+        return $this->search_widgets($courseid, $repo, $offset, $visiblewidgets, $searchvalues, 'tableless');
     }
 
     /**
@@ -222,6 +241,9 @@ class local_sharedresources_renderer extends plugin_renderer_base {
      * @param int $courseid the course context id. I null the library is browsed from non course area
      * @param int $repo the repository ID
      * @param int $nbrpages
+     * @param int $page
+     * @param int $offset
+     * @param bool $isediting
      */
     public function pager($courseid, $repo, $nbrpages, $page, $offset = 0, $isediting = false) {
         global $FULLME;
@@ -232,7 +254,7 @@ class local_sharedresources_renderer extends plugin_renderer_base {
             for ($i = 1; $i <= $nbrpages; $i++) {
                 $pageoffset = ($i - 1) * $page;
                 $pagestyle = ($pageoffset == $offset) ? 'color:black;font-size:14pt' : 'color:grey;font-size:12pt';
-                $params = array('course' => $courseid, 'repo' => $repo, 'offset' => $pageoffset, 'isediting' => $isediting);
+                $params = ['course' => $courseid, 'repo' => $repo, 'offset' => $pageoffset, 'isediting' => $isediting];
                 $libraryurl = new moodle_url($FULLME, $params);
                 $pagetpl = new StdClass;
                 $pagetpl->i = $i;
@@ -244,7 +266,7 @@ class local_sharedresources_renderer extends plugin_renderer_base {
             for ($i = 1; $i <= $nbrpages; $i++) {
                 $pageoffset = ($i - 1) * $page;
                 $pagestyle = ($pageoffset == $offset) ? 'color:black;font-size:14pt' : 'color:grey;font-size:12pt';
-                $params = array('repo' => $repo, 'offset' => $pageoffset, 'isediting' => $isediting);
+                $params = ['repo' => $repo, 'offset' => $pageoffset, 'isediting' => $isediting];
                 $libraryurl = new moodle_url('/local/sharedresources/index.php', $params);
                 $pagetpl = new StdClass;
                 $pagetpl->i = $i;
@@ -258,15 +280,15 @@ class local_sharedresources_renderer extends plugin_renderer_base {
     }
 
     /**
-     * print list of the selected resources
-     * @param arrayref &$resources the selection of resources to print
-     * @param objectref &$course the course being used as origin
+     * Print list of the selected resources.
+     * @param array $resources the selection of resources to print
+     * @param object $course the course being used as origin
      * @param int $section the section to return to to keep course context
      * @param bool $isediting do the user have editing capabilities ?
      * @param string $repo the current repository
      */
-    public function resources_list(&$resources, &$course, $section, $isediting = false, $repo = 'local') {
-        global $CFG, $OUTPUT;
+    public function resources_list($resources, $course, $section, $isediting = false, $repo = 'local') {
+        global $CFG;
 
         $resources = (array)$resources;
 
@@ -274,12 +296,8 @@ class local_sharedresources_renderer extends plugin_renderer_base {
 
         $str = '';
 
-        $consumers = sharedresources_get_consumers();
-
-        $courseid = (empty($course->id)) ? '' : $course->id;
-
         $gui = $this->get_gui();
-        $gui->hasproviders = count($providers = sharedresources_get_providers());
+        $gui->hasproviders = count(sharedresources_get_providers());
 
         if (!empty($listviewthreshold) && (!empty($resources)) && (count($resources) < $listviewthreshold)) {
             $gui->bodytplname = 'boxresourcebody';
@@ -297,13 +315,13 @@ class local_sharedresources_renderer extends plugin_renderer_base {
             $str .= $this->output->render_from_template('local_sharedresources/'.$gui->bodytplname.'start', null);
 
             foreach ($resources as $resource) {
-                $str .= $this->print_resource($resource, $course, $repo, $isediting, $gui);
+                $str .= $this->print_resource($resource, $course, $repo, $isediting, $gui, $section);
             }
 
             $str .= $this->output->render_from_template('local_sharedresources/'.$gui->bodytplname.'end', null);
         } else {
             if ($CFG->debug == DEBUG_DEVELOPER) {
-                $str .= $OUTPUT->notification(get_string('noresourceshere', 'local_sharedresources'));
+                $str .= $this->output->notification(get_string('noresourceshere', 'local_sharedresources'));
             }
         }
 
@@ -334,13 +352,18 @@ class local_sharedresources_renderer extends plugin_renderer_base {
 
     /**
      * Print a single resource.
+     * @param object $resource
+     * @param object $course
+     * @param string $repo
+     * @param bool $isediting
+     * @param object $gui
      */
-    public function print_resource($resource, $course, $repo, $isediting, $gui) {
+    public function print_resource($resource, $course, $repo, $isediting, $gui, $section) {
         static $shrconfig;
         static $config;
         static $fs;
         static $i = 0;
-        global $CFG, $FULLME, $USER, $DB;
+        global $CFG, $FULLME, $DB;
 
         $str = '';
 
@@ -357,8 +380,8 @@ class local_sharedresources_renderer extends plugin_renderer_base {
             $resource->uses = sharedresource_get_usages($resource, $response, null);
             $reswwwroot = $CFG->wwwroot;
         } else {
-            // remote repo.
-            $resourcehost = $DB->get_record('mnet_host', array('id' => $repo));
+            // Remote repo.
+            $resourcehost = $DB->get_record('mnet_host', ['id' => $repo]);
             $reswwwroot = $resourcehost->wwwroot;
         }
 
@@ -368,41 +391,59 @@ class local_sharedresources_renderer extends plugin_renderer_base {
             $catid = optional_param('catid', '', PARAM_INT);
             $catpath = optional_param('catpath', '', PARAM_TEXT);
 
-            $params = array('course' => 1,
-                            'type' => 'file',
-                            'fromlibrary' => true,
-                            'returnpage' => RETURN_PAGE,
-                            'return' => 0, /* not significant here as not comming from course workflow */
-                            'mode' => 'update',
-                            'entryid' => $resource->id,
-                            'catid' => $catid,
-                            'catpath' => $catpath);
+            $params = [
+                'course' => 1,
+                'type' => 'file',
+                'fromlibrary' => true,
+                'returnpage' => RETURN_PAGE,
+                'return' => 0, /* not significant here as not comming from course workflow */
+                'mode' => 'update',
+                'section' => $section,
+                'entryid' => $resource->id,
+                'catid' => $catid,
+                'catpath' => $catpath,
+            ];
             $editurl = new moodle_url('/mod/sharedresource/edit.php', $params);
-            $commands = '<a href="'.$editurl.'" title="'.$gui->editstr.'">'.$this->output->pix_icon('t/edit', get_string('edit')).'</a>';
+            $icon = $this->output->pix_icon('t/edit', get_string('edit'));
+            $commands = '<a href="'.$editurl.'" title="'.$gui->editstr.'">'.$icon.'</a>';
 
             if (sharedresource_supports_feature('entry/accessctl') && $shrconfig->accesscontrol) {
-                $params = array('course' => $courseid, 'resourceid' => $resource->id, 'return' => 'localindex');
+                $params = ['course' => $course->id, 'resourceid' => $resource->id, 'return' => 'localindex'];
                 $aclsurl = new moodle_url('/mod/sharedresource/pro/classificationacls.php', $params);
                 $commands .= '&nbsp;<a href="'.$aclsurl.'" title="'.$gui->aclsstr.'">'.$gui->aclspix.'</a>';
             }
 
             if (@$resource->uses == 0) {
-                $params = array('what' => 'delete', 'course' => $course->id, 'id' => $resource->id);
+                $params = ['what' => 'delete', 'course' => $course->id, 'id' => $resource->id];
                 $deleteurl = new moodle_url($FULLME, $params);
-                $commands .= '&nbsp;<a href="'.$deleteurl.'" title="'.$gui->deletestr.'" class="sharedresource delete">'.$gui->deletepix.'</a>';
+                $attrs = [
+                    'href' => $deleteurl,
+                    'title' => $gui->deletestr,
+                    'class' => 'sharedresource delete',
+                ];
+                $commands .= '&nbsp;'.html_writer::tag('a', $gui->deletepix, $attrs);
             } else {
-                $params = array('what' => 'forcedelete', 'course' => $course->id, 'id' => $resource->id);
+                $params = ['what' => 'forcedelete', 'course' => $course->id, 'id' => $resource->id];
                 $deleteurl = new moodle_url($FULLME, $params);
-                $commands .= '&nbsp;<a href="'.$deleteurl.'" title="'.$gui->forcedeletestr.'" class="sharedresource force-delete">'.$gui->forcedeletepix.'</a>';
+                $attrs = [
+                    'href' => $deleteurl,
+                    'title' => $gui->forcedeletestr,
+                    'class' => 'sharedresource force-delete',
+                ];
+                $commands .= '&nbsp;'.html_writer::tag('a', $gui->forcedeletepix, $attrs);
             }
             if (!empty($gui->hasprovider)) {
-                $params = array('course' => $course->id, 'resourceid' => $resource->id);
+                $params = ['course' => $course->id, 'resourceid' => $resource->id];
                 $pushurl = new moodle_url('/local/sharedresources/pushout.php', $params);
-                $commands .= '&nbsp;<a href="'.$pushurl.'" title="'.$gui->exportstr.'">'.$gui->exportpix.'</a>';
+                $attrs = [
+                    'href' => $pushurl,
+                    'title' => $gui->exportstr,
+                ];
+                $commands .= '&nbsp;'.html_writer::tag('a', $gui->exportpix, $attrs);
             }
         }
 
-        $template = new StdClass;
+        $template = new StdClass();
 
         if ('pro' == local_sharedresources_supports_feature('emulate/community')) {
             if (!empty($config->hidesocial)) {
@@ -471,15 +512,15 @@ class local_sharedresources_renderer extends plugin_renderer_base {
         $template->quotedurl = htmlentities($resource->url, ENT_QUOTES, 'UTF-8');
 
         // Only for file type resources or remote resources.
-        $template->quotedfilename = htmlentities(@$resource->filename, ENT_QUOTES, 'UTF-8');
-        $template->quotedfilepath = htmlentities(@$resource->filepath, ENT_QUOTES, 'UTF-8');
+        $template->quotedfilename = htmlentities($resource->filename ?? '', ENT_QUOTES, 'UTF-8');
+        $template->quotedfilepath = htmlentities($resource->filepath ?? '', ENT_QUOTES, 'UTF-8');
 
         $template->title = $this->trim_chars($resource->title, 120);
         $template->editioncommands = $commands;
         $template->haseditioncommands = !empty($commands);
         $template->identifier = $resource->identifier;
         if ($resource->provider != 'local') {
-            $providerhostid = $DB->get_field('mnet_host', 'id', array('wwwroot' => $resource->provider));
+            $providerhostid = $DB->get_field('mnet_host', 'id', ['wwwroot' => $resource->provider]);
         } else {
             $providerhostid = $CFG->mnet_localhost_id;
         }
@@ -490,12 +531,18 @@ class local_sharedresources_renderer extends plugin_renderer_base {
         if (empty($config->hidenotice)) {
             $template->shownotice = true;
             $readnotice = get_string('readnotice', 'sharedresource');
-            $url = "{$reswwwroot}/mod/sharedresource/metadatanotice.php?identifier={$resource->identifier}";
-            $popupaction = new popup_action('click', $url, 'popup', array('width' => 800, 'height' => 600));
+            if ($course->id !== SITEID) {
+                $url = "/mod/sharedresource/metadatanotice.php?identifier={$resource->identifier}&course={$course->id}";
+                $url = "{$reswwwroot}{$url}";
+            } else {
+                $url = "{$reswwwroot}/mod/sharedresource/metadatanotice.php?identifier={$resource->identifier}";
+            }
+            $popupaction = new popup_action('click', $url, 'popup', ['width' => 800, 'height' => 600]);
             $pixicon = new pix_icon('notice', $readnotice, 'local_sharedresources');
-            $template->noticepopupactionlink = $this->output->action_link($url, '', $popupaction, array('title' => $readnotice), $pixicon);
+            $attrs = ['title' => $readnotice];
+            $template->noticepopupactionlink = $this->output->action_link($url, '', $popupaction, $attrs, $pixicon);
             $pixicon = new pix_icon('boxnotice', $readnotice, 'local_sharedresources');
-            $template->boxnoticepopupactionlink = $this->output->action_link($url, '', $popupaction, array('title' => $readnotice), $pixicon);
+            $template->boxnoticepopupactionlink = $this->output->action_link($url, '', $popupaction, $attrs, $pixicon);
         }
 
         // Content toggler.
@@ -503,7 +550,7 @@ class local_sharedresources_renderer extends plugin_renderer_base {
 
         $template->uses = $resource->uses ?? '';
         if (!empty($resource->uses)) {
-            $params = array('courseid' => @$course->id, 'entryid' => $resource->id);
+            $params = ['courseid' => @$course->id, 'entryid' => $resource->id];
             $template->courselisturl = new moodle_url('/local/sharedresources/courses.php', $params);
             $template->uses = $resource->uses;
         }
@@ -526,7 +573,7 @@ class local_sharedresources_renderer extends plugin_renderer_base {
 
         // Download url.
         if (empty($resource->url)) {
-            $resourceurl = new moodle_url('/local/sharedresources/view.php', array('identifier' => $resource->identifier));
+            $resourceurl = new moodle_url('/local/sharedresources/view.php', ['identifier' => $resource->identifier]);
         } else {
             $resourceurl = $resource->url;
         }
@@ -546,7 +593,7 @@ class local_sharedresources_renderer extends plugin_renderer_base {
                     $template->url = false;
                 }
             } else {
-                // No conditions
+                // No conditions.
                 $template->url = $resourceurl;
             }
         } else {
@@ -618,13 +665,13 @@ class local_sharedresources_renderer extends plugin_renderer_base {
                 } else {
                     // If is a true remote.
                     $template->formurl = new moodle_url('/mod/sharedresource/addremotetocourse.php');
-                    $template->islocalizable = false; // a remote resource cannot be localized.
+                    $template->islocalizable = false; // A remote resource cannot be localized.
                 }
                 $template->courseid = $course->id;
                 $template->section = optional_param('section', 0, PARAM_INT);
                 $template->identifier = $resource->identifier;
-                $template->quoteddesc = htmlentities($resource->description, ENT_QUOTES, 'UTF-8');
-                $template->quotedtitle = htmlentities($resource->title, ENT_QUOTES, 'UTF-8');
+                $template->quoteddesc = htmlentities($resource->description ?? '', ENT_QUOTES, 'UTF-8');
+                $template->quotedtitle = htmlentities($resource->title ?? '', ENT_QUOTES, 'UTF-8');
                 $template->repo = $repo;
                 $template->file = $resource->file;
 
@@ -649,8 +696,8 @@ class local_sharedresources_renderer extends plugin_renderer_base {
                 }
 
                 // Quote url for command form.
-                $template->quotedurl = urlencode($template->url);
-                $template->quotedmimetype = urlencode(@$template->mimetype);
+                $template->quotedurl = urlencode($template->url ?? '');
+                $template->quotedmimetype = urlencode($template->mimetype ?? '');
 
             }
         }
@@ -666,28 +713,31 @@ class local_sharedresources_renderer extends plugin_renderer_base {
      */
     public function tools($course) {
 
-        $template = new StdClass;
+        $template = new StdClass();
 
         $systemcontext = context_system::instance();
-        if (sharedresources_has_capability_somewhere('repository/sharedresources:create', false, false, false, CONTEXT_COURSECAT.','.CONTEXT_COURSE)) {
+        if (sharedresources_has_capability_somewhere('repository/sharedresources:create', false,
+                    false, false, CONTEXT_COURSECAT.','.CONTEXT_COURSE)) {
 
             if ($course->id > SITEID) {
                 // User has capability to convert his local resources to shared entries.
                 $template->convertstr = get_string('resourceconversion', 'local_sharedresources');
-                $template->converturl = new moodle_url('/mod/sharedresource/admin_convertall.php', array('course' => $course->id));
+                $template->converturl = new moodle_url('/mod/sharedresource/admin_convertall.php', ['course' => $course->id]);
             }
 
             // Librarian should have the capability everywhere. Enabled teachers in their own course.
             $template->newresourcestr = get_string('newresource', 'local_sharedresources');
             $catid = optional_param('catid', 0, PARAM_INT);
             $catpath = optional_param('catpath', '', PARAM_TEXT);
-            $params = array('course' => $course->id,
-                            'type' => 'file',
-                            'fromlibrary' => true,
-                            'returnpage' => RETURN_PAGE,
-                            'mode' => 'add',
-                            'catid' => $catid,
-                            'catpath' => $catpath);
+            $params = [
+                'course' => $course->id,
+                'type' => 'file',
+                'fromlibrary' => true,
+                'returnpage' => RETURN_PAGE,
+                'mode' => 'add',
+                'catid' => $catid,
+                'catpath' => $catpath,
+            ];
             $template->editurl = new moodle_url('/mod/sharedresource/edit.php', $params);
         }
 
@@ -695,7 +745,8 @@ class local_sharedresources_renderer extends plugin_renderer_base {
             if (has_capability('repository/sharedresources:massimport', $systemcontext)) {
                 // Only librarians in a "pro" version can mass import.
                 $template->massimportstr = get_string('massimport', 'local_sharedresources');
-                $template->importurl = new moodle_url('/local/sharedresources/pro/admin/admin_mass_import.php', array('course' => $course->id));
+                $params = ['course' => $course->id];
+                $template->importurl = new moodle_url('/local/sharedresources/pro/admin/admin_mass_import.php', $params);
             }
         }
 
@@ -738,7 +789,7 @@ class local_sharedresources_renderer extends plugin_renderer_base {
         }
 
         foreach ($repos as $arepo) {
-            $repourl = new moodle_url('/local/sharedresources/search.php', array('id' => $courseid, 'repo' => $arepo));
+            $repourl = new moodle_url('/local/sharedresources/search.php', ['id' => $courseid, 'repo' => $arepo]);
             $rows[0][] = new tabobject($arepo, $repourl, get_string($arepo.'_reponame', 'local_sharedresources'));
         }
 
@@ -748,20 +799,22 @@ class local_sharedresources_renderer extends plugin_renderer_base {
     }
 
     /**
+     * List of top keywords
      * @param int $courseid the origin course id
      */
     public function top_keywords($courseid) {
-        global $OUTPUT;
 
         $str = '';
 
         if ($topkws = sharedresource_get_top_keywords($courseid)) {
 
-            $params = array('course' => $courseid,
-                            'repo' => 'local',
-                            'offset' => 0,
-                            'Keyword_option' => 'includes',
-                            'go' => get_string('search'));
+            $params = [
+                'course' => $courseid,
+                'repo' => 'local',
+                'offset' => 0,
+                'Keyword_option' => 'includes',
+                'go' => get_string('search'),
+            ];
             $urlsearchbase = new moodle_url('/local/sharedresources/index.php', $params);
 
             foreach ($topkws as $kw => $kwinfo) {
@@ -774,6 +827,10 @@ class local_sharedresources_renderer extends plugin_renderer_base {
         return $str;
     }
 
+    /**
+     * Resource thumbnail
+     * @param object $resource
+     */
     public function thumbnail($resource) {
         static $fs;
         static $context;
@@ -799,19 +856,28 @@ class local_sharedresources_renderer extends plugin_renderer_base {
 
     /**
      * Prints a course reference line for a used resource.
+     * @param object $course
      */
-    public function resource_course($c) {
+    public function resource_course($course) {
 
         $str = '';
         $str .= '<li>';
-        $courseurl = new moodle_url('/course/view.php', array('id' => $c->id));
-        $str .= '<a href="'.$courseurl.'">'.format_string($c->fullname).'</a>';
+        $courseurl = new moodle_url('/course/view.php', ['id' => $course->id]);
+        $str .= '<a href="'.$courseurl.'">'.format_string($course->fullname).'</a>';
         $str .= '</li>';
 
         return $str;
     }
 
-    public function category(&$cat, &$catpath, $resourcecount, $current = 'current', $up = false) {
+    /**
+     * Print a category
+     * @param object $cat
+     * @param string $catpath
+     * @param int $resourcecount
+     * @param string $current
+     * @param bool $up
+     */
+    public function category($cat, $catpath, $resourcecount, $current = 'current', $up = false) {
         global $COURSE;
 
         $courseid = optional_param('course', $COURSE->id, PARAM_INT);
@@ -834,7 +900,7 @@ class local_sharedresources_renderer extends plugin_renderer_base {
             $template->hasup = true;
             $template->upstr = get_string('up', 'local_sharedresources');
             if (!is_null($cat->parent)) {
-                $params = array('catid' => $cat->parent, 'catpath' => $prevpath, 'course' => $courseid);
+                $params = ['catid' => $cat->parent, 'catpath' => $prevpath, 'course' => $courseid];
                 if (!empty($section)) {
                     $params['section'] = $section;
                 }
@@ -845,7 +911,7 @@ class local_sharedresources_renderer extends plugin_renderer_base {
                 $template->upiconurl = $this->output->image_url('up', 'local_sharedresources');
                 $template->catspan = 9;
             } else {
-                $params = array('catid' => 0, 'catpath' => '', 'course' => $courseid);
+                $params = ['catid' => 0, 'catpath' => '', 'course' => $courseid];
                 if (!empty($section)) {
                     $params['section'] = $section;
                 }
@@ -861,7 +927,7 @@ class local_sharedresources_renderer extends plugin_renderer_base {
         }
 
         if ($current == 'sub') {
-            $params = array('catid' => $cat->id, 'catpath' => $nextpath, 'course' => $courseid);
+            $params = ['catid' => $cat->id, 'catpath' => $nextpath, 'course' => $courseid];
             if (!empty($section)) {
                 $params['section'] = $section;
             }
@@ -883,8 +949,7 @@ class local_sharedresources_renderer extends plugin_renderer_base {
      * @param object $cat
      * @param string $catpath
      */
-    public function children(&$cat, $catpath) {
-        global $OUTPUT;
+    public function children($cat, $catpath) {
 
         $str = '';
 
@@ -897,15 +962,26 @@ class local_sharedresources_renderer extends plugin_renderer_base {
         return $str;
     }
 
-    protected function child(&$cat, $catpath) {
+    /**
+     * Renders a chil category.
+     * @param object $cat
+     * @param stirng $catpath
+     */
+    protected function child($cat, $catpath) {
         $catcount = $this->navigator->count_entries_rec($catpath.$cat->id.'/');
         return $this->category($cat, $catpath, $catcount, 'sub', false);
     }
 
+    /**
+     * Print filters
+     */
     public function filters() {
         return '';
     }
 
+    /**
+     * Print search link
+     */
     public function searchlink() {
         global $COURSE;
 
@@ -930,6 +1006,9 @@ class local_sharedresources_renderer extends plugin_renderer_base {
         return $this->output->render_from_template('local_sharedresources/modebutton', $template);
     }
 
+    /**
+     * Print link to resource browser
+     */
     public function browserlink() {
         global $COURSE;
 
@@ -961,21 +1040,21 @@ class local_sharedresources_renderer extends plugin_renderer_base {
      * Prints a taxonomy selector if more than one activated.
      */
     public function taxonomy_select() {
-        global $DB, $SESSION;
+        global $SESSION;
 
         if (!isset($SESSION->sharedresources)) {
-            $SESSION->sharedresources = new StdClass;
+            $SESSION->sharedresources = new StdClass();
         }
 
         $SESSION->sharedresources->taxonomy = optional_param('taxonomy', @$SESSION->sharedresources->taxonomy, PARAM_INT);
 
-        $enabledtaxonomies = \local_sharedresources\browser\navigation::get_taxonomies_menu(true);
+        $enabledtaxonomies = navigation::get_taxonomies_menu(true);
 
         $systemcontext = context_system::instance();
         if (!has_capability('repository/sharedresources:manage', $systemcontext)) {
             // Discard taxonomies that are disabled by rules.
             foreach (array_keys($enabledtaxonomies) as $txid) {
-                $taxo = new \local_sharedresources\browser\navigation($txid);
+                $taxo = new navigation($txid);
                 if (!$taxo->can_use()) {
                     unset($enabledtaxonomies[$txid]);
                 }
@@ -1007,20 +1086,24 @@ class local_sharedresources_renderer extends plugin_renderer_base {
         return $this->output->render_from_template('local_sharedresources/taxonomychooser', $template);
     }
 
+    /**
+     * Print confirm import
+     * @param object $data
+     */
     public function confirm_import_form($data) {
 
-        $template = new Stdclass;
+        $template = new Stdclass();
 
         $template->importpath = $data->importpath;
         $template->context = $data->context;
-        $template->importexclusionpattern = @$data->importexclusionpattern;
-        $template->deducetaxonomyfrompath = @$data->deducetaxonomyfrompath;
-        $template->simulate = @$data->simulate;
+        $template->importexclusionpattern = $data->importexclusionpattern ?? '';
+        $template->deducetaxonomyfrompath = $data->deducetaxonomyfrompath ?? '';
+        $template->simulate = $data->simulate ?? false;
         $template->taxonomy = $data->taxonomy;
         $template->encoding = $data->encoding;
-        $template->localize = @$data->localize;
-        $template->deployzips = @$data->deployzips;
-        $template->makelabelsfromguidance = @$data->makelabelsfromguidance;
+        $template->localize = $data->localize ?? false;
+        $template->deployzips = $data->deployzips ?? false;
+        $template->makelabelsfromguidance = $data->makelabelsfromguidance ?? false;
         if (!empty($data->simulate)) {
             $template->confirmstr = get_string('confirmsimulate', 'local_sharedresources');
         } else {
@@ -1028,31 +1111,33 @@ class local_sharedresources_renderer extends plugin_renderer_base {
         }
 
         // Used when using an uploded archive deployed by internal moodle zip packer.
-        $template->nativeutf8 = @$data->nativeutf8;
+        $template->nativeutf8 = $data->nativeutf8 ?? false;
 
         return $this->output->render_from_template('local_sharedresources/confirm_import_form', $template);
     }
 
     /**
-     * @params $catpath idencoded path from root to category
+     * Add path to navbar.
+     * @param string $catpath idencoded path from root to category
+     * @param $navigator
      */
     public function add_path($catpath, $navigator) {
-        global $SESSION, $DB, $PAGE;
+        global $SESSION, $DB;
 
         $courseid = optional_param('course', SITEID, PARAM_INT);
 
         if (!isset($SESSION->sharedresources)) {
-            $SESSION->sharedresources = new StdClass;
+            $SESSION->sharedresources = new StdClass();
         }
 
         if ($SESSION->sharedresources->taxonomy = optional_param('taxonomy', @$SESSION->sharedresources->taxonomy, PARAM_INT)) {
-            $taxoname = $DB->get_field('sharedresource_classif', 'name', array('id' => $SESSION->sharedresources->taxonomy));
-            $params = array('course' => $courseid, 'catpath' => '', 'catid' => 0);
+            $taxoname = $DB->get_field('sharedresource_classif', 'name', ['id' => $SESSION->sharedresources->taxonomy]);
+            $params = ['course' => $courseid, 'catpath' => '', 'catid' => 0];
             $url = null;
             if (!empty($catpath)) {
                 $url = new moodle_url('/local/sharedresources/browse.php', $params);
             }
-            $PAGE->navbar->add($taxoname, $url);
+            $this->page->navbar->add($taxoname, $url);
             $catpath = rtrim($catpath, '/');
 
             if (!empty($catpath)) {
@@ -1062,14 +1147,14 @@ class local_sharedresources_renderer extends plugin_renderer_base {
                     $category = $navigator->get_category($catid);
                     if (count($pathids) >= 1) {
                         $path .= $catid.'/';
-                        $params = array('course' => $courseid, 'catpath' => $path, 'catid' => $catid);
+                        $params = ['course' => $courseid, 'catpath' => $path, 'catid' => $catid];
                         $url = null;
                         if (!empty($pathids)) {
                             $url = new moodle_url('/local/sharedresources/browse.php', $params);
                         }
-                        $PAGE->navbar->add($category->name, $url);
+                        $this->page->navbar->add($category->name, $url);
                     } else {
-                        $PAGE->navbar->add($category->name);
+                        $this->page->navbar->add($category->name);
                     }
                 }
             }
@@ -1080,11 +1165,11 @@ class local_sharedresources_renderer extends plugin_renderer_base {
      * Cut a text to some length.
      *
      * @param $str
-     * @param $n
-     * @param $end_char
+     * @param $length
+     * @param $endchar
      * @return string
      */
-    public function trim_chars($str, $n = 500, $endchar = '...') {
+    public function trim_chars($str, $length = 500, $endchar = '...') {
 
         $debug = optional_param('debug', false, PARAM_BOOL);
 
@@ -1124,7 +1209,7 @@ class local_sharedresources_renderer extends plugin_renderer_base {
 
         while ($part = array_shift($parts)) {
 
-            if ($buflen > $n) {
+            if ($buflen > $length) {
                 $iscutoff = true;
                 if ($debug) {
                     echo "Cutting off\n";
@@ -1133,7 +1218,7 @@ class local_sharedresources_renderer extends plugin_renderer_base {
             }
 
             if (strpos($part, '<') === 0) {
-                // is a tag.
+                // Is a tag.
                 preg_match('#<(/?)([a-zA-Z0-6]+).*(/?)>#', $part, $matches);
                 $isendtag = !empty($matches[1]);
                 $tagname = $matches[2];

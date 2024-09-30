@@ -15,17 +15,17 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Widget for single search criteria.
  *
- * @author  Valery Fremaux
- * @version 0.0.1
- * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resource
  * @package local_sharedresources
  * @subpackage search
- * @category local
+ * @author  Valery Fremaux
+ * @copyright  Valery Fremaux (activeprolearn.com)
+ * @license http://www.gnu.org/copyleft/gpl.html GNU Public License
  */
 namespace local_sharedresources\search;
 
-use \StdClass;
+use StdClass;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -37,12 +37,19 @@ require_once($CFG->dirroot.'/local/sharedresources/classes/search_widget.class.p
  */
 class select_widget extends search_widget {
 
+    /**
+     * Constructor
+     * @param int $id
+     * @param string $label
+     */
     public function __construct($id, $label) {
         parent::__construct($id, $label, 'select');
     }
 
     /**
-     * Fonction used to display the widget. The parameter $display determines if plugins are displayed on a row or on a column
+     * Fonction used to display the widget.
+     * @param string $layout
+     * @param mixed $value
      */
     public function print_search_widget($layout, $value = 0) {
         global $CFG, $OUTPUT;
@@ -58,7 +65,7 @@ class select_widget extends search_widget {
         $template->label = $this->label;
         $template->selectsearchhelpicon = $OUTPUT->help_icon('selectsearch', 'sharedresource', false);
         $options = '';
-        foreach ($mtdstandard->METADATATREE[$this->id]['values'] as $optvalue) {
+        foreach ($mtdstandard->metadatatree[$this->id]['values'] as $optvalue) {
             $selected = ($value == $optvalue) ? 'selected="selected"' : '';
             $str = get_string(clean_string_key(strtolower($optvalue)), 'sharedmetadata_'.$this->schema);
             $options .= "<option value=\"$optvalue\" $selected >".$str.'</option>';
@@ -68,8 +75,11 @@ class select_widget extends search_widget {
         return $OUTPUT->render_from_template('local_sharedresources/search_select', $template);
     }
 
-    // Catchs a value in session from CGI input.
-    public function catch_value(&$searchfields) {
+    /**
+     * Catchs a value in session from CGI input.
+     * @param array $searchfields
+     */
+    public function catch_value(& $searchfields) {
         global $SESSION;
 
         if (!isset($SESSION->searchbag)) {

@@ -15,11 +15,15 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package    local_sharedresources
- * @category   local
- * @author Valery Fremaux <valery@valeisti.fr>
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
+ * Search engine.
  *
+ * @package     local_sharedresources
+ * @author      Valery Fremaux <valery@gmail.com>
+ * @copyright   Valery Fremaux (activeprolearn.com)
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL
+ */
+
+ /*
  * Provides a pluggable search form for several external resources repositories.
  * @see resources/results.php
  */
@@ -30,22 +34,36 @@ $PAGE->requires->js('/mod/sharedresource/js/calendar.js');
 
 $repo = optional_param('repo', 'cndp', PARAM_TEXT);
 $courseid = optional_param('id', SITEID, PARAM_INT);
+$config = get_config('local_sharedresources');
 
 $searchquerystr = get_string('remotesearchquery', 'local_sharedresources');
 
-if (!$course = $DB->get_record('course', array('id' => $courseid))) {
+if (!$course = $DB->get_record('course', ['id' => $courseid])) {
     throw new moodle_exception(get_string('coursemisconf'));
 }
 
-$systemcontext = context_system::instance();
+$context = context_system::instance();
+if (!empty($config->privatecatalog)) {
+
+    if ($courseid) {
+        $context = context_course::instance($courseid);
+        require_login($course);
+    } else {
+        require_login();
+    }
+    $where = CONTEXT_COURSECAT.','.CONTEXT_COURSE;
+    if (!sharedresources_has_capability_somewhere('repository/sharedresources:view', false, false, false, $where)) {
+        throw new moodle_exception(get_string('noaccess', 'local_sharedresources'));
+    }
+}
 
 $strtitle = get_string('search', 'local_sharedresources');
 $PAGE->set_pagelayout('standard');
-$PAGE->set_context($systemcontext);
+$PAGE->set_context($context);
 $PAGE->set_title($strtitle);
 $PAGE->set_heading($SITE->fullname);
-$PAGE->navbar->add( $course->shortname, new moodle_url('/course/view.php', array('id' => $courseid)));
-$PAGE->navbar->add($strtitle, new moodle_url('/local/sharedresources/search.php', array('id' => $courseid)));
+$PAGE->navbar->add( $course->shortname, new moodle_url('/course/view.php', ['id' => $courseid]));
+$PAGE->navbar->add($strtitle, new moodle_url('/local/sharedresources/search.php', ['id' => $courseid]));
 
 $PAGE->set_focuscontrol('');
 $PAGE->set_cacheable(false);

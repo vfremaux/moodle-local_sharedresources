@@ -18,7 +18,6 @@
  * Defines form to add a new project
  *
  * @package    local_sharedresources
- * @category   local
  * @subpackage plugins
  * @author     Valery Fremaux <valery.fremaux@gmail.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL

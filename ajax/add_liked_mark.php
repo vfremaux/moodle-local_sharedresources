@@ -15,11 +15,14 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package local_sharedresources
- * @category local
- *
  * Marks locally or remotely the like index
+ *
+ * @package     local_sharedresources
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   Valery Fremaux (activeprolearn.com)
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU Public License
  */
+
 require('../../../config.php');
 
 $resid = required_param('resid', PARAM_TEXT);
@@ -30,14 +33,14 @@ require_login();
 if ($repo == 'local' || $repo = $CFG->mnet_localhost_id) {
     $repohostroot = $CFG->wwwroot;
 } else {
-    $repohostroot = $DB->get_field('mnet_host', 'wwwroot', array('id' => $repo));
+    $repohostroot = $DB->get_field('mnet_host', 'wwwroot', ['id' => $repo]);
 }
 
 if ($repohostroot == $CFG->wwwroot) {
     // Do this locally.
-    $oldvalue = $DB->get_field('sharedresource_entry', 'scorelike', array('identifier' => $resid));
+    $oldvalue = $DB->get_field('sharedresource_entry', 'scorelike', ['identifier' => $resid]);
     $value = $oldvalue + 1;
-    $DB->set_field('sharedresource_entry', 'scorelike', $value, array('identifier' => $resid));
+    $DB->set_field('sharedresource_entry', 'scorelike', $value, ['identifier' => $resid]);
 } else {
     // Fire remote ajax_liked_mark thru Curl direct shoot (No need MNET here).
 
@@ -49,13 +52,13 @@ if ($repohostroot == $CFG->wwwroot) {
     curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($curl, CURLOPT_POST, false);
     curl_setopt($curl, CURLOPT_USERAGENT, 'Moodle');
-    curl_setopt($curl, CURLOPT_HTTPHEADER, array("Content-Type: text/xml charset=UTF-8"));
+    curl_setopt($curl, CURLOPT_HTTPHEADER, ["Content-Type: text/xml charset=UTF-8"]);
     curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
     curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 0);
 
-    if (!empty($CFG->proxyhost) and !@$proxybypass) {
+    if (!empty($CFG->proxyhost) && !@$proxybypass) {
         // SOCKS supported in PHP5 only.
-        if (!empty($CFG->proxytype) and ($CFG->proxytype == 'SOCKS5')) {
+        if (!empty($CFG->proxytype) && ($CFG->proxytype == 'SOCKS5')) {
             if (defined('CURLPROXY_SOCKS5')) {
                 curl_setopt($curl, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5);
             }
@@ -69,7 +72,7 @@ if ($repohostroot == $CFG->wwwroot) {
             curl_setopt($curl, CURLOPT_PROXY, $CFG->proxyhost.':'.$CFG->proxyport);
         }
 
-        if (!empty($CFG->proxyuser) and !empty($CFG->proxypassword)) {
+        if (!empty($CFG->proxyuser) && !empty($CFG->proxypassword)) {
             curl_setopt($curl, CURLOPT_PROXYUSERPWD, $CFG->proxyuser.':'.$CFG->proxypassword);
             if (defined('CURLOPT_PROXYAUTH')) {
                 // Any proxy authentication if PHP 5.1.

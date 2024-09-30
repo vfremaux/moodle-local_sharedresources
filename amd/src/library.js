@@ -16,7 +16,6 @@
 /**
  * A general JS library for library display.
  * @module     local_sharedresource/library
- * @package    local
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 // jshint unused: true, undef:true
@@ -139,12 +138,11 @@ define(['jquery', 'core/config', 'core/log', 'core/str'], function ($, cfg, log,
             }
         },
 
-        toversion: function(e) {
+        toversion: function() {
             var that = $(this);
 
             var versionid = that.attr('data-version');
             var containerid = that.attr('data-container');
-            var courseid = that.attr('data-container');
             var arr = containerid.split('-'); // Has repo-resid form.
             var repoid = arr[0];
             var residentifier = arr[1];
@@ -153,6 +151,7 @@ define(['jquery', 'core/config', 'core/log', 'core/str'], function ($, cfg, log,
             // Fetch and replace resource box content.
             var url = cfg.wwwroot + '/local/sharedresources/ajax/get_version.php';
             url += '?resid=' + versionid;
+            url += '&origineid=' + residentifier;
             url += '&repo=' + repoid;
             url += '&courseid=' + sharedresourceslibrary.courseid;
             url += '&isediting=' + $('#resources').hasClass('is-editing');

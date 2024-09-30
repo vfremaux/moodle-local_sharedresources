@@ -15,11 +15,14 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package local_sharedresources
- * @category local
+ * Get resource version description.
  *
- * Get a resource version description.
+ * @package    local_sharedresources
+ * @author Valery Fremaux <valery@gmail.com>
+ * @copyright Valery Fremaux (activeprolearn.com)
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
  */
+
 require('../../../config.php');
 require_once($CFG->dirroot.'/local/sharedresources/lib.php');
 
@@ -29,7 +32,8 @@ $isediting = optional_param('isediting', '', PARAM_BOOL);
 $shrtemplate = optional_param('template', 'boxresourcebodyinner', PARAM_TEXT);
 $repo = optional_param('repo', $CFG->mnet_localhost_id, PARAM_INT); // Repo is given as mnethostid.
 
-// Defined by page format
+// Defined by page format.
+
 if (!defined('RETURN_PAGE')) {
     define('RETURN_PAGE', get_config('local_sharedresources', 'defaultlibraryindexpage'));
 }
@@ -39,14 +43,15 @@ $PAGE->set_context($context);
 if (!empty($config->privatecatalog)) {
     if ($courseid) {
         $context = context_course::instance($courseid);
-        $course = $DB->get_record('course', array('id' => $courseid));
+        $course = $DB->get_record('course', ['id' => $courseid]);
         require_login($course);
     } else {
         $context = context_system::instance();
         require_login();
     }
 
-    if (!sharedresources_has_capability_somewhere('repository/sharedresources:view', false, false, false, CONTEXT_COURSECAT.','.CONTEXT_COURSE)) {
+    $where = CONTEXT_COURSECAT.','.CONTEXT_COURSE;
+    if (!sharedresources_has_capability_somewhere('repository/sharedresources:view', false, false, false, $where)) {
         throw new moodle_exception(get_string('noaccess', 'local_sharedresource'));
     }
 }
@@ -54,7 +59,7 @@ if (!empty($config->privatecatalog)) {
 if ($repo == 'local' || $repo = $CFG->mnet_localhost_id) {
     $repohostroot = $CFG->wwwroot;
 } else {
-    $repohostroot = $DB->get_field('mnet_host', 'wwwroot', array('id' => $repo));
+    $repohostroot = $DB->get_field('mnet_host', 'wwwroot', ['id' => $repo]);
 }
 
 if ($repohostroot == $CFG->wwwroot) {
@@ -66,7 +71,8 @@ if ($repohostroot == $CFG->wwwroot) {
     $gui->bodytplname = $shrtemplate; // Will have to resolve dynamically the template.
     $resourcedesc = $renderer->print_resource($version, $course, $repo, $isediting, $gui);
 } else {
-    // later implementation.
+    // Later implementation.
+    assert(true);
 }
 
 echo $resourcedesc;

@@ -15,12 +15,13 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Generic search widget.
  *
+ * @package local_sharedresources
  * @author  Frédéric Guillou
+ * @copyright  Valery Fremaux (activeprolearn.com)
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resource
- * @package local_sharedresource
  * @subpackage search
- * @category local
  */
 namespace local_sharedresources\search;
 
@@ -33,16 +34,23 @@ require_once($CFG->dirroot.'/mod/sharedresource/metadatalib.php');
  */
 abstract class search_widget {
 
+    /** @var the active metadata schema */
     protected $schema;
 
-    public $id; // The field id of the metadata tree in the plugin chosen by the admin.
+    /** @var The field id of the metadata tree in the plugin chosen by the admin. */
+    public $id;
 
-    public $label; // The name of the node which have this id.
+    /** @var The name of the node which have this id. */
+    public $label;
 
-    public $type; // The type of the widget. There are 6 types : numeric, freetext, select, selectmultiple, date and treeselect.
+    /** @var The type of the widget. There are 6 types : numeric, freetext, select, selectmultiple, date and treeselect. */
+    public $type;
 
     /**
      * Constructor for the search_widget class
+     * @param int $id
+     * @param string $label
+     * @param string $type
      */
     public function __construct($id, $label, $type) {
 
@@ -55,8 +63,7 @@ abstract class search_widget {
 
     /**
      * print widget implementation for each widget style.
-     * @param string $layout gives some indication about the surrounding layout and what glue is
-     * to be added.
+     * @param string $layout gives some indication about the surrounding layout and what glue is to be added.
      * @param mixed $value the input or current value
      */
     abstract public function print_search_widget($layout, $value = 0);

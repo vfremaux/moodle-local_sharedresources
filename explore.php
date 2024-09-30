@@ -15,10 +15,15 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package     local_sharedresource
- * @category    local
- * @author      Valery Fremaux (valery.fremaux@gmail.com)
+ * Explore resources with search engine.
  *
+ * @package    local_sharedresources
+ * @author Valery Fremaux <valery@gmail.com>
+ * @copyright Valery Fremaux (activeprolearn.com)
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
+ */
+
+/*
  * This file provides access to a master shared resources index, intending
  * to allow a public browsing of resources.
  * The catalog is considered as multi-provider, and can federate all resources into
@@ -78,13 +83,14 @@ $context = context_system::instance();
 if (!empty($config->privatecatalog)) {
     if ($courseid) {
         $context = context_course::instance($courseid);
-        $course = $DB->get_record('course', array('id' => $courseid));
+        $course = $DB->get_record('course', ['id' => $courseid]);
         require_login($course);
     } else {
         $context = context_system::instance();
     }
 
-    if (!sharedresources_has_capability_somewhere('repository/sharedresources:view', false, false, false, CONTEXT_COURSECAT.','.CONTEXT_COURSE)) {
+    $where = CONTEXT_COURSECAT.','.CONTEXT_COURSE;
+    if (!sharedresources_has_capability_somewhere('repository/sharedresources:view', false, false, false, $where)) {
         throw new moodle_exception(get_string('noaccess', 'local_sharedresources'));
     }
 }
@@ -97,13 +103,13 @@ $PAGE->set_title(get_string('sharedresources_library', 'local_sharedresources'))
 $PAGE->set_heading(get_string('sharedresources_library', 'local_sharedresources'));
 $PAGE->set_pagelayout('standard');
 
-$params = array('edit' => $edit,
+$params = ['edit' => $edit,
                 'blockaction' => $blockaction,
                 'course' => $courseid,
                 'repo' => $repo,
                 'offset' => $offset,
                 'mode' => $mode,
-                'what' => $action);
+                'what' => $action];
 $PAGE->set_url('/local/sharedresources/explore.php', $params);
 
 $renderer = $PAGE->get_renderer('local_sharedresources');
@@ -114,7 +120,7 @@ if ($action) {
     include($CFG->dirroot.'/local/sharedresources/library.controller.php');
 }
 
-$course = $DB->get_record('course', array('id' => $courseid));
+$course = $DB->get_record('course', ['id' => $courseid]);
 
 if (empty($config->searchblocksposition)) {
     set_config('searchblocksposition', 'side-pre', 'local_sharedresources');
@@ -130,7 +136,7 @@ if (file_exists($CFG->dirroot.'/blocks/search') && get_config('local_search', 'e
     $bc->attributes['id'] = 'local_sharedresource_globalsearch_block';
     $bc->attributes['role'] = 'search';
     $bc->attributes['aria-labelledby'] = 'local_sharedresouces_search_title';
-    $args = array('id' => 'local_sharedresources_globalsearch_title');
+    $args = ['id' => 'local_sharedresources_globalsearch_title'];
     $bc->title = html_writer::span(get_string('textsearch', 'local_sharedresources'), '', $args);
     $bc->content = $block->get_content()->text;
     $config = $configsaved; // Bring back the local_sharedresource config that has been tweaked by the search block loading.
@@ -146,8 +152,10 @@ if ($repo == 'local') {
     $visiblewidgets = sharedresources_remote_widgets($repo, $context);
 }
 
-// find search fields, values, and eventual changes in filtering request.
-// If mode is single, will build relevant searchfield to search text in.
+/*
+ * Find search fields, values, and eventual changes in filtering request.
+ * If mode is single, will build relevant searchfield to search text in.
+ */
 $searchfields = [];
 if (sharedresources_process_search_widgets($mtdplugin, $visiblewidgets, $searchfields, $mode)) {
     // If something has changed in filtering conditions, we might not have same resultset. Keep offset to 0.
@@ -170,10 +178,9 @@ $bc = new block_contents();
 $bc->attributes['id'] = 'local_sharedresource_searchblock';
 $bc->attributes['role'] = 'search';
 $bc->attributes['aria-labelledby'] = 'local_sharedresouces_search_title';
-$args = array('id' => 'local_sharedresources_search_title');
+$args = ['id' => 'local_sharedresources_search_title'];
 $bc->title = html_writer::span(get_string('searchinlibrary', 'local_sharedresources'), '', $args);
-// $bc->content = $renderer->search_widgets_tableless($courseid, $repo, $offset, $context, $visiblewidgets, $searchfields);
-$bc->content = $renderer->search_block($courseid, $repo, $offset, $context, $visiblewidgets, $searchfields, $layout);
+$bc->content = $renderer->search_block($courseid, $repo, $offset, $visiblewidgets, $searchfields, $layout);
 $PAGE->blocks->add_fake_block($bc, $config->searchblocksposition);
 
 $topkeywords = $renderer->top_keywords($courseid);
@@ -182,7 +189,7 @@ if (!empty($topkeywords)) {
     $bc->attributes['id'] = 'local_sharedresource_searchblock';
     $bc->attributes['role'] = 'search';
     $bc->attributes['aria-labelledby'] = 'local_sharedresouces_search_title';
-    $args = array('id' => 'local_sharedresources_topkeywords_title');
+    $args = ['id' => 'local_sharedresources_topkeywords_title'];
     $bc->title = html_writer::span(get_string('topkeywords', 'local_sharedresources'), '', $args);
     $bc->content = $topkeywords;
     $PAGE->blocks->add_fake_block($bc, $config->searchblocksposition);
@@ -212,7 +219,7 @@ if ($repo == 'local' || !local_sharedresources_supports_feature('repo/remote')) 
 $SESSION->resourceresult = $resources;
 
 $hastaxonomy = $DB->count_records('sharedresource_classif');
-if (is_object($mtdplugin) && $mtdplugin->getTaxonomyValueElement() && $hastaxonomy) {
+if (is_object($mtdplugin) && $mtdplugin->get_taxonomy_value_element() && $hastaxonomy) {
     // Only browse if there is a taxonomy in the metadata schema.
     echo '<center>';
     echo '<br/>';
@@ -238,7 +245,7 @@ if (empty($resources)) {
 }
 echo '</div>';
 
-if (is_object($mtdplugin) && $mtdplugin->getTaxonomyValueElement() && $hastaxonomy) {
+if (is_object($mtdplugin) && $mtdplugin->get_taxonomy_value_element() && $hastaxonomy) {
     // Only browse if there is a taxonomy in the metadata schema.
     echo '<center>';
     echo '<br/>';

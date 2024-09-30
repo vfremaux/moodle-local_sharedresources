@@ -16,7 +16,6 @@
 
 /**
  * @package     local_sharedresources
- * @category    local
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL
  *

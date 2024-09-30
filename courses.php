@@ -15,26 +15,14 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package     local_sharedresource
- * @category    local
- * @author      Valery Fremaux (valery.fremaux@gmail.com)
+ * Show courses using a resource.
  *
- * This file provides access to a master shared resources index, intending
- * to allow a public browsing of resources.
- * The catalog is considered as multi-provider, and can federate all resources into
- * browsing results, or provide them as separate catalogs for each resource provider.
- *
- * The index admits browsing remote linked catalogues, and will aggregate the found
- * entries in the current view, after a contextual query has been fired to remote connected
- * resource sets.
- *
- * The index will provide a "top viewed" resources side tray, and a "top used" side tray,
- * that will count local AND remote inttegration of the resource. The remote query to
- * bound catalogs will also get information about local catalog resource used by remote courses.
- *
- * The index is public access. Browsing the catalog should although be done through a Guest identity,
- * having as a default the repository/sharedresources:view capability.
+ * @package     local_sharedresources
+ * @author      Valery Fremaux <valery@gmail.com>
+ * @copyright   Valery Fremaux (activeprolearn.com)
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL
  */
+
 require('../../config.php');
 require($CFG->dirroot.'/local/sharedresources/lib.php');
 
@@ -42,9 +30,11 @@ $courseid = optional_param('course', SITEID, PARAM_INT); // Optional course if w
 $repo = optional_param('repo', '', PARAM_TEXT);
 $entryid = required_param('entryid', PARAM_INT);
 
-$params = array('course' => $courseid,
-                'repo' => $repo,
-                'entryid' => $entryid);
+$params = [
+    'course' => $courseid,
+    'repo' => $repo,
+    'entryid' => $entryid,
+];
 $PAGE->set_url('/local/sharedresources/courses.php', $params);
 
 // Security.
@@ -67,7 +57,7 @@ $PAGE->set_heading(get_string('courselist', 'local_sharedresources'));
 
 $renderer = $PAGE->get_renderer('local_sharedresources');
 
-$entryrec = $DB->get_record('sharedresource_entry', array('id' => $entryid));
+$entryrec = $DB->get_record('sharedresource_entry', ['id' => $entryid]);
 $courses = sharedresources_get_courses($entryrec);
 
 echo $OUTPUT->header();
@@ -88,7 +78,7 @@ echo $OUTPUT->box_end();
 
 echo '<center>';
 
-$buttonurl = new moodle_url('/local/sharedresource/index.php', array('course' => $courseid, 'repo' => $repo));
+$buttonurl = new moodle_url('/local/sharedresource/index.php', ['course' => $courseid, 'repo' => $repo]);
 echo $OUTPUT->single_button($buttonurl, get_string('backtoindex', 'local_sharedresources'));
 
 echo '</center>';

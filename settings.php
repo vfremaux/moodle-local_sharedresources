@@ -15,10 +15,12 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package    local_sharedresources
- * @category   local
- * @author Valery Fremaux <valery@valeisti.fr>
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
+ * Global settings.
+ *
+ * @package     local_sharedresources
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   Valery Fremaux (www.activeprolearn.com)
+ * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL
  */
 defined('MOODLE_INTERNAL') || die();
 
@@ -27,11 +29,11 @@ require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
 require_once($CFG->dirroot.'/mod/sharedresource/metadatalib.php');
 require_once($CFG->dirroot.'/local/sharedresources/classes/navigator.class.php');
 
-$shcaps = array(
+$shcaps = [
     'repository/sharedresouces:use',
     'repository/sharedresouces:view',
     'repository/sharedresouces:manage',
-);
+];
 
 $usecap = sharedresources_has_capability_somewhere('repository/sharedresources:use', false, false,
                                                     true, CONTEXT_COURSECAT.','.CONTEXT_COURSE);
@@ -47,7 +49,7 @@ if ($namespace = get_config('sharedresource', 'schema')) {
     $hasmetadata = true;
     $plugin = sharedresource_get_plugin($namespace);
 
-    if (!is_null($plugin->getClassification())) {
+    if (!is_null($plugin->get_classification())) {
         $hasclassification = true;
     }
 }
@@ -55,7 +57,7 @@ if ($namespace = get_config('sharedresource', 'schema')) {
 if ($hassiteconfig || $usecap || $viewcap || $managecap) {
     // Needs this condition or there is error on login page.
 
-    if ($DB->get_field('modules', 'visible', array('name' => 'sharedresource'))) {
+    if ($DB->get_field('modules', 'visible', ['name' => 'sharedresource'])) {
 
         if (!$ADMIN->locate('resources')) {
             $ADMIN->add('root', new admin_category('resources', get_string('pluginname', 'local_sharedresources')));
@@ -101,7 +103,7 @@ if ($hassiteconfig) {
     $config = get_config('sharedresource');
 
     if (!empty($config->schema) && !$upgradelock) {
-        if (@$debugwhitepage) {
+        if ($debugwhitepage ?? false) {
             echo "\t\tLoading active schema: {$config->schema}\n";
         }
         include_once($CFG->dirroot.'/mod/sharedresource/plugins/'.$config->schema.'/plugin.class.php');
@@ -117,8 +119,8 @@ if ($hassiteconfig) {
             $settings->add(new admin_setting_configselect($key, $label, $desc, 0, $taxonomies));
         }
 
-        $purposes = array();
-        $purposefield = $mtdstandard->getTaxonomyPurposeElement();
+        $purposes = [];
+        $purposefield = $mtdstandard->get_taxonomy_purpose_element();
         if ($purposefield) {
             foreach ($purposefield->values as $purpose) {
                 $purposes[$purpose] = get_string(clean_string_key($purpose), 'sharedmetadata_'.$config->schema);
@@ -131,12 +133,12 @@ if ($hassiteconfig) {
         }
 
         // Setup default landing page. Browse only can be used when the standard has a taxonomy.
-        $defaultpages = array(
-            'explore' => get_string('searchengine', 'local_sharedresources')
-        );
+        $defaultpages = [
+            'explore' => get_string('searchengine', 'local_sharedresources'),
+        ];
 
         $plugin = sharedresource_get_plugin($config->schema);
-        $taxonelement = $plugin->getTaxonomyValueElement();
+        $taxonelement = $plugin->get_taxonomy_value_element();
         if (!empty($taxonelement)) {
             $defaultpages['browse'] = get_string('browser', 'local_sharedresources');
         }
@@ -147,13 +149,13 @@ if ($hassiteconfig) {
         $settings->add(new admin_setting_configselect($key, $label, $desc, 'explore', $defaultpages));
     }
 
-    $options = array(0 => get_string('listviewalways', 'local_sharedresources'),
+    $options = [0 => get_string('listviewalways', 'local_sharedresources'),
                      10 => 10,
                      20 => 20,
                      30 => 30,
                      50 => 50,
                      100 => 100,
-                     10000 => get_string('boxviewalways', 'local_sharedresources'));
+                     10000 => get_string('boxviewalways', 'local_sharedresources')];
     $key = 'local_sharedresources/listviewthreshold';
     $label = get_string('configlistviewthreshold', 'local_sharedresources');
     $desc = get_string('configlistviewthreshold_desc', 'local_sharedresources');
@@ -161,7 +163,7 @@ if ($hassiteconfig) {
 
     $themeconfig = theme_config::load($CFG->theme);
     $layoutregions = $themeconfig->layouts['course']['regions'];
-    $options = array();
+    $options = [];
     foreach ($layoutregions as $region) {
         $options[$region] = get_string(preg_replace('/-/', '', 'region-'.$region), 'theme_'.$CFG->theme);
     }
@@ -179,7 +181,7 @@ if ($hassiteconfig) {
 
     $plugins = core_component::get_plugin_list('local/sharedresources/plugins');
     foreach ($plugins as $plugin) {
-        if (@$debugwhitepage) {
+        if ($debugwhitepage ?? false) {
             echo "Loading subsettings for plugin: $plugin\n";
         }
         if (file_exists($CFG->dirroot.'/local/sharedresources/plugins/'.$plugin.'/settings.php')) {

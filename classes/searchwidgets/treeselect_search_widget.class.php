@@ -15,17 +15,18 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Tree select search criteria widget.
  *
- * @author  Valery Fremaux
- * @version 0.0.1
- * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resource
  * @package local_sharedresources
+ * @author  Valery Fremaux
+ * @copyright  Valery Fremaux (activeprolearn.com)
+ * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resource
  *
  */
 namespace local_sharedresources\search;
 
-use \StdClass;
-use \html_writer;
+use StdClass;
+use html_writer;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -38,17 +39,24 @@ require_once($CFG->dirroot.'/mod/sharedresource/classificationlib.php');
  */
 class treeselect_widget extends search_widget {
 
+    /**
+     * Constructor.
+     * @param int $id
+     * @param string $label
+     */
     public function __construct($id, $label) {
         parent::__construct($id, $label, 'treeselect');
     }
 
     /**
-     * Fonction used to display the widget. The parameter $display determines if plugins are displayed on a row or on a column
+     * Fonction used to display the widget.
+     * @param string $layout
+     * @param string $value
      */
     public function print_search_widget($layout, $value = 0) {
         global $OUTPUT, $CFG, $SESSION;
 
-        $template = new StdClass;
+        $template = new StdClass();
         $config = get_config('sharedresource');
 
         $lowername = strtolower($this->label);
@@ -59,15 +67,13 @@ class treeselect_widget extends search_widget {
         $template->helpicon = $OUTPUT->help_icon('classificationsearch', 'sharedresource', false);
         $template->taxonpathstr = get_string('taxonpath', 'sharedmetadata_'.$config->schema);
 
-        // $jshandler = 'javascript:classif(this.options[selectedIndex].value,1,\'\',this.options[selectedIndex].value,this.options[this.selectedIndex].value);';
-
         $nochoicestr = get_string('none', 'sharedresource');
-        $classificationoptions[] = array('' => array('' => $nochoicestr));
+        $classificationoptions[] = ['' => ['' => $nochoicestr]];
         $classificationoptions = array_merge($classificationoptions, metadata_get_classification_options());
         $paramkey = str_replace(' ', '_', $this->label);
         $preselect = @$SESSION->searchbag->$paramkey;
 
-        $attrs = array('class' => 'widget-treeselect-select');
+        $attrs = ['class' => 'widget-treeselect-select'];
         $template->select = html_writer::select($classificationoptions, $paramkey, $preselect, null, $attrs);
         $template->label = $paramkey;
         $subskey = $paramkey.'_subs';
@@ -77,8 +83,11 @@ class treeselect_widget extends search_widget {
         return $OUTPUT->render_from_template('local_sharedresources/search_treeselect', $template);
     }
 
-    // Catchs a value in session from CGI input.
-    public function catch_value(&$searchfields) {
+    /**
+     * Catchs a value in session from CGI input.
+     * @param array $searchfields
+     */
+    public function catch_value(& $searchfields) {
         global $SESSION;
 
         if (!isset($SESSION->searchbag)) {

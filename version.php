@@ -18,8 +18,8 @@
  * Version details.
  *
  * @package     local_sharedresources
- * @category    local
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   Valery Fremaux <valery.fremaux@gmail.com>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL
  */
 defined('MOODLE_INTERNAL') || die();
@@ -30,9 +30,11 @@ $plugin->component = 'local_sharedresources';
 $plugin->release = '4.1.0 (Build 2024052400)';
 $plugin->maturity = MATURITY_STABLE;
 $plugin->supported = [401, 402];
-// Do not depend harldy on this component. Sharedresource use it
-// but can ignore it if missing.
-// $plugin->dependencies = array('local_staticguitexts' => 2013121900);
+/*
+ * Do not depend harldy on this component. Sharedresource use it
+ * but can ignore it if missing.
+ * $plugin->dependencies = array('local_staticguitexts' => 2013121900);
+ */
 
 // Non moodle attributes.
 $plugin->codeincrement = '4.1.0006';
