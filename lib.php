@@ -166,7 +166,8 @@ function resources_load_searchwidgets($classname) {
 }
 
 // Prepare autoloader of missing search widgets.
-ini_set('unserialize_callback_func', 'resources_load_searchwidgets');
+// ini_set('unserialize_callback_func', 'resources_load_searchwidgets');
+spl_autoload_register('resources_load_searchwidgets');
 
 if (!defined('RPC_SUCCESS')) {
     define('RPC_TEST', 100);

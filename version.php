@@ -24,25 +24,10 @@
  */
 defined('MOODLE_INTERNAL') || die();
 
-<<<<<<< HEAD
-$plugin->version  = 2024052400;   // The (date) version of this plugin.
-=======
-$plugin->version  = 2021102100;   // The (date) version of this plugin.
-<<<<<<< HEAD
-$plugin->requires = 2022041900;   // Requires this Moodle version.
-$plugin->component = 'local_sharedresources';
-$plugin->release = '4.0.0 (Build 2021102100)';
-$plugin->maturity = MATURITY_RC;
-$plugin->supported = [40, 40];
-$plugin->dependencies = array('local_staticguitexts' => 2013121900);
-
-// Non moodle attributes.
-$plugin->codeincrement = '4.0.0004';
-=======
->>>>>>> 62dff05934a1d3aeb8a752ff12b704e516c40e87
+$plugin->version  = 2024093000;   // The (date) version of this plugin.
 $plugin->requires = 2022112801;   // Requires this Moodle version.
 $plugin->component = 'local_sharedresources';
-$plugin->release = '4.1.0 (Build 2024052400)';
+$plugin->release = '4.1.0 (Build 2024093000)';
 $plugin->maturity = MATURITY_STABLE;
 $plugin->supported = [401, 402];
 /*
@@ -52,11 +37,5 @@ $plugin->supported = [401, 402];
  */
 
 // Non moodle attributes.
-<<<<<<< HEAD
-$plugin->codeincrement = '4.1.0006';
+$plugin->codeincrement = '4.1.0007';
 $plugin->privacy = 'dualrelease';
-=======
-$plugin->codeincrement = '4.1.0005';
->>>>>>> MOODLE_401_STABLE
-$plugin->privacy = 'dualrelease';
->>>>>>> 62dff05934a1d3aeb8a752ff12b704e516c40e87

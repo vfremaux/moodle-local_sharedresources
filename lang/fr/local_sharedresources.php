@@ -103,21 +103,10 @@ $string['noaccess'] = 'Vous n\'avez pas les permissions requises pour utiliser c
 $string['noresources'] = '<p>Aucune ressource locale dans cette librairie</p>';
 $string['noresourceshere'] = '</p>Aucune ressource à ce niveau de classement</p>';
 $string['notused'] = 'Jamais utilisée dans ce site';
-<<<<<<< HEAD
 $string['notaxonomiesenabled'] = 'Aucune taxonomie définie dans la librairie. Vous ne pouvez pas utiliser le navigateur
 "taxonomique".';
-=======
-<<<<<<< HEAD
-$string['pluginname'] = 'Librairie de ressources';
-=======
-$string['notaxonomiesenabled'] = 'Aucune taxonomie définie dans la librairie. Vous ne pouvez pas utiliser le navigateur "taxonomique".';
->>>>>>> 62dff05934a1d3aeb8a752ff12b704e516c40e87
 $string['pluginname'] = 'Librairie de ressources mutualisées';
-<<<<<<< HEAD
->>>>>>> MOODLE_401_STABLE
-=======
 $string['previous'] = 'Version précédente';
->>>>>>> MOODLE_401_STABLE
 $string['purposediscriminator'] = 'Objectif spécifique de la taxonomie';
 $string['reinitialized'] = '{$a} fichiers rétablis';
 $string['relocalize'] = 'Relocaliser';

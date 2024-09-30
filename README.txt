@@ -24,7 +24,11 @@ will come as 4 complementary parts :
 as standard resource instances, or in other publication contexts
 - Shared Resource Local Component (this package) : provides a front-end to librarian to search, browse and get some site level services around shared resources.
 
-4.1.0006
+4.X.0006
 ==============================
 
 Adding more control on community features. Remove "export" link when no providers. Control "mass import" button by capability.
+
+4.X.0007
+==============================
+Review moodle codechecker compliance, with fiew hidden optimizations.
