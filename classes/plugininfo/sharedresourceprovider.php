@@ -18,6 +18,7 @@
  * Subplugin info class.
  *
  * @package     local_sharedresources
+ * @author   2014 Valery Fremaux (valery.Fremaux@gmail.com)
  * @copyright   2014 Valery Fremaux (valery.Fremaux@gmail.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -25,8 +26,9 @@ namespace local_sharedresources\plugininfo;
 
 use core\plugininfo\base;
 
-defined('MOODLE_INTERNAL') || die();
-
+/**
+ * Defines a resource provider subplugin.
+ */
 class sharedresourceprovider extends base {
 
     public function is_uninstall_allowed() {

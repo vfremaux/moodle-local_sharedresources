@@ -15,6 +15,8 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Lang file.
+ *
  * @package    local_sharedresources
  * @author     Valery Fremaux <valery.fremaux@gmail.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
@@ -86,13 +88,15 @@ $string['makelabelsfromguidance'] = 'Make labels from guidance';
 $string['markliked'] = 'I like it!';
 $string['massimport'] = 'Mass import';
 $string['mimetype'] = 'Mime type';
-$string['moodleupgradelocks'] = 'Moodle requires some upgrades. Sharedresource configuration cannot be fullfilled while upgrades are pending.';
+$string['moodleupgradelocks'] = 'Moodle requires some upgrades. Sharedresource configuration cannot be fullfilled while upgrades
+are pending.';
 $string['moreoptions'] = 'More options';
 $string['lessoptions'] = 'Less options';
 $string['next'] = 'Next version';
 $string['newresource'] = 'Add a new resource';
 $string['noaccess'] = 'You have not the required capabilities to access this service';
-$string['noclassificationenabled'] = 'There is no classification enabled in this site. Administrator should configure the library with classifications, or disable this browser.';
+$string['noclassificationenabled'] = 'There is no classification enabled in this site. Administrator should configure the library
+with classifications, or disable this browser.';
 $string['noentries'] = 'This repository has no resources';
 $string['noresources'] = 'This repository has no local resources';
 $string['noresourceshere'] = 'There is no resource at this level';
@@ -163,21 +167,25 @@ will be automatically be filled with taxonomy entries. The imported taxonomy hie
 
 $string['configdefaultlibraryindexpage_desc'] = 'The default index page choice may depend of the activated metadata plugin';
 
-$string['purposediscriminator_help'] = 'You may give here a value for the taxmonomy purpose field that helps you to isolate this imported taxonomy
-from other taxonomies in the sharedresource taxon table.';
+$string['purposediscriminator_help'] = 'You may give here a value for the taxmonomy purpose field that helps you to isolate this
+imported taxonomy from other taxonomies in the sharedresource taxon table.';
 
-$string['cleaneverything_desc'] = 'Will delete all resources entries and metadata in the library. shared resouce module instances in courses
-will not be affected, but some references might be corrupted on reload.';
+$string['cleaneverything_desc'] = 'Will delete all resources entries and metadata in the library. shared resouce module instances
+in courses will not be affected, but some references might be corrupted on reload.';
 
-$string['resourcearchive_help'] = 'A ZIP archive with all resources organized in folders with metadata descriptors. See <a href="">the documentation</a>.';
+$string['resourcearchive_help'] = 'A ZIP archive with all resources organized in folders with metadata descriptors. See
+<a href="">the documentation</a>.';
 
 $string['simulate_help'] = 'Will not write anything in moodle and keeps the import volume unchanged.';
 
-$string['relocalize_help'] = 'Relocalize resources marked by a coursemoduletype colums set to "resource" (either implicit "sharedresource")';
+$string['relocalize_help'] = 'Relocalize resources marked by a coursemoduletype colums set to "resource" (either implicit
+"sharedresource")';
 
-$string['deployzips_help'] = 'If the file is a zip, and the resource is added to a course, then the zip will be unpacked in the resource course module storage.';
+$string['deployzips_help'] = 'If the file is a zip, and the resource is added to a course, then the zip will be unpacked in
+the resource course module storage.';
 
-$string['makelabelsfromguidance_help'] = 'If the metadata.csv file contains a colomn "guidance", add labels course modules before the resources with the guidance text.';
+$string['makelabelsfromguidance_help'] = 'If the metadata.csv file contains a colomn "guidance", add labels course modules
+before the resources with the guidance text.';
 
 $string['configlistviewthreshold_desc'] = 'Number of resources in result over which display switches to list view.';
 
@@ -186,4 +194,4 @@ responsible of all the resources stored in the library, where and whoever they c
 
 $string['configsearchblocksposition_desc'] = '';
 
-include(__DIR__.'/pro_additional_strings.php');
+require(__DIR__.'/pro_additional_strings.php');

@@ -15,6 +15,8 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Lang file.
+ *
  * @package    local_sharedresources
  * @author     Valery Fremaux <valery.fremaux@gmail.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
@@ -23,7 +25,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 // Privacy.
-$string['privacy:metadata'] = 'La librairie Shared resources ne stocke aucune donnée relative aux utilisateurs.';
+$string['privacy:metadata'] = 'La librairie mutualisée ne stocke aucune donnée relative aux utilisateurs.';
 
 $string['accesscontrol'] = 'Contrôle d\'accès';
 $string['addtocourse'] = 'Ajout au cours (mutu.)';
@@ -50,7 +52,8 @@ $string['configsearchblocksposition'] = 'Position des blocs de recherche';
 $string['confighidenotice'] = 'Cacher le lien vers la notice';
 $string['convertresources'] = 'Convertir des ressources';
 $string['confirm'] = 'Confirmer';
-$string['confirmresourceforcedeletion'] = 'Cette ressource est utilisée dans des cours. Voulez-vous vraiment la supprimer de la librairie ?';
+$string['confirmresourceforcedeletion'] = 'Cette ressource est utilisée dans des cours. Voulez-vous vraiment la supprimer de
+la librairie ?';
 $string['confirmresourcedeletion'] = 'Voulez-vous vraiment supprimer cette ressource ?';
 $string['confirmsimulate'] = 'Confirmer la simulation';
 $string['contains'] = 'contient';
@@ -68,14 +71,16 @@ $string['errorinvalidresourceid'] = 'Identifiant de ressource inconnu';
 $string['errorinvalidticket'] = 'Ticket d\'accès invalide';
 $string['errormnetpeer'] = 'Erreur d\'initialisation du client MNET';
 $string['errornotadir'] = 'Le répertoire d\'import n\'existe pas ou n\'est pas accessible';
-$string['errornotwritable'] = 'Le répertoire d\'import n\'est pas accessible en écriture. Modifiez les droits de ce répertoire avant d\'importer.';
+$string['errornotwritable'] = 'Le répertoire d\'import n\'est pas accessible en écriture. Modifiez les droits de ce répertoire avant
+d\'importer.';
 $string['exclusionpattern'] = 'Motif d\'exclusion';
 $string['filestoimport'] = 'Fichiers à importer de&nbsp;: {$a}';
 $string['forcedelete'] = 'Forcer la suppression (même si utilisé)';
 $string['importpath'] = 'Chemin à importer';
 $string['importvolume'] = 'Importer des documents';
 $string['installltitool'] = 'Installer comme outil externe';
-$string['ishiddenbyrule'] = 'Cette ressource est mutualisée dans un contexte restreint. Vous n\'avez pas les droits suffisants pour la télécharger.';
+$string['ishiddenbyrule'] = 'Cette ressource est mutualisée dans un contexte restreint. Vous n\'avez pas les droits suffisants pour
+la télécharger.';
 $string['keywords'] = 'Mots-clefs&nbsp;:&ensp;';
 $string['library'] = 'Librairie';
 $string['librarian'] = 'Documentaliste';
@@ -85,18 +90,21 @@ $string['makelabelsfromguidance'] = 'Créer les étiquettes de guidances';
 $string['markliked'] = 'J\'aime&nbsp;!';
 $string['massimport'] = 'Importer massivement';
 $string['mimetype'] = 'Type de contenu&nbsp;';
-$string['moodleupgradelocks'] = 'La configuration de la librairie ne peut être fournie complète lorsque des mises à jour de moodle sont en attente.';
+$string['moodleupgradelocks'] = 'La configuration de la librairie ne peut être fournie complète lorsque des mises à jour de moodle
+sont en attente.';
 $string['moreoptions'] = 'Plus d\'options';
 $string['lessoptions'] = 'Moins d\'options';
 $string['newresource'] = 'Ajouter une ressource';
 $string['next'] = 'Version suivante';
-$string['noclassificationenabled'] = 'Aucune taxonomie de ressources n\'a été activée sur ce site. L\'administrateur des ressources devrait définir ou importer des taxonomies, ou désactiver l\'usage du navigateur de taxonomies.';
+$string['noclassificationenabled'] = 'Aucune taxonomie de ressources n\'a été activée sur ce site. L\'administrateur des ressources
+devrait définir ou importer des taxonomies, ou désactiver l\'usage du navigateur de taxonomies.';
 $string['noentries'] = '<p>Aucune ressource dans cette librairie</p>';
 $string['noaccess'] = 'Vous n\'avez pas les permissions requises pour utiliser ce service.';
 $string['noresources'] = '<p>Aucune ressource locale dans cette librairie</p>';
 $string['noresourceshere'] = '</p>Aucune ressource à ce niveau de classement</p>';
 $string['notused'] = 'Jamais utilisée dans ce site';
-$string['notaxonomiesenabled'] = 'Aucune taxonomie définie dans la librairie. Vous ne pouvez pas utiliser le navigateur "taxonomique".';
+$string['notaxonomiesenabled'] = 'Aucune taxonomie définie dans la librairie. Vous ne pouvez pas utiliser le navigateur
+"taxonomique".';
 $string['pluginname'] = 'Librairie de ressources mutualisées';
 $string['previous'] = 'Version précédente';
 $string['purposediscriminator'] = 'Objectif spécifique de la taxonomie';
@@ -163,24 +171,27 @@ $string['deducetaxonomyfrompath_help'] = 'Si coché, le chemin relatif de la res
 de la taxonomie. L\'organisation hiérarchique de la taxonomie produite sera le reflet de l\'organisation physique du
 répertoire d\'import.';
 
-$string['configdefaultlibraryindexpage_desc'] = 'Le choix des pages par défaut de la librairie peut dépendre de la norme de métadonnée activée.';
+$string['configdefaultlibraryindexpage_desc'] = 'Le choix des pages par défaut de la librairie peut dépendre de la norme de
+métadonnée activée.';
 
-$string['purposediscriminator_help'] = 'Vous pouvez préciser une valeur d\'objectif de la taxonomie importée qui permettra de la discriminer
-des autres taxonomies présentes dans la table de taxons des ressources mutualisées.';
+$string['purposediscriminator_help'] = 'Vous pouvez préciser une valeur d\'objectif de la taxonomie importée qui permettra de
+la discriminer des autres taxonomies présentes dans la table de taxons des ressources mutualisées.';
 
-$string['cleaneverything_desc'] = 'Détruit toutes les ressources de la librairie et les métadonnées associées. Les instances de modules de cours
-Ressource mutualisées ne sont pas supprimées, mais certains liens référentiels après reconstruction de la librairie pourraient ête corrompus.';
+$string['cleaneverything_desc'] = 'Détruit toutes les ressources de la librairie et les métadonnées associées. Les instances de
+modules de cours Ressource mutualisées ne sont pas supprimées, mais certains liens référentiels après reconstruction de la librairie
+pourraient ête corrompus.';
 
 $string['simulate_help'] = 'N\'écrira aucune donnée rémanente dans moodle et ne modifiera pas le volume d\'import.';
 
-$string['relocalize_help'] = 'Relocalise les ressources ajoutées aux cours pour celles qui sont parquées avec une colonne "coursemoduletype" à "resource"
+$string['relocalize_help'] = 'Relocalise les ressources ajoutées aux cours pour celles qui sont parquées avec une colonne
+"coursemoduletype" à "resource"
 (par défaut "sharedresource")';
 
-$string['deployzips_help'] = 'Si le fichier est une archive zip et que la ressource doit être déployée dans un cours comme une ressource locale, alors
-elle sera également décompactée.';
+$string['deployzips_help'] = 'Si le fichier est une archive zip et que la ressource doit être déployée dans un cours comme une
+ressource locale, alors elle sera également décompactée.';
 
-$string['makelabelsfromguidance_help'] = 'Si le fichier metadata.csv contient une colonne "guidance", créer des labels avec ce texte
-avant la publication des ressources dans le cours.';
+$string['makelabelsfromguidance_help'] = 'Si le fichier metadata.csv contient une colonne "guidance", créer des labels avec ce
+texte avant la publication des ressources dans le cours.';
 
 $string['configlistviewthreshold_desc'] = 'Nombre de ressources du résultat pour passer en affichage de liste.';
 
@@ -190,4 +201,4 @@ quelle que soit leur origine.';
 
 $string['configsearchblocksposition_desc'] = '';
 
-include(__DIR__.'/pro_additional_strings.php');
+require(__DIR__.'/pro_additional_strings.php');

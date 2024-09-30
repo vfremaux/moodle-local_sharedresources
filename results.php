@@ -15,14 +15,14 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package    local_sharedresources
- * @category   local
- * @author Valery Fremaux <valery@valeisti.fr>
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
+ * Search results.
  *
- * Provides a pluggable search form for several external resources repositories.
- * @see resources/results.php
+ * @package    local_sharedresources
+ * @author Valery Fremaux <valery@gmail.com>
+ * @copyright Valery Fremaux (activeprolearn.com)
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
  */
+
 require('../../config.php');
 require_once($CFG->dirroot.'/local/sharedresources/lib.php');
 
@@ -40,11 +40,11 @@ if ($course == SITEID) {
 
 $repo = required_param('repo', PARAM_TEXT);
 
-$url = new moodle_url('/local/sharedresources/results.php', array('id' => $id));
+$url = new moodle_url('/local/sharedresources/results.php', ['id' => $id]);
 $PAGE->set_url($url);
 $PAGE->set_context($context);
 
-if (!$course = $DB->get_record('course', array('id' => $courseid))) {
+if (!$course = $DB->get_record('course', ['id' => $courseid])) {
     throw new moodle_exception(get_string('coursemisconf'));
 }
 
@@ -56,7 +56,7 @@ $searchresultsstr = get_string('remotesearchresults', 'sharedresource');
 
 $PAGE->set_heading($SITE->fullname);
 if ($courseid) {
-    $PAGE->navbar->add($course->shortname, new moodle_url('/course/view.php', array('id' => $courseid)));
+    $PAGE->navbar->add($course->shortname, new moodle_url('/course/view.php', ['id' => $courseid]));
 }
 $PAGE->navbar->add($searchresultsstr);
 
@@ -73,7 +73,7 @@ echo $OUTPUT->heading($searchresultsstr);
 require($CFG->dirroot."/local/sharedresources/plugins/{$repo}/remoteresults.php");
 
 echo '<center>';
-$params = array('repo' => $repo, 'id' => $courseid);
+$params = ['repo' => $repo, 'id' => $courseid];
 $buttonstr = get_string('othersearch', 'sharedresource');
 echo $OUTPUT->single_button(new moodle_url('/local/sharedresources/search.php', $params), $buttonstr);
 echo $OUTPUT->continue_button($CFG->wwwroot);

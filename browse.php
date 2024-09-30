@@ -15,12 +15,14 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package    local_sharedresources
- * @author     Valery Fremaux <valery.fremaux@gmail.com>
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
- * @copyright  (C) 1999 onwards Martin Dougiamas  http://dougiamas.com
+ * Browse resources by categories.
  *
+ * @package    local_sharedresources
+ * @author Valery Fremaux <valery@gmail.com>
+ * @copyright Valery Fremaux (activeprolearn.com)
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
  */
+
 require('../../config.php');
 require_once($CFG->dirroot.'/local/sharedresources/classes/navigator.class.php');
 require_once($CFG->dirroot.'/mod/sharedresource/lib.php');
@@ -48,7 +50,7 @@ $PAGE->requires->js_call_amd('local_sharedresources/boxview', 'init');
 $PAGE->requires->js_call_amd('local_sharedresources/library', 'init');
 
 if ($courseid) {
-    if (!$course = $DB->get_record('course', array('id' => $courseid))) {
+    if (!$course = $DB->get_record('course', ['id' => $courseid])) {
         throw new moodle_exception(get_string('coursemisconf'));
     }
 } else {
@@ -57,7 +59,7 @@ if ($courseid) {
     $course->id = SITEID;
 }
 
-// hidden key to open the catalog to the unlogged area.
+// Hidden key to open the catalog to the unlogged area.
 $context = context_system::instance();
 
 if (!empty($config->privatecatalog)) {
@@ -69,7 +71,8 @@ if (!empty($config->privatecatalog)) {
         $context = context_system::instance();
         require_login();
     }
-    if (!sharedresources_has_capability_somewhere('repository/sharedresources:view', false, false, false, CONTEXT_COURSECAT.','.CONTEXT_COURSE)) {
+    $where = CONTEXT_COURSECAT.','.CONTEXT_COURSE;
+    if (!sharedresources_has_capability_somewhere('repository/sharedresources:view', false, false, false, $where)) {
         throw new moodle_exception(get_string('noaccess', 'local_sharedresources'));
     }
 }
@@ -84,7 +87,6 @@ $url = new moodle_url('/local/sharedresources/browse.php');
 $PAGE->set_url($url);
 $PAGE->set_context(context_system::instance());
 $PAGE->navbar->add($strheading);
-// $PAGE->navbar->add(get_string('browse', 'local_sharedresources'));
 $PAGE->requires->jquery();
 $PAGE->requires->jquery_plugin('animatenumber', 'local_sharedresources');
 $PAGE->set_heading($strheading);
@@ -100,7 +102,7 @@ $filters = null;
 
 try {
     $taxonomyselector = $renderer->taxonomy_select();
-    $taxonomyobj = $DB->get_record('sharedresource_classif', array('id' => $SESSION->sharedresources->taxonomy));
+    $taxonomyobj = $DB->get_record('sharedresource_classif', ['id' => $SESSION->sharedresources->taxonomy]);
     $navigator = new \local_sharedresources\browser\navigation($taxonomyobj);
 } catch (Exception $e) {
     echo $OUTPUT->header();
@@ -120,9 +122,9 @@ if (empty($config->searchblocksposition)) {
     $config->searchblocksposition = 'side-pre';
 }
 
-$visiblewidgets = array();
+$visiblewidgets = [];
 sharedresources_setup_widgets($visiblewidgets, $context);
-$searchfields = array();
+$searchfields = [];
 $offset = 0;
 $repo = 'local';
 
@@ -130,7 +132,8 @@ $bc = new block_contents();
 $bc->attributes['id'] = 'local_sharedresource_searchblock';
 $bc->attributes['role'] = 'search';
 $bc->attributes['aria-labelledby'] = 'local_sharedresouces_search_title';
-$bc->title = html_writer::span(get_string('searchinlibrary', 'local_sharedresources'), '', array('id' => 'local_sharedresources_search_title'));
+$attrs = ['id' => 'local_sharedresources_search_title'];
+$bc->title = html_writer::span(get_string('searchinlibrary', 'local_sharedresources'), '', $attrs);
 $mode = optional_param('mode', 'full', PARAM_TEXT);
 $layout = 'tableless';
 switch ($mode) {
@@ -143,25 +146,26 @@ switch ($mode) {
         break;
     }
 }
-$bc->content = $renderer->search_block($courseid, $repo, $offset, $context, $visiblewidgets, $searchfields, $layout);
+$bc->content = $renderer->search_block($courseid, $repo, $offset, $visiblewidgets, $searchfields, $layout);
 $PAGE->blocks->add_fake_block($bc, $config->searchblocksposition);
 
-/* Fltering */
+/* Filtering */
 
-// $classificationfilters = $navigator->get_category_filters();
+$classificationfilters = $navigator->get_category_filters();
 
 $i = 0;
-/*
-foreach ($classificationfilters as $afilter) {
-    $options = $navigator->get_filter_modalities($filter);
-    $filters["f$i"] = new StdClass;
-    $filters["f$i"]->name = $afilter->name;
-    $filters["f$i"]->options = $options;
-    $filters["f$i"]->value = optional_param("f$i", '', PARAM_INT);
-    $i++;
-}
-*/
+
 $filters = null;
+if (!empty($classificationfilters)) {
+    foreach ($classificationfilters as $afilter) {
+        $options = $navigator->get_filter_modalities($filter);
+        $filters["f$i"] = new StdClass;
+        $filters["f$i"]->name = $afilter->name;
+        $filters["f$i"]->options = $options;
+        $filters["f$i"]->value = optional_param("f$i", '', PARAM_INT);
+        $i++;
+    }
+}
 
 $renderer->add_path($catpath, $navigator);
 
@@ -183,14 +187,12 @@ if (is_dir($CFG->dirroot.'/local/staticguitexts')) {
 
 // Making filters.
 
-// echo $renderer->filters($catid, $catpath);
-
 echo $taxonomyselector;
 
 // Calling navigation.
 
-// $isediting = has_capability('repository/sharedresources:manage', $context, $USER->id);
-$isediting = sharedresources_has_capability_somewhere('repository/sharedresources:create', false, false, false, CONTEXT_COURSECAT.','.CONTEXT_COURSE);
+$where = CONTEXT_COURSECAT.','.CONTEXT_COURSE;
+$isediting = sharedresources_has_capability_somewhere('repository/sharedresources:create', false, false, false, $where);
 
 if ($catid) {
     $category = $navigator->get_category($catid, $catpath, $filters);

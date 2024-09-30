@@ -15,16 +15,17 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Search widget by duration criteria.
  *
- * @author  Valery Fremaux
- * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resource
  * @package local_sharedresources
  * @subpackage search
- * @category local
+ * @author  Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright  Valery Fremaux
+ * @license http://www.gnu.org/copyleft/gpl.html GNU Public License
  */
 namespace local_sharedresources\search;
 
-use \StdClass;
+use StdClass;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -36,12 +37,19 @@ require_once($CFG->dirroot.'/local/sharedresources/classes/search_widget.class.p
  */
 class duration_widget extends search_widget {
 
+    /**
+     * Constructor
+     * @param int $id
+     * @param string $label
+     */
     public function __construct($id, $label) {
         parent::__construct($id, $label, 'duration');
     }
 
     /**
      * Fonction used to display the widget. The parameter $display determines if plugins are displayed on a row or on a column
+     * @param string $layout
+     * @param mixed $value
      */
     public function print_search_widget($layout, $value = 0) {
         global $OUTPUT;
@@ -84,8 +92,11 @@ class duration_widget extends search_widget {
         return $OUTPUT->render_from_template('local_sharedresources/search_duration', $template);
     }
 
-    // Catchs a value in session from CGI input.
-    public function catch_value(&$searchfields) {
+    /**
+     * Catchs a value in session from CGI input.
+     * @param array $searchfields
+     */
+    public function catch_value(& $searchfields) {
         global $SESSION;
 
         if (!isset($SESSION->searchbag)) {
@@ -95,7 +106,7 @@ class duration_widget extends search_widget {
         $paramkey = str_replace(' ', '_', $this->label);
         $searchfields[$this->id] = @$SESSION->searchbag->$paramkey;
 
-        // check we have operator and at least one field is fed
+        // Check we have operator and at least one field is fed.
         if ((isset($_GET[$paramkey.'_day']) ||
                 isset($_GET[$paramkey.'_hour']) ||
                         isset($_GET[$paramkey.'_min']) ||
@@ -143,6 +154,10 @@ class duration_widget extends search_widget {
         }
     }
 
+    /**
+     * Helper to split duration into parts
+     * @param int $duration in seconds
+     */
     public function durationsplit($duration) {
         $return->days = floor($duration / DAYSECS);
         $duration -= $return->days * DAYSECS;

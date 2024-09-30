@@ -15,12 +15,15 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package    local_sharedresources
- * @category   local
- * @author Valery Fremaux <valery.fremaux@gmail.com>
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
- * @copyright  (C) 1999 onwards Martin Dougiamas  http://dougiamas.com
+ * View a resource
  *
+ * @package     local_sharedresources
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   Valery Fremaux (activeprolearn.com)
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL
+ */
+
+/*
  * This file allows acceding to resources in a platform instance independant way.
  * The user will only need to present a local id (internal resource id) or remote id
  *
@@ -84,7 +87,7 @@ if (!empty($resourceid)) {
     throw new moodle_exception(get_string('errorinvalidresourceid', 'local_sharedresources'));
 }
 
-if (!$resource = $DB->get_record('sharedresource_entry', array($idfield => $idvalue))) {
+if (!$resource = $DB->get_record('sharedresource_entry', [$idfield => $idvalue])) {
     throw new moodle_exception(get_string('errorinvalidresource', 'local_sharedresources'));
 }
 
@@ -98,7 +101,7 @@ if (!$resource->isvalid) {
 
 // Is resource shared in lower context ?
 if ($resource->context > 1) {
-    $context = $DB->get_record('context', array('id' => $resource->context));
+    $context = $DB->get_record('context', ['id' => $resource->context]);
     if (!$isloggedin) {
         require_login();
     }

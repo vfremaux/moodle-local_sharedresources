@@ -15,14 +15,28 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package     local_sharedresources
- * @category    local
- * @author      Valery Fremaux <valery.fremaux@gmail.com>
- * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL
- * @copyright   (C) 1999 onwards Martin Dougiamas  http://dougiamas.com
- *
  * Provides libraries for resource generic access.
+ *
+ * @package     local_sharedresources
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   Valery Fremaux (activeprolearn.com)
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL
  */
+
+/*
+ * phpcs:disable moodle.Commenting.ValidTags.Invalid
+ * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+ * @SuppressWarnings(PHPMD.NPathComplexity)
+ * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
+ * @SuppressWarnings(PHPMD.ExcessiveClassLength)
+ * @SuppressWarnings(PHPMD.ExcessivePublicCount)
+ * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
+ * @SuppressWarnings(PHPMD.TooManyMethods)
+ * @SuppressWarnings(PHPMD.TooManyFields)
+ * @SuppressWarnings(PHPMD.TooManyPublicMethods)
+ * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
+ */
+
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/mnet/xmlrpc/client.php');
@@ -50,17 +64,17 @@ function local_sharedresources_supports_feature($feature = null, $getsupported =
     }
 
     if (!isset($supports)) {
-        $supports = array(
-            'pro' => array(
-                'repo' => array('remote'),
-                'import' => array('mass'),
-                'admin' => array('pro'),
+        $supports = [
+            'pro' => [
+                'repo' => ['remote'],
+                'import' => ['mass'],
+                'admin' => ['pro'],
                 'emulate' => 'community',
-            ),
-            'community' => array(
-            ),
-        );
-        $prefer = array();
+            ],
+            'community' => [
+            ],
+        ];
+        $prefer = [];
     }
 
     if ($getsupported) {
@@ -116,7 +130,10 @@ function local_sharedresources_supports_feature($feature = null, $getsupported =
     return $versionkey;
 }
 
-// Moodle 4.0
+/**
+ * Standard callback.
+ * @param global_navigation $nav
+ */
 function local_sharedresources_extend_navigation(global_navigation $nav) {
     global $USER, $COURSE, $PAGE;
 
@@ -127,14 +144,16 @@ function local_sharedresources_extend_navigation(global_navigation $nav) {
     }
 
     if (has_capability('repository/sharedresources:view', $context)) {
-        $librarynode = $PAGE->navigation->create(get_string('library', 'local_sharedresources'), new moodle_url('/local/sharedresources/index.php'), navigation_node::TYPE_CONTAINER);
+        $label = get_string('library', 'local_sharedresources');
+        $target = new moodle_url('/local/sharedresources/index.php');
+        $librarynode = $PAGE->navigation->create($label, $target, navigation_node::TYPE_CONTAINER);
         $nav->add_node($librarynode);
     }
 }
 
 /**
  * a call back function for autoloading classes when unserializing the widgets
- *
+ * @param string $classname
  */
 function resources_load_searchwidgets($classname) {
     global $CFG;
@@ -159,6 +178,11 @@ if (!defined('RPC_SUCCESS')) {
     define('RPC_FAILURE_CAPABILITY', 510);
 }
 
+/**
+ * Array compare helper.
+ * @param string $a
+ * @param string $b
+ */
 function cmp($a, $b) {
     $a = preg_replace('@^(a|an|the) @', '', $a);
     $b = preg_replace('@^(a|an|the) @', '', $b);
@@ -170,7 +194,7 @@ function cmp($a, $b) {
  * @param string $repo
  * @param arrayref &$fullresults
  * @param array $searchfields and array of fields to search in keyed by metadata node identifier. Empty values will be ignored.
- * @param intref &$offset paged offset. May be changed (reset) while seeking for resources in some cases.
+ * @param int &$offset paged offset. May be changed (reset) while seeking for resources in some cases.
  * @param int $page the paging size.
  */
 function sharedresources_get_local_resources($repo, &$fullresults, $searchfields = [], &$offset = 0, $page = 20) {
@@ -183,7 +207,7 @@ function sharedresources_get_local_resources($repo, &$fullresults, $searchfields
     $plugin = $plugins[$config->schema];
 
     // Check if we have some filters.
-    $sqlclauses = array();
+    $sqlclauses = [];
     $hasfilter = false;
     $tabresources = []; // Array with keys = id of a resource and value = number of criteria matched in research.
 
@@ -202,7 +226,7 @@ function sharedresources_get_local_resources($repo, &$fullresults, $searchfields
     }
 
     // Get sharedresources from that preselection.
-    $clauses = array();
+    $clauses = [];
     if ($hasfilter) {
         $entrylist = implode("','", array_keys($tabresources));
         $clauses[] = " se.id IN('{$entrylist}') ";
@@ -233,12 +257,12 @@ function sharedresources_get_local_resources($repo, &$fullresults, $searchfields
     ";
 
     $fullresults['maxobjects'] = $DB->count_records_sql($sqlcount);
-    $fullresults['order'] = array();
+    $fullresults['order'] = [];
     if ($offset >= $fullresults['maxobjects']) {
         // Security when changing filter configuration.
         $offset = 0;
     }
-    $fullresults['entries'] = $DB->get_records_sql($sql, array(), $offset, $page);
+    $fullresults['entries'] = $DB->get_records_sql($sql, [], $offset, $page);
 
     if (!empty($fullresults['entries'])) {
         foreach ($fullresults['entries'] as $id => $r) {
@@ -246,9 +270,9 @@ function sharedresources_get_local_resources($repo, &$fullresults, $searchfields
             $entryclass = \mod_sharedresource\entry_factory::get_entry_class();
             $rentry = new $entryclass($r);
 
-            // Discard resources that have next version (not last version of)
+            // Discard resources that have next version (not last version of).
             if ($rentry->get_next() != $rentry->id) {
-                // we have a next version, so do not output in results.
+                // We have a next version, so do not output in results.
                 $fullresults['maxobjects']--;
                 unset($fullresults['entries'][$id]);
                 continue;
@@ -294,7 +318,7 @@ function sharedresources_get_remote_repo_resources($repo, &$fullresults, $search
         throw new moodle_exception(get_string('errorrepoprogramming'));
     }
 
-    $remotehost = $DB->get_record('mnet_host', array('id' => $repo));
+    $remotehost = $DB->get_record('mnet_host', ['id' => $repo]);
 
     // Get the originating (ID provider) host info.
     if (!$remotepeer = new mnet_peer()) {
@@ -309,7 +333,7 @@ function sharedresources_get_remote_repo_resources($repo, &$fullresults, $search
     // Set remoteuser and remoteuserhost parameters.
     if (!empty($USER->username)) {
         $mnetrequest->add_param($USER->username, 'string');
-        $remoteuserhost = $DB->get_record('mnet_host', array('id' => $USER->mnethostid));
+        $remoteuserhost = $DB->get_record('mnet_host', ['id' => $USER->mnethostid]);
         $mnetrequest->add_param($remoteuserhost->wwwroot, 'string');
     } else {
         $mnetrequest->add_param('anonymous', 'string');
@@ -421,7 +445,7 @@ function sharedresources_is_consumer($hostroot) {
             mh.wwwroot = ?
     ";
 
-    $consumers = $DB->get_records_sql($sql, array($hostroot));
+    $consumers = $DB->get_records_sql($sql, [$hostroot]);
 
     return $consumers;
 }
@@ -443,7 +467,7 @@ function sharedresource_get_usages($entry, &$response, $consumers = null, $user 
     }
 
     if (is_null($consumers)) {
-        $uses = $DB->count_records('sharedresource', array('identifier' => $entry->identifier));
+        $uses = $DB->count_records('sharedresource', ['identifier' => $entry->identifier]);
     } else {
         $uses = 0;
         if ($consumers) {
@@ -462,7 +486,7 @@ function sharedresource_get_usages($entry, &$response, $consumers = null, $user 
                 // Set remoteuser and remoteuserhost parameters.
                 $mnetrequest->add_param($user->username);
 
-                $remoteuserhost = $DB->get_record('mnet_host', array('id' => $user->mnethostid));
+                $remoteuserhost = $DB->get_record('mnet_host', ['id' => $user->mnethostid]);
                 $mnetrequest->add_param($remoteuserhost->wwwroot);
 
                 // Set category and resourceID parameter.
@@ -493,7 +517,7 @@ function sharedresource_get_usages($entry, &$response, $consumers = null, $user 
 function sharedresource_submit($repo, &$resourceentry) {
     global $CFG, $DB;
 
-    $remotehost = $DB->get_record('mnet_host', array('id' => $repo));
+    $remotehost = $DB->get_record('mnet_host', ['id' => $repo]);
 
     // Get the originating (ID provider) host info.
     if (!$remotepeer = new mnet_peer()) {
@@ -508,7 +532,7 @@ function sharedresource_submit($repo, &$resourceentry) {
     // Set $remoteuser and $remoteuserhost parameters.
     if (!empty($USER->username)) {
         $mnetrequest->add_param($USER->username);
-        $remoteuserhost = $DB->get_record('mnet_host', array('id', $USER->mnethostid));
+        $remoteuserhost = $DB->get_record('mnet_host', ['id', $USER->mnethostid]);
         $mnetrequest->add_param($remoteuserhost->wwwroot);
     } else {
         $mnetrequest->add_param('anonymous');
@@ -518,7 +542,7 @@ function sharedresource_submit($repo, &$resourceentry) {
     // Set $category and $offset ad $page parameters.
     $mnetrequest->add_param($resourceentry, 'struct');
 
-    $metadata = $DB->get_records('sharedresource_metadata', array('entryid' => $resourceentry->id));
+    $metadata = $DB->get_records('sharedresource_metadata', ['entryid' => $resourceentry->id]);
 
     $mnetrequest->add_param($metadata, 'array');
 
@@ -631,7 +655,7 @@ function sharedresources_remote_widgets($repo, $context) {
         throw new moodle_exception(get_string('errormnetpeer', 'local_sharedresources'));
     }
 
-    if (!$remotehost = $DB->get_record('mnet_host', array('id' => $repo))) {
+    if (!$remotehost = $DB->get_record('mnet_host', ['id' => $repo])) {
         if (debugging()) {
             throw new moodle_exception("No such host $repo in the neighborghood");
         }
@@ -646,7 +670,7 @@ function sharedresources_remote_widgets($repo, $context) {
     // Set remoteuser and remoteuserhost parameters.
     if (!empty($USER->username)) {
         $mnetrequest->add_param($USER->username, 'string');
-        $userremoteuserhost = $DB->get_record('mnet_host', array('id' => $USER->mnethostid));
+        $userremoteuserhost = $DB->get_record('mnet_host', ['id' => $USER->mnethostid]);
         $mnetrequest->add_param($userremoteuserhost->wwwroot, 'string');
     } else {
         $mnetrequest->add_param('anonymous', 'string');
@@ -673,7 +697,7 @@ function sharedresources_remote_widgets($repo, $context) {
             throw new moodle_exception($res->error);
         }
     } else {
-        $widgets = array();
+        $widgets = [];
     }
 
     return $widgets;
@@ -691,10 +715,10 @@ function sharedresources_process_search_widgets($mtdplugin, $visiblewidgets, &$s
     global $SESSION;
 
     if ($mode == 'simple') {
-        // Erase all searches
+        // Erase all searches.
         unset($SESSION->searchbag);
 
-        $fieldsforsingle = $mtdplugin->getSimpleSearchElements();
+        $fieldsforsingle = $mtdplugin->get_simple_search_elements();
         $searchvalue = optional_param('simplesearch', '', PARAM_TEXT);
         $searchoption = optional_param('simplesearch_option', '', PARAM_TEXT);
         // Fakes a full search, based on what the metadata plugin tells as relevant fields to search text in.
@@ -713,16 +737,23 @@ function sharedresources_process_search_widgets($mtdplugin, $visiblewidgets, &$s
     if (!empty($_GET) && !empty($config->activewidgets)) {
         foreach ($visiblewidgets as $key => $widget) {
             // The widget catches the value in $_GET, cleans it and self registers in $searchfields.
-            $result = $result or $widget->catch_value($searchfields);
+            $result = $result || $widget->catch_value($searchfields);
         }
     }
     return $result;
 }
 
+/**
+ * Get a string in a subplugin
+ * @param string $identifier
+ * @param string $subplugin
+ * @param string $a replacement object
+ * @param string $lang
+ */
 function sharedresources_get_string($identifier, $subplugin, $a = '', $lang = '') {
     global $CFG;
 
-    static $string = array();
+    static $string = [];
 
     if (empty($lang)) {
         $lang = current_language();
@@ -743,7 +774,7 @@ function sharedresources_get_string($identifier, $subplugin, $a = '', $lang = ''
         if (file_exists($CFG->dirroot.'/'.$subplugins[$type].'/'.$plug.'/lang/'.$lang.'/'.$subplugin.'.php')) {
             include($CFG->dirroot.'/'.$subplugins[$type].'/'.$plug.'/lang/'.$lang.'/'.$subplugin.'.php');
         } else {
-            $string = array();
+            $string = [];
         }
         $plugstring[$plug] = $string;
     }
@@ -751,10 +782,10 @@ function sharedresources_get_string($identifier, $subplugin, $a = '', $lang = ''
     if (array_key_exists($identifier, $plugstring[$plug])) {
         $result = $plugstring[$plug][$identifier];
         if ($a !== null) {
-            if (is_object($a) or is_array($a)) {
+            if (is_object($a) || is_array($a)) {
                 $a = (array)$a;
-                $search = array();
-                $replace = array();
+                $search = [];
+                $replace = [];
                 foreach ($a as $key => $value) {
                     if (is_int($key)) {
                         // We do not support numeric keys - sorry!
@@ -826,6 +857,7 @@ function sharedresource_is_media($resource) {
 
 /**
  * Based on the structure of the zip file.
+ * @param StdClass $resource
  */
 function sharedresource_is_scorm($resource) {
     global $CFG;
@@ -863,6 +895,12 @@ function sharedresource_is_scorm($resource) {
     return false;
 }
 
+/**
+ * Get courses where a resource is published.
+ * @param object $entry
+ * @return array of course records
+ * @todo restrict number of fields in the result for optimization
+ */
 function sharedresources_get_courses($entry) {
     global $DB;
 
@@ -882,7 +920,7 @@ function sharedresources_get_courses($entry) {
             sh.identifier = ?
     ";
 
-    return $DB->get_records_sql($sql, array($entry->identifier));
+    return $DB->get_records_sql($sql, [$entry->identifier]);
 }
 
 /**
@@ -905,7 +943,8 @@ function sharedresource_is_moodle_activity($resource) {
 
 /**
  * get top ranking keywords from metadata
- * @TODO : turn implementation to more portable IN() statement
+ * @param int $courseid
+ * @todo turn implementation to more portable IN() statement
  */
 function sharedresource_get_top_keywords($courseid) {
     global $DB, $CFG;
@@ -919,7 +958,7 @@ function sharedresource_get_top_keywords($courseid) {
     $mtdclass = '\\mod_sharedresource\\plugin_'.$config->schema;
     require_once($CFG->dirroot.'/mod/sharedresource/plugins/'.$config->schema.'/plugin.class.php');
     $mtdstandard = new $mtdclass();
-    $kwelement = $mtdstandard->getKeywordElement();
+    $kwelement = $mtdstandard->get_keyword_element();
 
     if (!$kwelement) {
         // Some metadata standard have no keywords (DC).
@@ -930,12 +969,12 @@ function sharedresource_get_top_keywords($courseid) {
 
     // Get all categories on the way to root.
     if ($courseid > SITEID) {
-        $catid = $DB->get_field('course', 'category', array('id' => $courseid));
-        $cat = $DB->get_record('course_categories', array('id' => $catid));
+        $catid = $DB->get_field('course', 'category', ['id' => $courseid]);
+        $cat = $DB->get_record('course_categories', ['id' => $catid]);
         $catcontext = context_coursecat::instance($cat->id);
         $contexts[] = $catcontext->id;
         while ($cat->parent) {
-            $cat = $DB->get_record('course_categories', array('id' => $cat->parent));
+            $cat = $DB->get_record('course_categories', ['id' => $cat->parent]);
             $catcontext = context_coursecat::instance($cat->id);
             $contexts[] = $catcontext->id;
         }
@@ -967,7 +1006,7 @@ function sharedresource_get_top_keywords($courseid) {
             0, $topranksize
     ";
 
-    $topkws = $DB->get_records_sql($sql, array());
+    $topkws = $DB->get_records_sql($sql, []);
 
     return $topkws;
 }
@@ -986,8 +1025,8 @@ function sharedresources_scan_importpath($upath, &$importlines, &$metadatadefine
     global $CFG;
 
     if ($CFG->ostype == 'WINDOWS' && !$data->nativeutf8) {
-        $path = utf8_decode($upath);
-        $importpath = utf8_decode($data->importpath);
+        $path = mb_convert_encoding($upath, 'Windows-1252', 'UTF-8');
+        $importpath = mb_convert_encoding($data->importpath, 'Windows-1252', 'UTF-8');
     } else {
         $path = $upath;
         $importpath = $data->importpath;
@@ -996,18 +1035,18 @@ function sharedresources_scan_importpath($upath, &$importlines, &$metadatadefine
     if (file_exists($path.'/metadata.csv')) {
         $metadata = file($path.'/metadata.csv');
         mtrace("Found metadata file in $upath");
-        $options = array('encoding' => $data->encoding);
+        $options = ['encoding' => $data->encoding];
         sharedresources_parse_metadata($metadata, $metadatadefines, $upath, $options);
     }
 
     // Process an optional alias file for taxonomy tokens.
-    $aliasescache = array();
+    $aliasescache = [];
     if (file_exists($importpath.'/taxonomy_aliases.txt')) {
         $aliases = file($importpath.'/taxonomy_aliases.txt');
         foreach ($aliases as $aliasline) {
             // Taxonomy aliases should share the same encoding than the metadata.csv.
             if ($data->encoding != 'UTF-8') {
-                $aliasline = utf8_encode($aliasline);
+                $aliasline = mb_convert_encoding($aliasline, 'UTF-8', 'auto');
             }
             list($from, $to) = explode('=', chop($aliasline));
             $aliasescache[rtrim($from)] = ltrim($to);
@@ -1016,7 +1055,13 @@ function sharedresources_scan_importpath($upath, &$importlines, &$metadatadefine
 
     // Apply overriding aliases to taxonomy.
     if (!function_exists('alias_taxon_tokens')) {
-        function alias_taxon_tokens(&$item, $unused, $aliases) {
+        /**
+         * Internal helper for array_walk.
+         * @param object $item
+         * @param object $unused
+         * @param object $aliases
+         */
+        function alias_taxon_tokens(& $item, $unused, $aliases) {
             if (array_key_exists($item, $aliases)) {
                 $item = $aliases[$item];
             }
@@ -1060,7 +1105,7 @@ function sharedresources_scan_importpath($upath, &$importlines, &$metadatadefine
              * $entry is read as ASCII from Windows file system. We need it so for accessing
              * Windows filesystem but in UTF8 for all other purposes.
              */
-            $uentry = utf8_encode($entry);
+            $uentry = mb_convert_encoding($entry, 'UTF-8', 'auto');
         } else {
             $uentry = $entry;
         }
@@ -1128,10 +1173,10 @@ function sharedresources_parse_metadata(&$metadata, &$metadatadefines, $upath, $
 
     static $sortorder = 0; // An absolute counter for ordering file in inputlist, based on metadata analysis.
 
-    $authorized = array('file', 'category', 'section', 'visible', 'title',
+    $authorized = ['file', 'category', 'section', 'visible', 'title',
                         'shortname', 'description', 'keywords', 'language',
                         'authors', 'contributors', 'documenttype', 'documentnature',
-                        'pedagogictype', 'difficulty', 'guidance');
+                        'pedagogictype', 'difficulty', 'guidance'];
 
     $hl = array_shift($metadata);
     while ($hl && preg_match('/^(\s|\/\/|#|$)/', $hl)) {
@@ -1139,7 +1184,7 @@ function sharedresources_parse_metadata(&$metadata, &$metadatadefines, $upath, $
     }
 
     if ($options['encoding'] != 'UTF-8') {
-        $hl = utf8_encode($hl);
+        $hl = mb_convert_encoding($hl, 'UTF-8', 'auto');
     }
 
     $header = explode(';', chop($hl));
@@ -1150,7 +1195,7 @@ function sharedresources_parse_metadata(&$metadata, &$metadatadefines, $upath, $
         return;
     }
 
-    $unauthorized = array();
+    $unauthorized = [];
     foreach ($header as $column) {
         if (!in_array($column, $authorized)) {
             $unauthorized[] = $column;
@@ -1179,7 +1224,7 @@ function sharedresources_parse_metadata(&$metadata, &$metadatadefines, $upath, $
         }
 
         $j = 0;
-        $mtd = array();
+        $mtd = [];
         $mtd['sortorder'] = $sortorder++;
         foreach ($line as $field) {
             if (!$j) {
@@ -1208,17 +1253,17 @@ function sharedresources_parse_metadata(&$metadata, &$metadatadefines, $upath, $
  * for the import processor.
  *
  * @param array $importlist The list of file physical paths to import
- * @param arrayref &$metadatadefines
+ * @param array $metadatadefines
  */
-function sharedresources_aggregate($importlist, &$metadatadefines) {
-    $aggregatedlist = array();
+function sharedresources_aggregate($importlist, $metadatadefines) {
+    $aggregatedlist = [];
 
     foreach ($importlist as $entry) {
         if (array_key_exists($entry, $metadatadefines)) {
             $descriptor = $metadatadefines[$entry];
             $descriptor['fullpath'] = $entry;
         } else {
-            $descriptor = array();
+            $descriptor = [];
             $descriptor['fullpath'] = $entry;
             $descriptor['file'] = pathinfo($entry, PATHINFO_BASENAME);
             $descriptor['title'] = basename($entry);
@@ -1332,7 +1377,7 @@ function sharedresources_has_capability_in_upper_contexts($capability, $context,
         }
     }
 
-    $courses = $DB->get_records_menu('course', array('category' => $context->instanceid), 'id,shortname');
+    $courses = $DB->get_records_menu('course', ['category' => $context->instanceid], 'id,shortname');
     if (!empty($courses)) {
         foreach (array_keys($courses) as $cid) {
             $ctx = context_course::instance($cid);

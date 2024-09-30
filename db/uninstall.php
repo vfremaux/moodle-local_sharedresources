@@ -17,13 +17,11 @@
 /**
  * Post-uninstall code for the sharedresource local plugin.
  *
- * @package     local_sharedresource
- * @category    local
+ * @package     local_sharedresources
+ * @author      2013 Valery Fremaux
  * @copyright   2013 Valery Fremaux
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
-defined('MOODLE_INTERNAL') || die();
 
 /**
  * on the install we still need to build and add the librarian role.

@@ -53,7 +53,7 @@
 }
 
 .resource-user-controls a {
-    font-weight: 0.95;
+    font-weight: 300;
 }
 
 .resourceitem .generalbox {
@@ -109,7 +109,7 @@ a.sharedresource-actionlink {
 
 .is-hidden-by-rule {
     -moz-opacity: 0.5;
-    filter: alpha(opacity=50);  /* Opacity for IE8 and lower */
+    filter: opacity(50%);  /* Opacity for IE8 and lower */
     opacity: 0.5;
 }
 
@@ -253,7 +253,7 @@ a.sharedresource-actionlink {
 }
 
 .sharedresource-user-controls img {
-    width: 69px !important;
+    width: 69px;
     height: 20px;
 }
 
@@ -310,6 +310,6 @@ img.icon32 {
 }
 
 .shr-version {
-    font-size: 110% !important;
-    font-weight: bolder !important;
+    font-size: 110%;
+    font-weight: bolder;
 }

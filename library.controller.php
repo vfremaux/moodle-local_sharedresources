@@ -15,9 +15,14 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package     local_sharedresource
- * @category    local
- * @author      Valery Fremaux (valery.fremaux@gmail.com)
+ * General controller of library.
+ *
+ * @package     local_sharedresources
+ * @author Valery Fremaux <valery@gmail.com>
+ * @copyright Valery Fremaux (activeprolearn.com)
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
+ *
+ * @todo : turn to controller class.
  */
 defined('MOODLE_INTERNAL') || die();
 
@@ -25,11 +30,11 @@ if ($action == 'forcedelete' || $action == 'delete') {
 
     $resourceid = required_param('id', PARAM_INT);
 
-    $identifier = $DB->get_field('sharedresource_entry', 'identifier', array('id' => $resourceid));
-    $DB->delete_records('sharedresource_metadata', array('entryid' => $resourceid));
-    $DB->delete_records('sharedresource_entry', array('id' => $resourceid));
+    $identifier = $DB->get_field('sharedresource_entry', 'identifier', ['id' => $resourceid]);
+    $DB->delete_records('sharedresource_metadata', ['entryid' => $resourceid]);
+    $DB->delete_records('sharedresource_entry', ['id' => $resourceid]);
 
-    if ($sharedresources = $DB->get_records('sharedresource', array('identifier' => $identifier))) {
+    if ($sharedresources = $DB->get_records('sharedresource', ['identifier' => $identifier])) {
 
         foreach ($sharedresources as $sharedresource) {
             if ($cm = get_coursemodule_from_instance('sharedresource', $sharedresource->id)) {

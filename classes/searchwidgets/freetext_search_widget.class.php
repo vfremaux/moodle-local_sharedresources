@@ -15,16 +15,17 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Search widget by free textual criteria.
  *
- * @author  Valery Fremaux
- * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resource
  * @package local_sharedresources
  * @subpackage search
- * @category local
+ * @author  Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright  Valery Fremaux (activeprolearn.com)
+ * @license http://www.gnu.org/copyleft/gpl.html GNU Public License
  */
 namespace local_sharedresources\search;
 
-use \StdClass;
+use StdClass;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -36,12 +37,19 @@ require_once($CFG->dirroot.'/local/sharedresources/classes/search_widget.class.p
  */
 class freetext_widget extends search_widget {
 
+    /**
+     * Constructor
+     * @param int $id
+     * @param string $label
+     */
     public function __construct($id, $label) {
         parent::__construct($id, $label, 'freetext');
     }
 
     /**
-     * Fonction used to display the widget. The parameter $display determines if plugins are displayed on a row or on a column
+     * Fonction used to display the widget.
+     * @param string $layout
+     * @param mixed $value
      */
     public function print_search_widget($layout, $value = '') {
         global $OUTPUT;
@@ -76,10 +84,10 @@ class freetext_widget extends search_widget {
 
     /**
      * catchs a value in session from CGI input
-     * @param arrayref &$searchfields
+     * @param array $searchfields
      * @return true if filter configuration has changed
      */
-    public function catch_value(&$searchfields) {
+    public function catch_value(& $searchfields) {
         global $SESSION;
 
         if (!isset($SESSION->searchbag)) {

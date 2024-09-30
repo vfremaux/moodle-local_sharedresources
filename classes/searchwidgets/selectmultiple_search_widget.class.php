@@ -15,17 +15,18 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Widget for multiple select search criteria
  *
- * @author  Valery Fremaux
- * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resource
  * @package local_sharedresources
+ * @author  Valery Fremaux
+ * @copyright  Valery Fremaux (activeprolearn.com)
+ * @license http://www.gnu.org/copyleft/gpl.html GNU Public License, mod/sharedresource is a work derived from Moodle mod/resource
  * @subpackage search
- * @category local
  *
  */
 namespace local_sharedresources\search;
 
-use \Stdclass;
+use Stdclass;
 
 defined('MOODLE_INTERNAL') || die();
 define('MOREOPTIONS_THRESHOLD', 8);
@@ -38,6 +39,11 @@ require_once($CFG->dirroot.'/local/sharedresources/classes/search_widget.class.p
  */
 class selectmultiple_widget extends search_widget {
 
+    /**
+     * constructor
+     * @param int $id
+     * @param string $label
+     */
     public function __construct($id, $label) {
         parent::__construct($id, $label, 'selectmultiple');
     }
@@ -72,7 +78,7 @@ class selectmultiple_widget extends search_widget {
         $i = 0;
 
         $template->hasmoreoptions = false;
-        foreach ($mtdstandard->METADATATREE[$this->id]['values'] as $optvalue) {
+        foreach ($mtdstandard->metadatatree[$this->id]['values'] as $optvalue) {
             $valuetpl = new StdClass;
             $valuetpl->checked = ($this->checkvalue($optvalue, $value)) ? ' checked ' : '';
             $valuetpl->optvalue = $optvalue;
@@ -94,8 +100,11 @@ class selectmultiple_widget extends search_widget {
         return $OUTPUT->render_from_template('local_sharedresources/search_selectmultiple', $template);
     }
 
-    // Catchs a value in session from CGI input.
-    public function catch_value(&$searchfields) {
+    /**
+     * Catchs a value in session from CGI input.
+     * @param array $searchfields
+     */
+    public function catch_value(& $searchfields) {
         global $SESSION;
 
         if (!isset($SESSION->searchbag)) {
@@ -114,7 +123,7 @@ class selectmultiple_widget extends search_widget {
         $searchfields[$this->id] = @$SESSION->searchbag->$paramkey;
 
         if (isset($_GET[$paramkey])) {
-            $valueset = array();
+            $valueset = [];
             if (is_array($_GET[$paramkey])) {
                 $paramarrayval = clean_param_array($_GET[$paramkey], PARAM_TEXT);
                 $selectvalue = implode(',', array_values($paramarrayval));

@@ -15,24 +15,38 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package     local_sharedresource
- * @category    local
- * @author      Valery Fremaux (valery.fremaux@gmail.com)
+ * Form to push a resource to an outdoors repository.
+ *
+ * @package     local_sharedresources
+ * @author Valery Fremaux <valery@gmail.com>
+ * @copyright Valery Fremaux (activeprolearn.com)
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
  */
 
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->libdir.'/formslib.php');
 
+/**
+ * Form definition.
+ */
 class PushOut_Form extends moodleform {
 
+    /** @var the resource identifier */
     protected $resourceid;
 
+    /**
+     * Constructor
+     * @param int $resourceid the resource identifier
+     */
     public function __construct($resourceid) {
         $this->resourceID = $resourceid;
         parent::__construct();
     }
 
+    /**
+     * Standard definition.
+     */
     public function definition() {
         global $CFG, $OUTPUT;
 
@@ -42,7 +56,7 @@ class PushOut_Form extends moodleform {
         // Adding title and description.
         $mform->addElement('html', $OUTPUT->heading(get_string('export', 'sharedresource')));
 
-        $buttonarray = array();
+        $buttonarray = [];
 
         $providers = sharedresources_get_providers();
 
@@ -76,11 +90,13 @@ class PushOut_Form extends moodleform {
         // Adding submit and reset button.
         $buttonarray[] = &$mform->createElement('cancel', 'go_cancel', get_string('cancel'));
 
-        $mform->addGroup($buttonarray, 'buttonar', '', array(' '), false);
+        $mform->addGroup($buttonarray, 'buttonar', '', [' '], false);
     }
 
     /**
-     * validates the form and incomming data
+     * validates the form and incomming data.
+     * @param object $data
+     * @param array $files
      */
     public function validation($data, $files) {
         $errors = parent::validation($data, $files);
