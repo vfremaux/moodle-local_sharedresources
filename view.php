@@ -84,7 +84,12 @@ if (!empty($resourceid)) {
     }
     $idvalue = $identifier;
 } else {
+<<<<<<< HEAD
+    print_error('errorinvalidresourceid', 'local_sharedresources');
+    exit 1;
+=======
     throw new moodle_exception(get_string('errorinvalidresourceid', 'local_sharedresources'));
+>>>>>>> MOODLE_401_STABLE
 }
 
 if (!$resource = $DB->get_record('sharedresource_entry', [$idfield => $idvalue])) {
